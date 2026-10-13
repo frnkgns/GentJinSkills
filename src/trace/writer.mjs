@@ -39,6 +39,10 @@ export class TraceWriter {
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
   }
 
+  bindSession(sessionId) {
+    if (!this.sessionId && typeof sessionId === "string") this.sessionId = sessionId
+  }
+
   #markCoverage(hook, captured, missing) {
     const current = this.coverage.get(hook) ?? { captured: new Set(), missing: new Set(), calls: 0 }
     for (const f of captured) current.captured.add(f)

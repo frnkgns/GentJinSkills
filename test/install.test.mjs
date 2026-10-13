@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url"
 import test from "node:test"
 import assert from "node:assert/strict"
 import { buildRegistry } from "../scripts/build-registry.mjs"
+import { payloadFiles } from "../src/install/apply.mjs"
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..")
 
@@ -14,25 +15,6 @@ function inTemp(fn) {
   } finally {
     rmSync(dir, { recursive: true, force: true })
   }
-}
-
-function payloadFiles(root) {
-  const files = ["AGENTS.md"]
-  for (const dir of ["command", "skills", "src", "schemas", "registry", "evals", "plugins", "scripts", "test", "docs"]) {
-    const full = join(root, dir)
-    if (!existsSync(full)) continue
-    for (const entry of readdirSync(full, { withFileTypes: true })) {
-      const p = join(full, entry.name)
-      if (entry.isDirectory()) {
-        for (const sub of readdirSync(p, { withFileTypes: true })) {
-          if (sub.isFile()) files.push(`${dir}/${entry.name}/${sub.name}`)
-        }
-      } else {
-        files.push(`${dir}/${entry.name}`)
-      }
-    }
-  }
-  return files
 }
 
 function installTo(target, source = repoRoot) {
@@ -55,6 +37,22 @@ test("a clean install copies the full runtime payload into a temporary location"
     assert.ok(existsSync(join(target, "src", "trace", "plugin-body.mjs")))
     assert.ok(existsSync(join(target, "src", "trace", "plugin-support.mjs")))
     assert.ok(existsSync(join(target, "registry", "skills.json")))
+  })
+})
+
+test("the payload ships the typecheck config, because without it the typecheck script silently passes", () => {
+  assert.ok(
+    payloadFiles(repoRoot).includes("tsconfig.json"),
+    "tsconfig.json must be in the payload or an installed copy reports a clean typecheck it never ran",
+  )
+})
+
+test("the payload ships the plugins that OpenCode 2 requires a definition object from", () => {
+  inTemp((target) => {
+    installTo(target)
+    const plugin = readFileSync(join(target, "plugins", "gentjin-capabilities.ts"), "utf8")
+    assert.match(plugin, /id: "gentjin"/, "the plugin must export a V2 definition object")
+    assert.match(plugin, /async setup\(ctx/, "the plugin must initialize inside setup")
   })
 })
 

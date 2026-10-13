@@ -119,10 +119,12 @@ test("existing git, tracing, scope, reporting, and install behaviour is untouche
   assert.equal(assertTraceIntegrity([]).ok, true)
 })
 
-test("the plugin entry point exports only an inline default, as OpenCode requires", async () => {
+test("the plugin entry point exports only the definition object OpenCode 2 requires", async () => {
   const mod = await import("../plugins/gentjin-capabilities.ts")
   assert.deepEqual(Object.keys(mod), ["default"])
-  assert.match(mod.default.toString(), /^async/)
+  assert.equal(typeof mod.default, "object")
+  assert.equal(mod.default.id, "gentjin")
+  assert.equal(typeof mod.default.setup, "function")
 })
 test("ordering: a governed mutation is refused until the body is loaded", async () => {
   const { createLoader } = await import("../src/capabilities/loader.mjs")
@@ -243,10 +245,10 @@ test("runtime completion: a session that never loaded anything reports nothing",
   assert.deepEqual(loader.completionReport().findings, [])
 })
 
-test("the plugin registers the event hook needed for runtime completion checking", async () => {
+test("the plugin subscribes to the server event stream for runtime completion checking", async () => {
   const { readFileSync } = await import("node:fs")
   const source = readFileSync(join(repoRoot, "plugins", "gentjin-capabilities.ts"), "utf8")
-  assert.match(source, /event:/, "no event hook")
-  assert.match(source, /session\.idle/, "event hook does not observe session.idle")
-  assert.match(source, /completionReport\(\)/, "event hook does not run the completion check")
+  assert.match(source, /ctx\.event\.subscribe/, "no event subscription")
+  assert.match(source, /session\.idle/, "the subscription does not observe session.idle")
+  assert.match(source, /completionReport\(\)/, "the subscription does not run the completion check")
 })

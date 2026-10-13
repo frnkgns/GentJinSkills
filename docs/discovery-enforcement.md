@@ -4,11 +4,26 @@ Measured against OpenCode 1.18.35 on this machine, by probe. Every claim below w
 not read from documentation. Probes were temporary files under the system temp root and were
 removed; the installation manifest was re-verified afterwards.
 
+## Status under OpenCode 2.0.28
+
+The probes below were taken on 1.18.35 and are left as the historical record of what was
+measured, because rewriting observed results would destroy the evidence. Two facts changed with
+the V2 upgrade and are recorded here rather than edited into the probe output:
+
+- **The probe conclusions still hold, but the tool names moved.** The shell tool is now named
+  `shell`, not `bash`. The plugins match both names, so the `bash` findings below remain
+  applicable, but new work must not assume `bash`.
+- **The plugin entrypoint contract is different.** V2 requires the default export to be a
+  definition object with an `id` and a `setup` function. Both plugins were rewritten, and the
+  rewrite was confirmed by a clean load in `opencode.log` plus the `gentjin_capability` and
+  `gentjin_discovery` tools becoming callable. The V1 shape is rejected, so the probes would need
+  re-running against a V2 plugin before being cited as current.
+
 ## What is enforced at runtime today
 
 | Path | Interceptable | Enforced today |
 | --- | --- | --- |
-| `bash` | yes | yes, by `tool.execute.before` for three guarded capabilities |
+| `bash` / `shell` | yes | yes, by `tool.execute.before` for three guarded capabilities |
 | `write` | yes | **no** |
 | `edit` | yes | **no** |
 | `read`, `grep`, `glob`, `list` | yes | not applicable, read-only |

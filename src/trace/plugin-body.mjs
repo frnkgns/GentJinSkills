@@ -18,62 +18,117 @@ function hashString(value) {
   return hash
 }
 
-async function logToOpenCode(ctx, level, message) {
-  try {
-    await ctx?.client?.app?.log({ body: { service: PLUGIN_NAME, level, message } })
-  } catch {
-    // Logging must never break the session.
+function numericExitCode(result) {
+  for (const candidate of [result?.exitCode, result?.metadata?.exitCode]) {
+    if (typeof candidate === "number") return candidate
   }
+  return null
 }
 
-export async function createTracePlugin(ctx) {
+/**
+ * OpenCode 2 reports a tool call as a single event carrying either a result or an error. The
+ * trace writer reasons about the older { error, exitCode } pair, so the event is normalized here
+ * instead of teaching the writer and its tests about the transport.
+ */
+function toToolOutput(event) {
+  if (event?.status === "error") return { error: event.error }
+  const result = event?.result
+  const exitCode = numericExitCode(result)
+  return { output: result, ...(exitCode === null ? {} : { exitCode }) }
+}
+
+export async function registerTracePlugin(ctx) {
   const traceDir = resolveTraceDir()
-  mkdirSync(traceDir, { recursive: true })
+  try {
+    mkdirSync(traceDir, { recursive: true })
+  } catch {
+    // A trace directory that cannot be created must not stop the plugin from loading.
+  }
 
   let trace = null
   let loadError = null
 
-  const ensureTrace = async () => {
-    if (trace) return trace
+  const ensureTrace = (sessionId) => {
     if (loadError) return null
     try {
-      const file = join(traceDir, `${Date.now()}-${randomBytes(4).toString("hex")}.jsonl`)
-      trace = new TraceWriter({
-        taskId: process.env.GENTJIN_TASK_ID ?? hexId("task"),
-        projectId: resolveProjectId(ctx),
-        sessionId: ctx?.sessionID ?? null,
-        file,
-      })
+      if (!trace) {
+        const file = join(traceDir, `${Date.now()}-${randomBytes(4).toString("hex")}.jsonl`)
+        trace = new TraceWriter({
+          taskId: process.env.GENTJIN_TASK_ID ?? hexId("task"),
+          projectId: resolveProjectId(ctx),
+          sessionId: sessionId ?? null,
+          file,
+        })
+      }
+      trace.bindSession(sessionId)
       return trace
     } catch (error) {
       loadError = error
-      await logToOpenCode(ctx, "error", `trace writer unavailable: ${error.message}`)
       return null
     }
   }
 
   const spans = new Map()
 
-  return {
-    "tool.execute.before": async (input) => {
-      const writer = await ensureTrace()
-      if (!writer) return
-      const spanId = `span-${Date.now()}-${Math.abs(hashString(String(input?.tool ?? "")))}`
-      spans.set(spanId, Date.now())
-    },
+  await ctx.tool.hook("execute.before", async (event) => {
+    const writer = ensureTrace(event?.sessionID)
+    if (!writer) return
+    const spanId = `span-${Date.now()}-${Math.abs(hashString(String(event?.tool ?? "")))}`
+    spans.set(spanId, Date.now())
+  })
 
-    "tool.execute.after": async (input, output) => {
-      const writer = await ensureTrace()
-      if (!writer) return
-      const spanId = [...spans.keys()].pop()
-      const startedAt = spanId ? spans.get(spanId) : Date.now()
-      if (spanId) spans.delete(spanId)
-      writer.onToolExecuteAfter(input, output, spanId, startedAt)
-    },
+  await ctx.tool.hook("execute.after", async (event) => {
+    const writer = ensureTrace(event?.sessionID)
+    if (!writer) return
+    const spanId = [...spans.keys()].pop()
+    const startedAt = spanId ? spans.get(spanId) : Date.now()
+    if (spanId) spans.delete(spanId)
+    writer.onToolExecuteAfter({ tool: event?.tool }, toToolOutput(event), spanId, startedAt)
+  })
 
-    event: async ({ event }) => {
-      const writer = await ensureTrace()
-      if (!writer || !event?.type) return
+  await ctx.session.hook("context", async (event) => {
+    const writer = ensureTrace(event?.sessionID)
+    if (!writer) return
+    writer.append({
+      event_id: hexId("evt"),
+      timestamp: new Date().toISOString(),
+      phase: "observe",
+      event_type: "task.started",
+      source: "observed",
+      outcome: "ok",
+      payload: { message_count: Array.isArray(event?.messages) ? event.messages.length : null },
+      instrumentation: {
+        hook: "chat.message",
+        captured_fields: ["message_count"],
+        missing_fields: ["message_text"],
+      },
+    })
+  })
+
+  await ctx.permission.hook("evaluate", async (event) => {
+    const writer = ensureTrace(event?.sessionID)
+    if (!writer) return
+    writer.append({
+      event_id: hexId("evt"),
+      timestamp: new Date().toISOString(),
+      phase: "act",
+      event_type: "action.executed",
+      source: "observed",
+      outcome: "ok",
+      payload: { action: event?.action ?? null, resources: event?.resources ?? null },
+      instrumentation: {
+        hook: "permission.ask",
+        captured_fields: ["action", "resources"],
+        missing_fields: [],
+      },
+    })
+  })
+
+  const controller = new AbortController()
+  void (async () => {
+    for await (const event of ctx.event.subscribe({ signal: controller.signal })) {
+      const writer = ensureTrace()
+      if (!writer || !event?.type) continue
       writer.append({
         event_id: hexId("evt"),
         timestamp: new Date().toISOString(),
@@ -88,46 +143,10 @@ export async function createTracePlugin(ctx) {
           missing_fields: ["model_reasoning"],
         },
       })
-    },
+    }
+  })()
 
-    "chat.message": async (_input, output) => {
-      const writer = await ensureTrace()
-      if (!writer) return
-      writer.append({
-        event_id: hexId("evt"),
-        timestamp: new Date().toISOString(),
-        phase: "observe",
-        event_type: "task.started",
-        source: "observed",
-        outcome: "ok",
-        payload: { message_count: Array.isArray(output?.messages) ? output.messages.length : null },
-        instrumentation: {
-          hook: "chat.message",
-          captured_fields: ["message_count"],
-          missing_fields: ["message_text"],
-        },
-      })
-    },
-
-    "permission.ask": async (input) => {
-      const writer = await ensureTrace()
-      if (!writer) return
-      writer.append({
-        event_id: hexId("evt"),
-        timestamp: new Date().toISOString(),
-        phase: "act",
-        event_type: "action.executed",
-        source: "observed",
-        outcome: "ok",
-        payload: { permission: input?.permission ?? null, patterns: input?.patterns ?? null },
-        instrumentation: {
-          hook: "permission.ask",
-          captured_fields: ["permission", "patterns"],
-          missing_fields: [],
-        },
-      })
-    },
-  }
+  return () => controller.abort()
 }
 
 export function resolveTraceDir() {
@@ -136,5 +155,9 @@ export function resolveTraceDir() {
 }
 
 export function resolveProjectId(ctx) {
-  return ctx?.project?.id ?? ctx?.project?.name ?? process.env.GENTJIN_PROJECT_ID ?? "unknown"
+  return (
+    ctx?.location?.project?.id ??
+    process.env.GENTJIN_PROJECT_ID ??
+    PLUGIN_NAME
+  )
 }

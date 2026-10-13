@@ -7,6 +7,23 @@ labelled separately and are never presented as installed-runtime evidence.
 Each probe is a standalone `opencode run` in a temporary project, so no probe can inherit another
 probe's discovery state.
 
+## Status under OpenCode 2.0.28
+
+The probe results below are left exactly as observed, because editing measured results destroys
+the evidence they are meant to provide. Read them as a 1.18.35 baseline, not as current state.
+
+The mechanisms the probes exercised still exist in V2 under different names, and the plugins were
+ported on 2026-10-13:
+
+- `tool.execute.before` is now registered as `ctx.tool.hook("execute.before", ...)`, and its
+  callback receives one event instead of `(input, output)`. Throwing from it still blocks the call.
+- The shell tool is named `shell`, not `bash`. The gate matches both.
+- `patch` and `multiedit` no longer exist as separate tools; V2 merges them into the `edit`
+  permission action, so `write` and `edit` are the file mutators now.
+
+**These probes have not been re-run against V2.** Treat the table below as a baseline and re-probe
+before citing it as current.
+
 ## Probe 1 — a project edit is refused before discovery
 
 | | |

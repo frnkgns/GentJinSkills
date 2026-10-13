@@ -16,7 +16,7 @@ A control belongs in the enforcement layer only when a hook supplies real eviden
 
 | Component | Path | Responsibility |
 | --- | --- | --- |
-| OpenCode 1.18.34 | external | Model runtime, tools, execution, plugin hooks |
+| OpenCode 2.0.28 | external | Model runtime, tools, execution, plugin hooks |
 | GENTJIN plugin | `plugins/gentjin-trace.js` | Records traces from real hooks |
 | Trace writer | `src/trace/writer.mjs` | JSONL append-only events, redaction, coverage |
 | Task record | `src/task/record.mjs` | Lifecycle, states, transitions, action capture |

@@ -30,7 +30,7 @@ export const CAPABILITY_CONTRACTS = {
     records: "action.executed",
   },
   "diff inspection": {
-    tools: ["bash"],
+    tools: ["shell"],
     mutating: false,
     requires_approval: false,
     records: "action.executed",
@@ -44,14 +44,14 @@ export const CAPABILITY_CONTRACTS = {
     note: "Scoped to task.scope.allowed_paths.",
   },
   "verification commands": {
-    tools: ["bash"],
+    tools: ["shell"],
     mutating: false,
     requires_approval: false,
     records: "verification.evidence",
     note: "Exit code is the evidence. Never assert a result without one.",
   },
   "read-only database inspection": {
-    tools: ["bash"],
+    tools: ["shell"],
     mutating: false,
     requires_approval: false,
     records: "action.executed",

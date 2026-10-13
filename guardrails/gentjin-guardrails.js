@@ -4,32 +4,25 @@ import { evaluateGitCommand } from "../src/guardrails/git-guardrails.mjs"
  * Blocks destructive git commands before OpenCode executes them, using the
  * tool.execute.before hook.
  *
- * OpenCode 1.18.34 discovers only .js and .ts files and invokes only an inline
- * default export. Extra named exports suppress invocation, so this file
- * deliberately exports nothing but the default.
+ * OpenCode 2.0.28 requires a definition object with an `id` and an `effect` or `setup` function.
+ * The shell tool is named `shell` in V2, so both that name and the V1 `bash` name are matched.
  *
  * This file is NOT installed automatically. Run /setup-git-guardrails to place
  * it in ~/.config/opencode/plugins/.
  */
-export default async (ctx) => {
-  return {
-    "tool.execute.before": async (input, output) => {
-      if (input?.tool !== "bash") return
-      const command = output?.args?.command
+const SHELL_TOOLS = new Set(["bash", "shell"])
+
+export default {
+  id: "gentjin-guardrails",
+
+  async setup(ctx) {
+    await ctx.tool.hook("execute.before", async (event) => {
+      if (!event?.tool || !SHELL_TOOLS.has(event.tool)) return
+      const command = (event.input ?? {}).command
       if (typeof command !== "string") return
 
       const verdict = evaluateGitCommand(command)
       if (!verdict.blocked) return
-
-      const note = await ctx?.client?.app?.log({
-        body: {
-          service: "gentjin-guardrails",
-          level: "warn",
-          message: `blocked ${verdict.rule}: ${command}`,
-        },
-      }).catch(() => {})
-
-      void note
 
       throw new Error(
         [
@@ -40,6 +33,6 @@ export default async (ctx) => {
           "Ask the user for explicit authorization, or run /setup-git-guardrails to remove this guardrail.",
         ].join("\n"),
       )
-    },
-  }
+    })
+  },
 }

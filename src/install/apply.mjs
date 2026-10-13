@@ -23,7 +23,7 @@ const PAYLOAD_DIRECTORIES = [
   "schemas",
   "guardrails",
 ]
-const PAYLOAD_FILES = ["AGENTS.md", "package.json"]
+const PAYLOAD_FILES = ["AGENTS.md", "package.json", "tsconfig.json"]
 
 export function sha256OfFile(path) {
   return createHash("sha256").update(readFileSync(path)).digest("hex")
