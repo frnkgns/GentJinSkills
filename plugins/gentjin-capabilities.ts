@@ -183,6 +183,7 @@ export default {
           type: "object",
           properties: {
             action: { type: "string", description: "collect | render" },
+            project: { type: "string", description: "Project name used in the rendered title, for action render" },
             theme: { type: "string", description: "Short release theme, for action render" },
             intro: { type: "array", items: { type: "string" }, description: "One or two short paragraphs, for action render" },
             items: {
