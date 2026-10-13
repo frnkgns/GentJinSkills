@@ -1,5 +1,12 @@
 # Diagnosis: natural-language routing to real instruction loading
 
+## Status under OpenCode 2.0.28
+
+The diagnosis and the fix it led to both stand. The three hooks it relies on still exist, and the
+plugins now register them under their V2 names: a plugin-owned tool via `ctx.tool.transform`, and
+`tool.execute.before` via `ctx.tool.hook("execute.before", ...)`. The version reference in the
+section below is historical; the mechanism it describes is current.
+
 ## Message to action path, as observed
 
 A plain user message with no slash prefix reaches the model with no enforced link to any

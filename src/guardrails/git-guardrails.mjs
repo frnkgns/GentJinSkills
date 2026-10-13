@@ -72,8 +72,7 @@ export function evaluateGitCommand(command) {
 export const guardrailRules = BLOCKED.map((r) => ({ id: r.id, why: r.why }))
 
 /**
- * OpenCode 1.18.35 discovers only .js and .ts files and invokes only an inline
- * default export. Extra named exports suppress invocation, so the plugin entry
- * point delegates to this module instead of defining the hooks here.
+ * This module is a rule evaluator, not a plugin entry point. The plugin that applies these rules
+ * lives in guardrails/gentjin-guardrails.js, because OpenCode 2.0.28 loads a plugin only from a
+ * default export that is a definition object with an id and a setup function.
  */
-export default async () => ({})

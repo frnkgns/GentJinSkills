@@ -97,31 +97,53 @@ test("every rule carries a reason", () => {
   }
 })
 
-test("the guardrail plugin exports only an inline default, which is what OpenCode invokes", async () => {
+test("the guardrail plugin exports only the definition object OpenCode 2 requires", async () => {
   const mod = await import("../guardrails/gentjin-guardrails.js")
   assert.deepEqual(Object.keys(mod), ["default"])
-  assert.match(guardrailPlugin.toString(), /^async/)
+  assert.equal(guardrailPlugin.id, "gentjin-guardrails")
+  assert.equal(typeof guardrailPlugin.setup, "function")
 })
 
+async function mountGuardrails() {
+  let before = null
+  await guardrailPlugin.setup({
+    tool: {
+      hook: async (name, callback) => {
+        if (name === "execute.before") before = callback
+        return { dispose: async () => {} }
+      },
+    },
+  })
+  return (...args) => before(...args)
+}
+
 test("the plugin refuses a blocked command by throwing", async () => {
-  const hooks = await guardrailPlugin({ client: { app: { log: async () => {} } } })
-  assert.equal(typeof hooks["tool.execute.before"], "function")
+  const before = await mountGuardrails()
+  assert.equal(typeof before, "function")
 
   await assert.rejects(
-    () => hooks["tool.execute.before"]({ tool: "bash" }, { args: { command: "git push origin main" } }),
+    () => before({ tool: "shell", input: { command: "git push origin main" } }),
     /Blocked by GENTJIN git guardrails/,
   )
 })
 
 test("the plugin lets ordinary commands through without throwing", async () => {
-  const hooks = await guardrailPlugin({ client: { app: { log: async () => {} } } })
-  const result = await hooks["tool.execute.before"]({ tool: "bash" }, { args: { command: "git status" } })
-  assert.equal(result, undefined)
+  const before = await mountGuardrails()
+  assert.equal(await before({ tool: "shell", input: { command: "git status" } }), undefined)
 })
 
-test("the plugin ignores non-bash tools and missing args", async () => {
-  const hooks = await guardrailPlugin({ client: { app: { log: async () => {} } } })
-  await hooks["tool.execute.before"]({ tool: "read" }, { args: { filePath: "x" } })
-  await hooks["tool.execute.before"]({ tool: "bash" }, {})
-  await hooks["tool.execute.before"]({ tool: "bash" }, { args: { command: 123 } })
+test("the plugin ignores non-shell tools and missing args", async () => {
+  const before = await mountGuardrails()
+  await before({ tool: "read", input: { filePath: "x" } })
+  await before({ tool: "shell", input: {} })
+  await before({ tool: "shell", input: { command: 123 } })
+  await before({})
+})
+
+test("the plugin still blocks the legacy V1 bash tool name", async () => {
+  const before = await mountGuardrails()
+  await assert.rejects(
+    () => before({ tool: "bash", input: { command: "git push origin main" } }),
+    /Blocked by GENTJIN git guardrails/,
+  )
 })

@@ -2,18 +2,18 @@
  * Makes GENTJIN capabilities loadable and enforceable at runtime.
  *
  * Registers `gentjin_capability`, which returns the complete canonical body of a skill or
- * command; a `tool.execute.before` hook that refuses workflow-owned commands until those
- * instructions are loaded; and an `event` hook that checks adherence when the turn ends.
+ * command; a tool.execute.before hook that refuses workflow-owned commands until those
+ * instructions are loaded; and an event subscription that checks adherence when the turn ends.
  *
- * Verified against OpenCode 1.18.35 by probe, not documentation:
- *   - plugin tools are callable by the model
- *   - throwing from tool.execute.before blocks the command
- *   - `event` receives session.idle when the assistant finishes a turn
- *   - no hook exists that can retract or block an already-emitted message, so the completion
- *     check can only surface non-adherence, never prevent the claim
+ * OpenCode 2.0.28 requires the default export to be a definition object carrying an `id` and an
+ * `effect` or `setup` function. A V1 plugin exported an async function returning a hook map, and
+ * V2 rejects that shape outright, so both plugins failed to load. This file implements the V2
+ * contract directly rather than importing `Plugin.define` from `@opencode/plugin`: define is an
+ * identity function, so importing it would add six transitive packages for no behavior, and the
+ * plugin still has to be validated against the release it targets.
  *
- * OpenCode discovers .js and .ts and invokes only an inline default export, so this file
- * exports nothing else.
+ * The V2 context exposes no session id, so the session observed on each hook event becomes the
+ * identity used for discovery state, the gate, and the plugin-owned tools.
  */
 import { appendFileSync } from "node:fs"
 import { tmpdir } from "node:os"
@@ -47,6 +47,8 @@ import { saveReleaseNote } from "../src/release/vault.mjs"
 import { createGateTracer } from "../src/discovery/gate-trace.mjs"
 import type { GateTracer } from "../src/discovery/gate-trace.mjs"
 
+const SHELL_TOOLS = new Set(["bash", "shell"])
+
 interface PluginInput {
   project?: string
   theme?: string
@@ -68,6 +70,20 @@ interface PluginInput {
   reason?: string
 }
 
+interface ToolInput {
+  filePath?: string
+  command?: unknown
+}
+
+interface ToolHookEvent {
+  tool?: string
+  sessionID?: string
+  input?: unknown
+  status?: "completed" | "error"
+  result?: unknown
+  error?: unknown
+}
+
 interface GuardOwner {
   capability: { id: string }
 }
@@ -77,12 +93,32 @@ interface GuardVerdict {
   owners?: GuardOwner[]
 }
 
-interface PluginEvent {
-  event?: { type?: string }
+interface ServerEvent {
+  type?: string
+  properties?: unknown
 }
 
-interface ToolArgs {
-  filePath?: string
+interface ToolEditor {
+  add(tool: {
+    name: string
+    description: string
+    input: Record<string, unknown>
+    execute(args: PluginInput): Promise<{ content: string }>
+  }): void
+}
+
+interface PluginContext {
+  location?: { directory?: string }
+  tool: {
+    transform(callback: (editor: ToolEditor) => void): Promise<unknown>
+    hook(
+      name: "execute.before" | "execute.after",
+      callback: (event: ToolHookEvent) => Promise<void> | void,
+    ): Promise<unknown>
+  }
+  event: {
+    subscribe(options?: { signal?: AbortSignal }): AsyncIterable<ServerEvent>
+  }
 }
 
 function resolveOpenCodeRoot(): string {
@@ -91,67 +127,87 @@ function resolveOpenCodeRoot(): string {
   return resolve(here, "..")
 }
 
-export default async (ctx: { directory?: string; sessionID?: string }) => {
-  const loader: CapabilityLoader = createLoader({ opencodeRoot: resolveOpenCodeRoot() })
-  const discovery: DiscoveryState = createDiscoveryState()
-  const sessionId = ctx?.sessionID ?? "default"
-  const resolution = resolveProject(ctx?.directory ?? process.cwd())
-  beginSession(discovery, sessionId, resolution)
-  const tracer: GateTracer = createGateTracer()
+export default {
+  id: "gentjin",
 
-  return {
-    event: async ({ event }: PluginEvent): Promise<void> => {
-      if (event?.type !== "session.idle") return
-      const report = loader.completionReport()
-      if (report.findings.length === 0) return
-      try {
-        appendFileSync(join(tmpdir(), "gentjin-adherence.log"), `${JSON.stringify(report)}\n`)
-      } catch {
-        // A session-end finding must never break the session.
-      }
-    },
+  async setup(ctx: PluginContext) {
+    const loader: CapabilityLoader = createLoader({ opencodeRoot: resolveOpenCodeRoot() })
+    const discovery: DiscoveryState = createDiscoveryState()
+    const resolution = resolveProject(ctx?.location?.directory ?? process.cwd())
+    const tracer: GateTracer = createGateTracer()
 
-    tool: {
-      gentjin_capability: {
+    let activeSession: string | undefined
+
+    const sessionFor = (observed?: string): string => {
+      const sessionId = observed ?? "default"
+      if (!discovery.sessions.has(sessionId)) beginSession(discovery, sessionId, resolution)
+      return sessionId
+    }
+
+    const currentSession = (): string => sessionFor(activeSession)
+
+    await ctx.tool.transform((editor) => {
+      editor.add({
+        name: "gentjin_capability",
         description:
           "Load the complete canonical instructions for a GENTJIN skill or command before performing any action it governs. " +
           "Use this whenever a GENTJIN workflow applies and you need its full body rather than its summary. " +
           "Examples: id update-gentjin, install-gentjin, git-push, systematic-debugging. " +
           "Pass kind as command or skill when you know it.",
-        args: {
-          id: { type: "string", description: "Capability id, for example update-gentjin or systematic-debugging" },
-          kind: { type: "string", description: "Optional: command or skill" },
+        input: {
+          type: "object",
+          properties: {
+            id: { type: "string", description: "Capability id, for example update-gentjin or systematic-debugging" },
+            kind: { type: "string", description: "Optional: command or skill" },
+          },
+          required: ["id"],
+          additionalProperties: false,
         },
-        async execute(args: PluginInput): Promise<string> {
+        async execute(args: PluginInput) {
           const result = loader.load(args?.id, args?.kind)
-          if (!result.ok) return `CAPABILITY_UNAVAILABLE: ${result.reason}`
+          if (!result.ok) return { content: `CAPABILITY_UNAVAILABLE: ${result.reason}` }
           const header = `# ${result.id} (${result.kind}) - canonical instructions loaded from ${result.path}`
-          return [header, "", result.instructions].join("\n")
+          return { content: [header, "", result.instructions].join("\n") }
         },
-      },
+      })
 
-      gentjin_release_notes: {
+      editor.add({
+        name: "gentjin_release_notes",
         description:
           "Prepare release notes for the current repository from verified Git history. " +
           "Action 'collect' returns the target, previous boundary, collected changes and a proposed " +
           "version so you can write accurate prose. Action 'render' takes your theme, intro, items " +
           "and notes, renders the Markdown and saves it into this project's knowledge root. " +
           "This never creates a tag, a release or a pull request, and never publishes anything.",
-        args: {
-          action: { type: "string", description: "collect | render" },
-          theme: { type: "string", description: "Short release theme, for action render" },
-          intro: { type: "array", description: "One or two short paragraphs, for action render" },
-          items: {
-            type: "array",
-            description: "Change items as { title, detail }, for action render",
+        input: {
+          type: "object",
+          properties: {
+            action: { type: "string", description: "collect | render" },
+            project: { type: "string", description: "Project name used in the rendered title, for action render" },
+            theme: { type: "string", description: "Short release theme, for action render" },
+            intro: { type: "array", items: { type: "string" }, description: "One or two short paragraphs, for action render" },
+            items: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  detail: { type: "string" },
+                },
+                additionalProperties: false,
+              },
+              description: "Change items as { title, detail }, for action render",
+            },
+            why: { type: "string", description: "Why this release matters, for action render" },
+            projectContext: { type: "string", description: "Verified project context, for action render" },
+            limitations: { type: "array", items: { type: "string" }, description: "Short limitation statements, for action render" },
+            breaking: { type: "array", items: { type: "string" }, description: "Breaking change statements, for action render" },
+            repository: { type: "string", description: "Repository URL, for action render" },
           },
-          why: { type: "string", description: "Why this release matters, for action render" },
-          projectContext: { type: "string", description: "Verified project context, for action render" },
-          limitations: { type: "array", description: "Short limitation statements, for action render" },
-          breaking: { type: "array", description: "Breaking change statements, for action render" },
-          repository: { type: "string", description: "Repository URL, for action render" },
+          required: [],
+          additionalProperties: false,
         },
-        async execute(args: PluginInput): Promise<string> {
+        async execute(args: PluginInput) {
           const action = args?.action ?? "collect"
           const root = resolution.project_root
           const target = resolveTarget(root, "HEAD")
@@ -159,20 +215,26 @@ export default async (ctx: { directory?: string; sessionID?: string }) => {
           const items = boundary.sha ? collectChanges(root, boundary.sha, target.sha) : []
 
           if (action === "collect") {
-            return JSON.stringify({
-              project_root: root,
-              knowledge_root: resolution.knowledge_root,
-              branch: defaultBranch(root) ?? target.branch,
-              target_sha: target.sha,
-              previous_boundary: boundary.tag,
-              previous_boundary_selected: Boolean(boundary.selected),
-              previous_boundary_verified: Boolean(boundary.verified),
-              previous_release_published: Boolean(boundary.publication?.verified),
-              boundary_warning: boundary.warning,
-              eligible_changes: hasEligibleChanges(items) ? items.length : 0,
-              items,
-              proposed_version: suggestVersion(root, items),
-            }, null, 2)
+            return {
+              content: JSON.stringify(
+                {
+                  project_root: root,
+                  knowledge_root: resolution.knowledge_root,
+                  branch: defaultBranch(root) ?? target.branch,
+                  target_sha: target.sha,
+                  previous_boundary: boundary.tag,
+                  previous_boundary_selected: Boolean(boundary.selected),
+                  previous_boundary_verified: Boolean(boundary.verified),
+                  previous_release_published: Boolean(boundary.publication?.verified),
+                  boundary_warning: boundary.warning,
+                  eligible_changes: hasEligibleChanges(items) ? items.length : 0,
+                  items,
+                  proposed_version: suggestVersion(root, items),
+                },
+                null,
+                2,
+              ),
+            }
           }
 
           const pkg = renderReleasePackage({
@@ -193,53 +255,65 @@ export default async (ctx: { directory?: string; sessionID?: string }) => {
 
           const saved = saveReleaseNote({ knowledgeRoot: resolution.knowledge_root, pkg })
 
-          return JSON.stringify({
-            saved: saved.ok,
-            path: saved.path ?? null,
-            save_error: saved.ok ? null : saved.error,
-            updated_in_place: Boolean(saved.updated),
-            proposed_title: pkg.title,
-            release_url: pkg.releaseUrl,
-            previous_boundary: pkg.previousBoundary,
-            previous_release_published: pkg.previousReleasePublished,
-            boundary_advanced: pkg.boundaryAdvanced,
-            created_tag: pkg.createsTag,
-            created_release: pkg.createsRelease,
-            published: pkg.published,
-            body: pkg.body,
-          }, null, 2)
+          return {
+            content: JSON.stringify(
+              {
+                saved: saved.ok,
+                path: saved.path ?? null,
+                save_error: saved.ok ? null : saved.error,
+                updated_in_place: Boolean(saved.updated),
+                proposed_title: pkg.title,
+                release_url: pkg.releaseUrl,
+                previous_boundary: pkg.previousBoundary,
+                previous_release_published: pkg.previousReleasePublished,
+                boundary_advanced: pkg.boundaryAdvanced,
+                created_tag: pkg.createsTag,
+                created_release: pkg.createsRelease,
+                published: pkg.published,
+                body: pkg.body,
+              },
+              null,
+              2,
+            ),
+          }
         },
-      },
+      })
 
-      gentjin_discovery: {
+      editor.add({
+        name: "gentjin_discovery",
         description:
           "Record and inspect verified project discovery for this session. Actions: " +
           "'resolve' returns the resolved project root, identity and knowledge root; " +
           "'scope' declares the files the task intends to change; " +
           "'memory' records the memory retrieval result (notes_read, or no_relevant_notes); " +
           "'status' reports current readiness. Project edits are blocked until readiness is ready.",
-        args: {
-          action: { type: "string", description: "resolve | scope | memory | status" },
-          paths: { type: "array", description: "Files the task intends to change, for action scope" },
-          notes_read: { type: "array", description: "Memory notes actually read, for action memory" },
-          no_relevant_notes: { type: "boolean", description: "True when no note applies, for action memory" },
-          searched: { type: "array", description: "Vault areas actually searched this session, required with no_relevant_notes" },
-          failed: { type: "boolean", description: "True when retrieval genuinely failed, for action memory" },
-          reason: { type: "string", description: "Why retrieval failed, only when failed is true" },
+        input: {
+          type: "object",
+          properties: {
+            action: { type: "string", description: "resolve | scope | memory | status" },
+            paths: { type: "array", items: { type: "string" }, description: "Files the task intends to change, for action scope" },
+            notes_read: { type: "array", items: { type: "string" }, description: "Memory notes actually read, for action memory" },
+            no_relevant_notes: { type: "boolean", description: "True when no note applies, for action memory" },
+            searched: { type: "array", items: { type: "string" }, description: "Vault areas actually searched this session, required with no_relevant_notes" },
+            failed: { type: "boolean", description: "True when retrieval genuinely failed, for action memory" },
+            reason: { type: "string", description: "Why retrieval failed, only when failed is true" },
+          },
+          required: ["action"],
+          additionalProperties: false,
         },
-        async execute(args: PluginInput): Promise<string> {
+        async execute(args: PluginInput) {
           const action = args?.action ?? "status"
-          const record = recordFor(discovery, sessionId)
+          const sessionId = currentSession()
 
           if (action === "resolve") {
-            return JSON.stringify(startDiscovery(discovery, sessionId), null, 2)
+            return { content: JSON.stringify(startDiscovery(discovery, sessionId), null, 2) }
           }
 
           if (action === "scope") {
             const paths = declareScope(discovery, sessionId, args?.paths ?? [])
             const active = recordFor(discovery, sessionId)
             if (active) active.source_areas = paths.map((p: string) => dirname(p))
-            return JSON.stringify({ intended_paths: paths })
+            return { content: JSON.stringify({ intended_paths: paths }) }
           }
 
           if (action === "memory") {
@@ -250,29 +324,28 @@ export default async (ctx: { directory?: string; sessionID?: string }) => {
               searched: args?.searched ?? [],
               reason: args?.failed ? (args?.reason ?? "memory retrieval failed") : null,
             })
-            return JSON.stringify(result)
+            return { content: JSON.stringify(result) }
           }
 
-          return JSON.stringify(readinessFor(discovery, sessionId), null, 2)
+          return { content: JSON.stringify(readinessFor(discovery, sessionId), null, 2) }
         },
-      },
-    },
+      })
+    })
 
-    "tool.execute.after": async (input: { tool?: string }, output: { args?: ToolArgs }) => {
-      const failed =
-        Boolean((output as { error?: unknown } | undefined)?.error) ||
-        (output as { exitCode?: number } | undefined)?.exitCode === 0
-      if (input?.tool === "read" && output?.args?.filePath && failed) {
-        noteReadFailure(discovery, sessionId, output.args.filePath)
+    await ctx.tool.hook("execute.after", async (event: ToolHookEvent) => {
+      const sessionId = sessionFor(event?.sessionID)
+      const args = (event?.input ?? {}) as ToolInput
+      if (event?.tool === "read" && args.filePath && event.status === "error") {
+        noteReadFailure(discovery, sessionId, args.filePath)
       }
-    },
+    })
 
-    "tool.execute.before": async (
-      input: { tool?: string },
-      output: { args?: ToolArgs },
-    ): Promise<void> => {
-      const tool = input?.tool
-      const filePath = output?.args?.filePath
+    await ctx.tool.hook("execute.before", async (event: ToolHookEvent) => {
+      const sessionId = sessionFor(event?.sessionID)
+      activeSession = sessionId
+      const tool = event?.tool
+      const args = (event?.input ?? {}) as ToolInput
+      const filePath = args.filePath
 
       if (tool === "read" && filePath) {
         noteRead(discovery, sessionId, filePath)
@@ -283,8 +356,8 @@ export default async (ctx: { directory?: string; sessionID?: string }) => {
         return
       }
 
-      if (tool === "bash") {
-        const command = (output?.args as { command?: string } | undefined)?.command
+      if (tool !== undefined && SHELL_TOOLS.has(tool)) {
+        const command = args.command
         if (typeof command !== "string") return
 
         const verdict: GuardVerdict = loader.checkCommand(command)
@@ -327,6 +400,22 @@ export default async (ctx: { directory?: string; sessionID?: string }) => {
         })
       }
       if (!gate.allowed) throw new Error(gate.reason ?? "Blocked by discovery readiness.")
-    },
-  }
+    })
+
+    const controller = new AbortController()
+    void (async () => {
+      for await (const event of ctx.event.subscribe({ signal: controller.signal })) {
+        if (event?.type !== "session.idle") continue
+        const report = loader.completionReport()
+        if (report.findings.length === 0) continue
+        try {
+          appendFileSync(join(tmpdir(), "gentjin-adherence.log"), `${JSON.stringify(report)}\n`)
+        } catch {
+          // A session-end finding must never break the session.
+        }
+      }
+    })()
+
+    return () => controller.abort()
+  },
 }

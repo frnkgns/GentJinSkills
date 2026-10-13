@@ -229,7 +229,7 @@ Before modifying a project, establish verified context for the intended change. 
 4. Call `gentjin_discovery` with action `memory` recording either the notes read, or that none applied. No relevant notes is a valid result. Set `failed` only when retrieval genuinely failed.
 5. Call `gentjin_discovery` with action `status` to confirm readiness is `ready`.
 
-Project edits through `write`, `edit`, `patch`, and `multiedit` are refused until readiness is `ready`. Read, search, list, and Git-status operations are never refused, so the steps needed to recover are always available. Writes inside the resolved knowledge root stay permitted so memory can be captured.
+Project edits through `write` and `edit` are refused until readiness is `ready`. Read, search, list, and Git-status operations are never refused, so the steps needed to recover are always available. Writes inside the resolved knowledge root stay permitted so memory can be captured.
 
 Readiness describes sufficient inspected context for this task. It never asserts understanding of the whole project, and it never authorizes a push or proves a fix works. The measured enforcement boundary, including known bypasses, is in `docs/discovery-enforcement.md`.
 

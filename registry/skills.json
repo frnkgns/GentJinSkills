@@ -19,7 +19,7 @@
     },
     "diff inspection": {
       "tools": [
-        "bash"
+        "shell"
       ],
       "mutating": false,
       "requires_approval": false,
@@ -38,7 +38,7 @@
     },
     "verification commands": {
       "tools": [
-        "bash"
+        "shell"
       ],
       "mutating": false,
       "requires_approval": false,
@@ -47,7 +47,7 @@
     },
     "read-only database inspection": {
       "tools": [
-        "bash"
+        "shell"
       ],
       "mutating": false,
       "requires_approval": false,
