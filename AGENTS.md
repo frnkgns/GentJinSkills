@@ -229,7 +229,7 @@ Before modifying a project, establish verified context for the intended change. 
 4. Call `gentjin_discovery` with action `memory` recording either the notes read, or that none applied. No relevant notes is a valid result. Set `failed` only when retrieval genuinely failed.
 5. Call `gentjin_discovery` with action `status` to confirm readiness is `ready`.
 
-Project edits through `write` and `edit` are refused until readiness is `ready`. Read, search, list, and Git-status operations are never refused, so the steps needed to recover are always available. Writes inside the resolved knowledge root stay permitted so memory can be captured.
+Discovery readiness is required before a project edit through `write` and `edit`, and it is stated rather than enforced: the gate tells you what is missing and records the miss, but does not refuse the edit. A blanket refusal stranded agents that legitimately had nowhere to retrieve from, and a gate that always says no gets switched off entirely. Treat the stated requirement as required. Read, search, list, and Git-status operations are never gated, so the steps needed to recover are always available. Writes inside the resolved knowledge root stay permitted so memory can be captured.
 
 Readiness describes sufficient inspected context for this task. It never asserts understanding of the whole project, and it never authorizes a push or proves a fix works. The measured enforcement boundary, including known bypasses, is in `docs/discovery-enforcement.md`.
 
@@ -279,9 +279,9 @@ Never rely on conversation history or a compaction summary as the only record of
 ## Memory Retrieval
 
 **Looking up project memory before you act is required, not optional.** It is the first step of
-discovery, and the discovery gate refuses your project edits until you have recorded a memory
-result. Skipping it does not save time. It gets your edit refused, and you restart the sequence
-from the beginning.
+discovery. The gate tells you what is missing before an edit, and records the miss, but it does not
+refuse the edit — so nothing stops you except your own follow-through. Skipping it costs you the
+context you would have had.
 
 Vault knowledge is **not** supplied to you. Nothing is appended to what the user typed, and no note
 text is ever injected into a prompt. Every lookup below is a read you perform yourself.
@@ -323,8 +323,8 @@ not stretch to find a note just to have one; that is as wrong as skipping the lo
 If you cannot retrieve because the project has no vault, record that fact rather than leaving it
 blank.
 
-The gate enforces this on the edit path. It cannot enforce it on a spoken answer, so for questions
-this is on you.
+Nothing enforces this for you. The gate states what is missing before an edit and records the miss;
+it does not refuse, and it cannot reach a spoken answer. Follow-through is yours.
 
 What you must still do:
 

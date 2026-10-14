@@ -58,9 +58,12 @@ mutation can be refused without freezing the rest of the session.
 
 ## Conclusion
 
-Native `write` and `edit` are interceptable and blockable. This is the load-bearing finding:
-discovery readiness can be enforced on the mutation paths that matter, rather than only
-described in prose.
+Native `write` and `edit` are interceptable. This was originally built as a hard block, and that
+turned out to be the wrong call: a blanket refusal stranded agents that legitimately had nowhere to
+retrieve from, and a gate that always says no gets disabled rather than satisfied. The gate now
+**states** what is missing before an edit and records the miss to the gate trace, without refusing.
+The interception point is what matters here, because that is the only place a requirement can be
+stated at the moment it applies.
 
 ## Known bypasses, stated rather than hidden
 

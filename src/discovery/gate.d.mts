@@ -54,7 +54,7 @@ export function evaluateGate(args: {
   sessionId: string
   tool: string
   filePath?: string
-}): { allowed: boolean; reason?: string; status?: string }
+}): { allowed: boolean; reason?: string; status?: string; advisory?: boolean }
 
 export interface GateTraceEntry {
   at: string

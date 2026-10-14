@@ -320,11 +320,16 @@ export function evaluateGate({ state, sessionId, tool, filePath }) {
     return { allowed: true, status: READINESS.READY }
   }
 
+  // Readiness is advisory, not a refusal. A blanket block strands an agent that legitimately has
+  // nowhere to retrieve from, and a tool that always says "no" teaches people to disable it
+  // entirely. The requirement is stated instead, and recorded, so the miss stays visible.
   return {
-    allowed: false,
+    allowed: true,
     status: verdict.status,
-    reason: `Blocked: discovery readiness is "${verdict.status}" for ${filePath}. ${verdict.reasons.join("; ")}. ` +
-      `Inspect the file with a read tool first, declare the intended paths with the gentjin_discovery ` +
-      `tool (action 'scope'), and record the memory retrieval result (action 'memory').`,
+    advisory: true,
+    reason:
+      `Required before this change: ${verdict.reasons.join("; ")}. ` +
+      `Inspect the file with a read tool, declare the intended paths with the gentjin_discovery tool ` +
+      `(action 'scope'), and record the memory retrieval result (action 'memory').`,
   }
 }

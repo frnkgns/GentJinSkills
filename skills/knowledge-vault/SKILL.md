@@ -288,10 +288,10 @@ every change.
 
 ## Retrieval Pipeline
 
-**Looking up prior knowledge is required, not optional.** The discovery gate refuses your project
-edits until you have recorded a memory result, so skipping this does not save time — it gets the
-edit refused and restarts the sequence. Treat questions the same way, because a question is as
-likely to depend on a past decision as a task is.
+**Looking up prior knowledge is required, not optional.** The discovery gate states what is missing
+before an edit and records the miss, but does not refuse the edit — so nothing stops you except your
+own follow-through. Treat questions the same way, because a question is as likely to depend on a past
+decision as a task is.
 
 **When:** a task about the project, or a question about how something works, was decided, or broke
 before. **Not when:** a greeting, an acknowledgement, *"continue"*, or something already answered by
