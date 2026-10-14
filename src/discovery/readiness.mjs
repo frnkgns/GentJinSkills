@@ -1,3 +1,4 @@
+import { isAbsolute, resolve } from "node:path"
 import { isWithin } from "./resolve.mjs"
 
 export const READINESS = {
@@ -76,10 +77,14 @@ export function evaluateReadiness(record, { intendedPaths = [], reads = [], memo
     reasons.push(`no inspected source area covers ${unread.join(", ")}`)
   }
 
-  const observedReads = new Set(reads)
+  // Both sides are normalized against the project root first. An agent that read `src/app.ts` and
+  // an agent that read the same file by absolute path have both inspected it, and readiness must not
+  // depend on which form the runtime happened to report.
+  const observedReads = new Set(reads.map((r) => normalize(r, record.project_root)))
   for (const path of intendedPaths) {
-    const directory = dirnameOf(path)
-    const touched = [...observedReads].some((r) => r === path || withinDir(r, directory))
+    const absolute = normalize(path, record.project_root)
+    const directory = dirnameOf(absolute)
+    const touched = [...observedReads].some((r) => r === absolute || withinDir(r, directory))
     if (!touched) reasons.push(`no recorded read in this session touched ${path}`)
   }
 
@@ -114,6 +119,13 @@ export function evaluateReadiness(record, { intendedPaths = [], reads = [], memo
     status: READINESS.READY,
     reasons: [],
   }
+}
+
+function normalize(path, base) {
+  const value = String(path ?? "")
+  if (!value) return value
+  if (isAbsolute(value)) return resolve(value)
+  return resolve(base ?? process.cwd(), value)
 }
 
 function dirnameOf(path) {

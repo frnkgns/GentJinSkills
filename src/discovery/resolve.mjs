@@ -48,9 +48,17 @@ function readOverride(file) {
     }
   }
 
+  // Accept the prose form people actually write (`- Knowledge root: ~/...`) as well as the
+  // hyphenated key. A key silently ignored here points the session at a vault that does not
+  // exist, and every note then reads as being outside the knowledge root.
+  const key = "[A-Za-z][A-Za-z0-9 _-]*"
   for (const line of text.split(/\r?\n/)) {
-    const match = /^[-*]\s*([A-Za-z0-9_-]+)\s*:\s*(.+?)\s*$/.exec(line.trim())
-    if (match && values[match[1]] === undefined) values[match[1]] = match[2].replace(/^["']|["']$/g, "").trim()
+    const match = new RegExp(`^[-*]?\\s*(${key})\\s*:\\s*(.+?)\\s*$`).exec(line.trim())
+    if (!match) continue
+    const name = match[1].trim().replace(/\s+/g, "_").toLowerCase()
+    if (values[name] === undefined) {
+      values[name] = match[2].replace(/^["'`]|["'`]$/g, "").trim()
+    }
   }
 
   return Object.keys(values).length > 0 ? values : null
