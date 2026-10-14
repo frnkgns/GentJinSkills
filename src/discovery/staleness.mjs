@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto"
 import { existsSync, readFileSync, statSync } from "node:fs"
-import { join, resolve } from "node:path"
+import { isAbsolute, join, resolve } from "node:path"
 
 function digestOf(path) {
   try {
@@ -94,7 +94,8 @@ export function diffContext(snapshot, paths = []) {
 }
 
 export function contextChanged(snapshot, { projectRoot, readPaths = [], configPaths = [] } = {}) {
-  const relevant = [...readPaths, ...configPaths].map((p) => resolve(p))
+  const anchor = projectRoot ?? snapshot.projectRoot
+  const relevant = [...readPaths, ...configPaths].map((p) => (isAbsolute(p) ? resolve(p) : resolve(anchor, p)))
   const { changed, removed } = diffContext(snapshot, relevant)
   const gitNow = readGitContext(snapshot.project_root)
   const gitMoved =

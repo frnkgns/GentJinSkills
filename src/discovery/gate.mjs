@@ -104,7 +104,7 @@ export function verifyMemoryResult(record, session, { notesExist = false } = {})
   if (!result) return { ok: false, reason: "no memory retrieval result recorded" }
   if (result.status === "error") return { ok: true, degraded: true, reason: result.reason ?? "retrieval failed" }
 
-  const readSet = new Set([...session.reads].map((p) => resolvePath(p)))
+  const readSet = new Set([...session.reads].map((p) => resolvePath(p, record.project_root)))
 
   if (Array.isArray(result.notes_read) && result.notes_read.length > 0) {
     const problems = []
@@ -156,10 +156,18 @@ export function verifyMemoryResult(record, session, { notesExist = false } = {})
   return { ok: false, reason: "retrieval result must record notes read, or that none applied" }
 }
 
-function resolvePath(path, base = process.cwd()) {
+/**
+ * A relative path is ambiguous: the plugin process and the agent can disagree about the working
+ * directory, and a recorded read then fails to match the path it was supposed to cover. Resolving
+ * against the project root when one is known is what makes a relative scope and a relative read
+ * describe the same file.
+ */
+function resolvePath(path, base) {
   const value = String(path ?? "")
   if (!value) return value
-  return isAbsolute(value) ? resolve(value) : resolve(base, value)
+  if (isAbsolute(value)) return resolve(value)
+  const anchor = base ?? process.cwd()
+  return resolve(anchor, value)
 }
 
 /** Re-reads the state readiness depended on; any drift invalidates the previous verdict. */
