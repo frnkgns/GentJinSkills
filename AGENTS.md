@@ -278,17 +278,19 @@ Never rely on conversation history or a compaction summary as the only record of
 
 ## Memory Retrieval
 
-Do not load everything the vault knows. Know what exists, load only what matters, verify it, then work.
+Relevant notes are **supplied automatically** on each new user turn. The runtime searches this project's vault and appends bounded, cited excerpts to the request before the model reasons, so retrieval is not something you trigger or remember to request.
 
-- Read the project's `memory-index.md` first when it exists; it lists canonical notes with one-line descriptions. Treat it as a catalog, not as content. Create it lazily, keep it bounded, and update only the entries whose note changed.
-- Retrieve because the memory matches the task: task relevance plus importance, recency when it matters, and relationship to the current module. Never load unrelated modules or history as a precaution.
-- Retrieve progressively and stop as soon as context is sufficient. Prefer, in order: current WIP, project overview/structure when needed, the exact module note, the exact decision/issue/attempt, the most recent relevant session, and broader history only if still necessary.
-- Use deterministic retrieval first: project identity, note titles, Obsidian links, module names, paths, and task terminology. Do not introduce embeddings, a vector store, or a database.
+What you must still do:
+
+- Treat supplied notes as **prior evidence, not truth**. Verify any claim against current source before acting on it. Source wins on every conflict.
+- Retrieve further only when the supplied context is insufficient. Stop as soon as it is enough, and never read the vault wholesale.
 - Record provenance and verification state on important canonical knowledge so it can be re-verified later.
-- When memory conflicts with the repository, source wins. Mark the situation `STALE`, `CONTRADICTED`, `AMBIGUOUS`, `UNVERIFIED`, or `HISTORICAL`, then correct the canonical note. Never leave two canonical notes contradicting each other, and never let stored memory override the code.
+- When memory conflicts with the repository, mark the situation `STALE`, `CONTRADICTED`, `AMBIGUOUS`, `UNVERIFIED`, or `HISTORICAL`, then correct the canonical note. Never leave two canonical notes contradicting each other, and never let stored memory override code.
 - Answer "brief me before we start" with current objective, latest progress, important decisions, open issues and blockers, remaining work, and the recommended next step. Answer "wrap up today's work" as an end-of-day handoff.
-- Review memory occasionally for duplicates, orphans, broken links, and stale canonical notes. Cleanup is non-destructive by default: report and propose, do not delete.
+- Review memory occasionally for duplicates, orphans, broken links, and stale notes. Cleanup is non-destructive by default: report and propose, do not delete.
 - Do not add memory-management slash commands. Prefer natural language.
+
+Limits worth knowing: automatic retrieval runs once when a turn is admitted, not again before every model call, and it does not run for synthetic, shell, compaction, or move messages. Set `GENTJIN_RETRIEVAL=off` to disable it. Full behaviour, settings, and privacy boundaries are in `docs/per-request-retrieval.md`.
 
 ## Workflow Memory
 

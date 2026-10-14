@@ -10,7 +10,7 @@ import {
 } from "node:fs"
 import { dirname, join } from "node:path"
 
-const PAYLOAD_DIRECTORIES = [
+export const PAYLOAD_DIRECTORIES = [
   "command",
   "skills",
   "src",
@@ -23,7 +23,13 @@ const PAYLOAD_DIRECTORIES = [
   "schemas",
   "guardrails",
 ]
-const PAYLOAD_FILES = ["AGENTS.md", "package.json", "tsconfig.json"]
+/**
+ * `package.json` is deliberately excluded: <opencode-root> owns its own, and it carries the user's
+ * installed plugin dependencies. Copying the repository manifest over it breaks every package the
+ * runtime resolves from that directory. `tsconfig.json` does ship, because without it the installed
+ * tree's typecheck script silently passes without checking anything.
+ */
+export const PAYLOAD_FILES = ["AGENTS.md", "tsconfig.json"]
 
 export function sha256OfFile(path) {
   return createHash("sha256").update(readFileSync(path)).digest("hex")

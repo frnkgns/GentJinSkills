@@ -25,14 +25,13 @@ Installation direction:
 
 ```text
 <source-root>/AGENTS.md    -> <opencode-root>/AGENTS.md
+<source-root>/tsconfig.json -> <opencode-root>/tsconfig.json
 <source-root>/command/**   -> <opencode-root>/command/**
 <source-root>/skills/**    -> <opencode-root>/skills/**
 <source-root>/schemas/**   -> <opencode-root>/schemas/**
 <source-root>/src/**       -> <opencode-root>/src/**  (includes src/discovery/)
 <source-root>/plugins/** -> <opencode-root>/plugins/**
-<source-root>/package.json -> <opencode-root>/package.json
 <source-root>/registry/**  -> <opencode-root>/registry/**
-<source-root>/plugins/**   -> <opencode-root>/plugins/**
 <source-root>/evals/**     -> <opencode-root>/evals/**
 <source-root>/scripts/**   -> <opencode-root>/scripts/**
 <source-root>/guardrails/** -> <opencode-root>/guardrails/**  (inert source; only /setup-git-guardrails places it into plugins/)
@@ -41,6 +40,11 @@ Installation direction:
 installation metadata      -> <metadata-root>/manifest.json
                              <metadata-root>/version.json
 ```
+
+`package.json` is deliberately not part of the payload. `<opencode-root>` owns its
+own `package.json`, which carries the installed plugin dependencies the runtime
+resolves from there. Copying the repository manifest over it would replace the
+user's dependency list and break every package already installed beside it.
 
 `test/` ships as part of the payload so the executable checks can run from the
 installation without the repository. `evals/` ships for the same reason. Neither
@@ -295,13 +299,30 @@ backup storage is superseded.
 
 ### 3. Install runtime files directly
 
-Copy the approved payload into OpenCode's native runtime paths:
+Copy the approved payload into OpenCode's native runtime paths. This step must
+carry the same set as the installation-direction table in section 1:
 
 ```text
-<source-root>/AGENTS.md    -> <opencode-root>/AGENTS.md
-<source-root>/command/**   -> <opencode-root>/command/**
-<source-root>/skills/**    -> <opencode-root>/skills/**
+<source-root>/AGENTS.md     -> <opencode-root>/AGENTS.md
+<source-root>/tsconfig.json -> <opencode-root>/tsconfig.json
+<source-root>/command/**    -> <opencode-root>/command/**
+<source-root>/skills/**     -> <opencode-root>/skills/**
+<source-root>/schemas/**    -> <opencode-root>/schemas/**
+<source-root>/registry/**   -> <opencode-root>/registry/**
+<source-root>/src/**        -> <opencode-root>/src/**
+<source-root>/plugins/**    -> <opencode-root>/plugins/**
+<source-root>/evals/**      -> <opencode-root>/evals/**
+<source-root>/scripts/**    -> <opencode-root>/scripts/**
+<source-root>/guardrails/** -> <opencode-root>/guardrails/**
+<source-root>/docs/**       -> <opencode-root>/docs/**
+<source-root>/test/**       -> <opencode-root>/test/**
 ```
+
+`plugins/` and `src/` are load-bearing, not optional. OpenCode discovers a
+global plugin from `<opencode-root>/plugins/`, and each plugin imports its
+supporting modules from `<opencode-root>/src/`. Installing the instruction layer
+alone leaves every runtime tool, hook, and gate unregistered, so GENTJIN appears
+installed while nothing it documents as enforced is actually running.
 
 Install missing files automatically. Update unchanged manifest-managed files
 automatically. Ask only for the unsafe cases in the classification table.
@@ -519,6 +540,55 @@ runtime state and metadata have both been successfully created and verified.
 Deletion is the final migration step. If the run is interrupted before
 verification, the legacy folder must still exist so the migration can be retried
 safely, and the failure must be reported clearly.
+
+## Install on another harness
+
+GENTJIN's instructions are portable; only the runtime around them is OpenCode-specific. To install
+into a harness that is not OpenCode, take the portable core and skip the adapter.
+
+```text
+PORTABLE CORE                    OPENCODE ADAPTER (skip when foreign)
+AGENTS.md                        src/
+command/*.md                     registry/
+skills/*/SKILL.md                plugins/
+                                 evals/
+                                 scripts/
+                                 docs/
+                                 test/
+                                 schemas/
+                                 guardrails/
+                                 package.json
+```
+
+The authoritative classification is `src/portability/contract.mjs`; `isPortableCore` and `isAdapter`
+are mutually exclusive and cover every payload file. No skill depends on the adapter to be
+understood, so a foreign harness loses no behavior by skipping it.
+
+Generate a ready-to-consume copy rather than assembling it by hand:
+
+```bash
+npm run export:portable
+```
+
+This writes `AGENTS.md`, `command/`, `skills/`, plus two metadata files:
+
+- `capabilities.json` — every skill and command with description, path, and prerequisites, plus the
+  declared skill format and the host capabilities GENTJIN requires. A harness reads this to decide
+  what to surface without running any GENTJIN tooling.
+- `INTEGRATION.md` — generated per-harness install steps.
+
+The shared skill contract is one directory per skill containing `SKILL.md` with `name` and
+`description` frontmatter, where `name` equals the directory name. Commands are `command/<name>.md`
+with a `description`. These are the formats most agent harnesses already read, so no conversion is
+required.
+
+A host must provide `file-read`, `file-write`, and `shell`. `network`, an Obsidian-compatible vault,
+and `git` are optional. A harness with no entry in the install table still installs the core and
+only loses OpenCode-specific wiring such as the `opencode.jsonc` KnowledgeVault permission, `tui.json`
+keybinds, and `obsidian://` note links.
+
+See `docs/portability.md` for the full contract, and `test/portability.test.mjs` for the checks that
+guard it.
 
 ## Keep the Knowledge Vault canonical
 
