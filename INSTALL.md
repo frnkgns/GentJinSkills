@@ -140,36 +140,46 @@ credentials, `.env` files, generated caches, `README.md`, or `INSTALL.md`.
 Never copy the source `opencode.jsonc` into the destination. It is user
 configuration, not a GENTJIN payload. Preserve all providers, plugins, settings,
 permissions, MCP configuration, authentication data, and unrelated files in the
-user's global `opencode.jsonc`, except for the additive permission change defined
+user's global `opencode.jsonc`, except for the additive permission changes defined
 below.
 
-## Add the required global permission
+## Add the required global permissions
 
-GENTJIN needs one explicit OpenCode permission so it can read and write the
+GENTJIN needs explicit OpenCode permissions so it can read and write the
 Knowledge Vault outside the active project:
 
 ```jsonc
 {
-  "permission": {
-    "external_directory": {
-      "~/Documents/KnowledgeVault/**": "allow"
-    }
-  }
+  "permissions": [
+    { "action": "external_directory", "resource": "~/Documents/KnowledgeVault/*", "effect": "allow" },
+    { "action": "read", "resource": "~/Documents/KnowledgeVault/*", "effect": "allow" },
+    { "action": "edit", "resource": "~/Documents/KnowledgeVault/*", "effect": "allow" }
+  ]
 }
 ```
 
-Apply this rule only to `<opencode-root>/opencode.jsonc`:
+All three rules are required. `external_directory` approves only the directory
+boundary; it does not grant `read` or `edit` on that path. Without the other two,
+vault access falls back to the default `ask`, so an installation reports the
+permission as present while prompting for every vault file.
 
-- If `~/Documents/KnowledgeVault/**` already maps to `allow`, keep the file
-  unchanged.
-- If the path is missing and `permission.external_directory` already exists as
-  an object, append the rule without changing any existing entry, pattern, or
-  order.
-- If `permission` or `permission.external_directory` is missing, add only the
-  required structure around the existing configuration.
-- If the path exists with a different action, or the addition would require
-  replacing, removing, reordering, or weakening any existing entry, stop and
-  ask the user for explicit approval in one concise request.
+Use the single-star wildcard. OpenCode matches whole values and `*` already
+crosses `/`, so `**` is redundant.
+
+Apply these rules only to `<opencode-root>/opencode.jsonc`:
+
+- If `permissions` already contains all three rules for the vault path with
+  effect `allow`, keep the file unchanged.
+- If `permissions` exists as an array, append only the missing rules without
+  changing any existing entry, pattern, or order.
+- If `permissions` is missing, add only the required array around the existing
+  configuration.
+- If the file still uses the OpenCode 1 `permission.external_directory` object,
+  report that the file predates OpenCode 2 and ask before converting it. Do not
+  rewrite a working configuration unasked.
+- If any rule for the vault path exists with a different effect, or the addition
+  would require replacing, removing, reordering, or weakening an existing entry,
+  stop and ask the user for explicit approval in one concise request.
 - Never delete, disable, replace, reorder, or downgrade existing configuration
   without explicit user approval. Never copy the source `opencode.jsonc` over
   the global file.
@@ -182,7 +192,7 @@ Apply this rule only to `<opencode-root>/opencode.jsonc`:
 
 The addition must be idempotent. A repeated install or update must not create
 duplicate rules, reformat unrelated content, or rewrite the file when the
-permission already exists.
+permissions already exist.
 
 ## Use the metadata for ownership
 
