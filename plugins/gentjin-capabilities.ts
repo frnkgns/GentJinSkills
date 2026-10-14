@@ -18,6 +18,7 @@
 import { appendFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { dirname, join, resolve } from "node:path"
+import { buildAugmentedPrompt, retrievalTrace } from "../src/memory/retrieve.mjs"
 import { fileURLToPath } from "node:url"
 import { createLoader, type CapabilityLoader } from "../src/capabilities/loader.mjs"
 import {
@@ -116,9 +117,25 @@ interface PluginContext {
       callback: (event: ToolHookEvent) => Promise<void> | void,
     ): Promise<unknown>
   }
+  session: {
+    hook(
+      name: "prompt",
+      callback: (event: PromptHookEvent) => Promise<void> | void,
+    ): Promise<unknown>
+  }
   event: {
     subscribe(options?: { signal?: AbortSignal }): AsyncIterable<ServerEvent>
   }
+}
+
+/**
+ * The v2 prompt admission event. Retrieval receives an owned, mutable draft, so a hook can
+ * append cited context to `text` before the message is persisted and the model is called.
+ */
+interface PromptHookEvent {
+  sessionID?: string
+  prompt?: { text?: string; files?: unknown[] }
+  delivery?: "steer" | "queue"
 }
 
 function resolveOpenCodeRoot(): string {
@@ -400,6 +417,35 @@ export default {
         })
       }
       if (!gate.allowed) throw new Error(gate.reason ?? "Blocked by discovery readiness.")
+    })
+
+    // Per-request vault retrieval. The v2 prompt hook runs during admission, before attachment
+    // handling, skill resolution, and durable inbox write, so retrieved notes become part of the
+    // canonical user input the model reasons over.
+    //
+    // Limits verified against the v2 docs rather than assumed: it runs once at admission, not
+    // before every model call in the turn; synthetic, shell, compaction, and move messages do not
+    // trigger it; and it is not an exactly-once boundary, so the trace stays append-only and free
+    // of side effects.
+    void ctx.session.hook("prompt", (event: PromptHookEvent) => {
+      const original = event?.prompt?.text ?? ""
+      const augmented = buildAugmentedPrompt({
+        userText: original,
+        vaultRoot: resolution.knowledge_root,
+        enabled: process.env.GENTJIN_RETRIEVAL !== "off",
+      })
+
+      if (augmented.changed && event.prompt) {
+        event.prompt.text = augmented.text
+      }
+
+      const trace = retrievalTrace(augmented.retrieval)
+      if (!trace) return
+      try {
+        appendFileSync(join(tmpdir(), "gentjin-retrieval.log"), `${JSON.stringify(trace)}\n`)
+      } catch {
+        // Retrieval tracing must never break a session.
+      }
     })
 
     const controller = new AbortController()

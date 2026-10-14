@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="./assets/gentjin-logo.png" alt="GENTJIN logo" width="240" />
+
 # GENTJIN
 
 ### A modular development system for [OpenCode](https://opencode.ai/docs/)
@@ -156,17 +158,77 @@ engineering state.
 
 ## Memory retrieval
 
+### It runs by itself
+
+Every new request searches your project's KnowledgeVault before the model answers,
+plans, or changes code. You type nothing extra — no `/search`, no naming a skill, no
+mentioning the vault. Relevant notes arrive as bounded, cited excerpts attached to the
+request itself.
+
+```text
+you ask something
+   → the plugin resolves this project's vault
+   → ranks notes by name, path, title, description, and content
+   → takes the top few, within a character budget
+   → appends them to the request as clearly-marked reference data
+   → the model answers with that knowledge already in context
+```
+
+Retrieved text is wrapped in an explicit **untrusted-data boundary**. A directive sitting
+inside an old note stays inside that boundary and cannot override your request. When a note
+contradicts the code, the code wins.
+
+Lookup is deterministic: no embeddings, no vector store, no database, no external service.
+A typical request touches a handful of notes in well under a tenth of a second, and the
+index (`memory-index.md`) is only ever a hint — a missing or stale one never hides a note.
+
+### Three kinds of memory, three different jobs
+
+| Layer | Scope | Holds | Lifetime |
+| --- | --- | --- | --- |
+| **Per-request retrieval** | one message | notes matched to *this* request | gone when the turn ends |
+| **WIP** | one task | unfinished state, blockers, next action | until the task closes |
+| **Durable memory** | one project | decisions, root causes, rejected attempts | permanent |
+
+Retrieval reads durable memory; it never writes to it. New knowledge is still captured
+deliberately rather than automatically.
+
+### Project scoping
+
+Only the active project's vault is searched. Notes from another project are never read,
+and neither are personal directories, unless you explicitly ask. Links that point outside
+the resolved vault are ignored.
+
+If your repository name and vault folder differ, point GENTJIN at the right place with a
+`.project-agent.md` in the repository root:
+
+```markdown
+---
+name: my-project
+knowledge_root: ~/Documents/KnowledgeVault/my-vault-dir
+---
+```
+
+Without it, every lookup silently misses.
+
+### What it will not do
+
+- It runs once when a turn is admitted, not again before every model call within it.
+- Synthetic, shell, compaction, and move messages do not trigger retrieval.
+- It never claims a match it did not find. No relevant notes means your prompt reaches the
+  model unchanged, rather than padded with an empty memory block.
+- It does not replace reading source. Notes are prior evidence; confirm before you act.
+
+Set `GENTJIN_RETRIEVAL=off` to switch it off. Every search records what it looked at and
+how much it returned in `$TMPDIR/gentjin-retrieval.log` — never note contents. Full
+settings, result statuses, and privacy boundaries: [`docs/per-request-retrieval.md`](docs/per-request-retrieval.md).
+
+---
+
 Each vault keeps a small `memory-index.md` catalog: one line per topic, linking
 to the canonical note with a one-line description. It answers "what knowledge
 exists, and where is it?" without opening a single note, and never grows into a
 second copy of the documentation.
-
-Retrieval is relevance-gated and progressive. A request about one module does
-not pull in unrelated modules or old sessions. Memory loads in budgeted order —
-current WIP, project overview, the exact module note, the exact decision or
-issue, the most recent relevant session — and stops as soon as context is
-sufficient. Lookup is deterministic first: note titles, links, module names,
-paths, and task terminology. No embeddings, no vector store, no database.
 
 Important canonical notes record where they came from and when they were last
 verified. When memory disagrees with the repository, the code wins, the
@@ -280,6 +342,39 @@ Run `/update-gentjin` for normal updates. It uses `<user-home>/.config/opencode/
 
 Commands are intentionally short entry points into larger, repeatable
 workflows.
+
+## Portability
+
+GENTJIN is not OpenCode-only. The instructions are plain Markdown; only the
+runtime and tooling around them are OpenCode-specific.
+
+```text
+PORTABLE CORE            OPENCODE ADAPTER
+AGENTS.md                src/
+command/*.md             registry/
+skills/*/SKILL.md        plugins/
+                         evals/ · scripts/ · docs/
+                         test/ · schemas/ · guardrails/
+                         package.json
+```
+
+A foreign harness installs the core and skips the adapter, and loses no
+behavior, because no skill depends on the adapter to be understood. The shared
+skill contract is one directory per skill containing `SKILL.md` with `name` and
+`description` frontmatter, where `name` equals the directory name — the format
+most agent harnesses already read.
+
+```bash
+npm run export:portable
+```
+
+This writes a ready-to-consume copy: the core plus `capabilities.json`, a
+machine-readable catalog of every skill and command with the host capabilities
+GENTJIN needs, and `INTEGRATION.md` with generated per-harness steps. Hosts need
+`file-read`, `file-write`, and `shell`; `network`, an Obsidian-compatible vault,
+and `git` are optional.
+
+See [docs/portability.md](docs/portability.md) for the full contract.
 
 ## Skills
 
@@ -438,14 +533,17 @@ GENTJIN is designed to make the cautious path the easy path:
 │   ├── task/record.mjs        Lifecycle, states, action capture
 │   ├── task/completion-gate.mjs
 │   ├── routing/route.mjs      Routing, scope and capability contracts
+│   ├── memory/retrieve.mjs    Per-request vault retrieval and ranking
+│   ├── memory/vault.mjs       Vault scanning, parsing, link extraction
 │   ├── memory/failure-awareness.mjs
+│   ├── plugin-api.mjs         Plugin.define with an identity fallback
 │   ├── trace/writer.mjs       JSONL traces, redaction, coverage
 │   ├── trace/plugin-body.mjs  Trace plugin implementation
 │   ├── trace/plugin-support.mjs
 │   └── guardrails/git-guardrails.mjs
 ├── registry/skills.json       Generated skill and capability registry
 ├── plugins/gentjin-trace.js  Trace plugin using real OpenCode hooks
-│   ├── gentjin-capabilities.ts  Capability loader + guarded-action block
+│   ├── gentjin-capabilities.ts  Capability loader, discovery gate, prompt retrieval
 ├── src/capabilities/         Registry, resolution, loader, adherence state
 ├── src/discovery/            Project resolution and discovery readiness gate
 ├── src/release/              Release-notes collection, rendering, vault save
@@ -469,13 +567,32 @@ GENTJIN is designed to make the cautious path the easy path:
 ## Verifying an installation
 
 ```bash
-node --test "test/**/*.test.mjs"   # 88 tests
+node --test "test/**/*.test.mjs"   # unit and contract tests
 node evals/run.mjs                 # contract evaluation, deterministic
 ```
 
 Both exit 0 on success. `node evals/run.mjs --mode live` runs the scenarios
 through a real model and needs credentials; it is not part of the default check
 and its results are never merged with contract results.
+
+Also confirm the **runtime layer** is actually installed, not just the instruction layer.
+Skills and commands can look perfect while every plugin is missing:
+
+```bash
+ls ~/.config/opencode/plugins ~/.config/opencode/src    # both must be non-empty
+```
+
+Then confirm the plugin loaded:
+
+- `gentjin_capability`, `gentjin_discovery`, and `gentjin_release_notes` appear as
+  available tools.
+- The server log at `~/.local/share/opencode/log/opencode.log` contains no
+  `message="failed to load plugin"` line whose `target=` names a GENTJIN plugin.
+
+`opencode plugin list` will not help here: it lists only *package* plugins, so local files
+under `plugins/` never appear in it. Filtering the log on the words "failed to load plugin"
+alone also over-matches, because OpenCode logs your own shell commands; match on `target=`
+as well.
 
 ## Contributing
 
