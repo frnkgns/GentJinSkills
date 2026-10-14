@@ -154,7 +154,7 @@ Before answering a project-specific question or making significant implementatio
 
 1. Identify the problem or development area.
 2. Search relevant project knowledge by meaning or scenario rather than exact wording.
-3. Read only the notes relevant to the current task and their meaningful wiki links.
+3. Read only the notes relevant to what the user asked and their meaningful wiki links.
 4. Inspect current source code and schemas.
 5. Reuse recorded decisions, patterns, or solutions when they still match the current implementation.
 6. If stored knowledge conflicts with current source code, treat the current implementation as authoritative.
@@ -208,7 +208,7 @@ Before broadly exploring a project:
 
 1. Resolve the current project knowledge root.
 2. Check whether `project/` already exists.
-3. Read only the notes relevant to the current task.
+3. Read only the notes relevant to what the user asked.
 4. Verify only the paths the task will touch.
 5. Update the note whose durable content changed, and nothing else.
 
@@ -325,19 +325,24 @@ This replaces broad vault scanning during normal tasks.
 - If a lookup misses, the index is stale or absent, or the project has no vault. Say so rather
   than guessing; `no relevant notes` is a valid outcome, not a failure.
 
-### Relevance-Gated Retrieval
+### Relevance-Gated Lookup
 
-Retrieve memory because it matches the task, not because it exists:
+Open memory because it matches what the user asked, not because it exists:
 
 ```text
-Task relevance
+Relevance to the question
   + importance
   + recency when it matters
   + relationship to the current module
-  = what should be loaded
+  = what should be opened
 ```
 
-A request about one module must not pull in unrelated modules, sessions, or
+"Relevance" covers more than work items. A user asking why a decision was made, what broke last
+time, or what an unfamiliar error message means needs the same notes a task would. Do not wait for
+something that looks like a task before looking anything up, and do not let the formality of the
+message decide.
+
+A question about one module must not pull in unrelated modules, sessions, or
 history. Relevance still matters even for the most important knowledge: do not
 load everything marked important on every request.
 

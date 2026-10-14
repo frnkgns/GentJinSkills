@@ -281,16 +281,15 @@ Never rely on conversation history or a compaction summary as the only record of
 Vault knowledge is **not** supplied to you. Nothing is appended to what the user typed, and no note
 text is ever injected into a prompt. Looking memory up is your decision, made in the open.
 
-When a request depends on prior decisions, past findings, or how something was done before in this
-project, read the vault yourself:
+When something the user asks depends on prior decisions, past findings, or how a thing was done
+before in this project, read the vault yourself:
 
-1. Resolve the vault root: `<user-home>/Documents/KnowledgeVault/<project-identifier>/`. Resolve the project first; do not assume a name.
-2. Read `memory-index.md` when it exists. Treat it as a catalog of one-line descriptions, never as content.
-3. Open only the notes that match the current task.
+1. Resolve the project and its vault root. Do not assume the names match: a repository name and a vault folder name often differ.
+2. Read `memory-index.md` when it exists. It is a catalog of one-line descriptions, never content.
+3. Open only the notes relevant to what the user actually asked. That may be a task, but it is just as often a question, an explanation, or a decision they want the reasoning behind. Relevance is the filter, not the shape of the request.
 4. Stop as soon as you have enough. Never read the vault wholesale.
 
-Search when the memory matches the task, not as a precaution. Relevance beats importance, recency,
-and habit. If no note applies, say so and move on; that is a valid outcome, not a failure.
+Not every message needs a lookup. A greeting, a yes-or-no question, or something already answered by the code in front of you does not justify opening the vault. Judge by relevance, not by habit or by how formal the request sounds. If no note applies, say so and move on; that is a valid outcome, not a failure.
 
 What you must still do:
 
