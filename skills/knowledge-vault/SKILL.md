@@ -290,8 +290,13 @@ every change.
 
 **Looking up prior knowledge is required, not optional.** The discovery gate refuses your project
 edits until you have recorded a memory result, so skipping this does not save time — it gets the
-edit refused and restarts the sequence. Before answering anything that depends on how a thing was
-done before, treat it the same way.
+edit refused and restarts the sequence. Treat questions the same way, because a question is as
+likely to depend on a past decision as a task is.
+
+**When:** a task about the project, or a question about how something works, was decided, or broke
+before. **Not when:** a greeting, an acknowledgement, *"continue"*, or something already answered by
+the code in front of you. Length is not the test — *"why does this use SQLite"* needs a lookup and
+*"hey, can you help"* does not. When genuinely unsure, look and record what you found.
 
 **Nothing is injected into a prompt.** No note text is ever appended to what the user typed. Every
 step below is a file read you perform yourself, in the open.
