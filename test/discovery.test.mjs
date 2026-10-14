@@ -110,7 +110,9 @@ function readySession(sessionId = "s1", options = {}) {
   return { base, root, state, sessionId, target }
 }
 
-test("an edit before discovery is blocked with an actionable reason", () => {
+test("an edit before discovery states what is missing without refusing it", () => {
+  // Readiness is stated, not enforced. A hard block stranded agents that had nowhere to retrieve
+  // from, and a gate that always refuses gets disabled rather than satisfied.
   const { base, root, state, sessionId } = readySession("s1", { read: false, scope: false, memory: false })
   try {
     const gate = evaluateGate({
@@ -119,9 +121,26 @@ test("an edit before discovery is blocked with an actionable reason", () => {
       tool: "write",
       filePath: join(root, "src", "new.js"),
     })
-    assert.equal(gate.allowed, false)
+    assert.equal(gate.allowed, true)
+    assert.equal(gate.advisory, true)
     assert.equal(gate.status, READINESS.IN_PROGRESS)
     assert.match(gate.reason, /gentjin_discovery/)
+  } finally {
+    rmSync(base, { recursive: true, force: true })
+  }
+})
+
+test("a satisfied gate is not marked advisory", () => {
+  const { base, root, state, sessionId } = readySession("s2", { read: true, scope: true, memory: true })
+  try {
+    const gate = evaluateGate({
+      state,
+      sessionId,
+      tool: "write",
+      filePath: join(root, "src", "app.js"),
+    })
+    assert.equal(gate.allowed, true)
+    assert.notEqual(gate.advisory, true)
   } finally {
     rmSync(base, { recursive: true, force: true })
   }
@@ -154,11 +173,12 @@ test("reading alone never satisfies readiness", () => {
   }
 })
 
-test("declaring scope without a recorded read of the target stays not ready", () => {
+test("declaring scope without a recorded read states the missing read", () => {
   const { base, root, state, sessionId } = readySession("s1", { read: false })
   try {
     const gate = evaluateGate({ state, sessionId, tool: "write", filePath: targetOf(state, sessionId) })
-    assert.equal(gate.allowed, false)
+    assert.equal(gate.allowed, true)
+    assert.equal(gate.advisory, true)
     assert.match(gate.reason, /no recorded read/)
   } finally {
     rmSync(base, { recursive: true, force: true })
