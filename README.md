@@ -11,7 +11,7 @@
 GENTJIN gives OpenCode a focused operating system for planning, building,
 reviewing, and learning from real software work.
 
-[Explore the workflow](#workflow-at-a-glance) · [Browse the skills](#skills)
+[Explore the workflow](#workflow-at-a-glance) Â· [Browse the skills](#skills)
 
 </div>
 
@@ -36,7 +36,7 @@ into focused skills that are activated when they are relevant.
 | Skills that only run when remembered | Semantic capability selection, not keyword matching |
 | Work disappears between sessions | Continuous knowledge capture and active WIP |
 | Long multi-part tasks | Bounded, skill-aware agent delegation |
-| “It looked done” | Cleanup, QA, and explicit verification |
+| â€œIt looked doneâ€ | Cleanup, QA, and explicit verification |
 | Reviews happen too late | Read-only `/changes-review` and `/project-review` |
 | Risky defaults | Read-only data access and guarded Git actions |
 | Reports take too long | Consistent, evidence-based reporting |
@@ -80,11 +80,11 @@ a `project/` area:
 
 ```text
 project/
-├── overview.md    what this repository is
-├── structure.md   layout, directory responsibilities, relationships
-├── stack.md       verified runtime, frameworks, data layer, tooling
-├── commands.md    verified install, dev, build, test, lint, type-check
-└── state.md       identity, known roots, last verified revision
+â”œâ”€â”€ overview.md    what this repository is
+â”œâ”€â”€ structure.md   layout, directory responsibilities, relationships
+â”œâ”€â”€ stack.md       verified runtime, frameworks, data layer, tooling
+â”œâ”€â”€ commands.md    verified install, dev, build, test, lint, type-check
+â””â”€â”€ state.md       identity, known roots, last verified revision
 ```
 
 The behavior it enables:
@@ -130,16 +130,16 @@ That means these work in plain conversation, with no command:
 "Didn't we try this before?"   "What changed this week?"
 ```
 
-A briefing stays compact — latest work, completed, key decisions, issues and
-discoveries, still in progress, next recommended step — and never presents an
+A briefing stays compact â€” latest work, completed, key decisions, issues and
+discoveries, still in progress, next recommended step â€” and never presents an
 older session as current when Git or WIP shows newer work. Git is evidence for
 what changed; the notes hold the reasoning.
 
 Three systems cooperate without duplicating each other:
 
 ```text
-conversation → compaction → active working context
-compaction → work-in-progress or knowledge-vault when appropriate
+conversation â†’ compaction â†’ active working context
+compaction â†’ work-in-progress or knowledge-vault when appropriate
 ```
 
 - **Compaction** = short-term compressed memory. Reconstructable working recall,
@@ -148,8 +148,8 @@ compaction → work-in-progress or knowledge-vault when appropriate
 - **Knowledge Vault** = long-term project memory. Decisions, conventions, root
   causes, and meaningful discoveries.
 
-Authority runs `current source code → user instructions → WIP → Knowledge
-Vault → compacted context`. Compaction hands durable facts to the vault and
+Authority runs `current source code â†’ user instructions â†’ WIP â†’ Knowledge
+Vault â†’ compacted context`. Compaction hands durable facts to the vault and
 unfinished work to WIP, then keeps only the temporary remainder by pointer.
 `/pause` separates state into those three buckets; `/resume` rebuilds from
 WIP plus relevant vault notes plus current source rather than trusting an old
@@ -158,44 +158,45 @@ engineering state.
 
 ## Memory retrieval
 
-### It runs by itself
+### The model looks things up itself
 
-Every new request searches your project's KnowledgeVault before the model answers,
-plans, or changes code. You type nothing extra — no `/search`, no naming a skill, no
-mentioning the vault. Relevant notes arrive as bounded, cited excerpts attached to the
-request itself.
+Nothing is injected into your prompt. No note text is ever appended to what you type, and
+lookup is not something that runs behind your back.
+
+When a task depends on prior decisions or past findings, the model resolves the project, reads
+`memory-index.md`, opens only the notes that match, and stops as soon as it has enough. Those
+reads are visible tool calls, not hidden context.
 
 ```text
 you ask something
-   → the plugin resolves this project's vault
-   → ranks notes by name, path, title, description, and content
-   → takes the top few, within a character budget
-   → appends them to the request as clearly-marked reference data
-   → the model answers with that knowledge already in context
+   â†’ the model decides whether prior knowledge is needed
+   â†’ resolves this project's vault
+   â†’ reads memory-index.md as a catalog
+   â†’ opens only the matching notes
+   â†’ verifies any claim against current source
 ```
 
-Retrieved text is wrapped in an explicit **untrusted-data boundary**. A directive sitting
-inside an old note stays inside that boundary and cannot override your request. When a note
-contradicts the code, the code wins.
+This is deliberate. Injected excerpts are stored in the conversation and re-sent on every
+later turn, which pays for the same content twice and puts text in the transcript you never
+typed. Lookup you can see is lookup you can trust.
 
 Lookup is deterministic: no embeddings, no vector store, no database, no external service.
-A typical request touches a handful of notes in well under a tenth of a second, and the
-index (`memory-index.md`) is only ever a hint — a missing or stale one never hides a note.
+The index is only ever a hint â€” a missing or stale one never hides a note.
 
 ### Three kinds of memory, three different jobs
 
 | Layer | Scope | Holds | Lifetime |
 | --- | --- | --- | --- |
-| **Per-request retrieval** | one message | notes matched to *this* request | gone when the turn ends |
+| **Lookup** | one task | notes the model chose to open | gone when the task closes |
 | **WIP** | one task | unfinished state, blockers, next action | until the task closes |
 | **Durable memory** | one project | decisions, root causes, rejected attempts | permanent |
 
-Retrieval reads durable memory; it never writes to it. New knowledge is still captured
+Lookup reads durable memory; it never writes to it. New knowledge is still captured
 deliberately rather than automatically.
 
 ### Project scoping
 
-Only the active project's vault is searched. Notes from another project are never read,
+Only the active project's vault is read. Notes from another project are never opened,
 and neither are personal directories, unless you explicitly ask. Links that point outside
 the resolved vault are ignored.
 
@@ -213,15 +214,10 @@ Without it, every lookup silently misses.
 
 ### What it will not do
 
-- It runs once when a turn is admitted, not again before every model call within it.
-- Synthetic, shell, compaction, and move messages do not trigger retrieval.
-- It never claims a match it did not find. No relevant notes means your prompt reaches the
-  model unchanged, rather than padded with an empty memory block.
+- It never appends anything to a prompt, under any setting.
+- It does not read the vault wholesale. Notes are opened by relevance, and the index is a
+  catalog rather than content.
 - It does not replace reading source. Notes are prior evidence; confirm before you act.
-
-Set `GENTJIN_RETRIEVAL=off` to switch it off. Every search records what it looked at and
-how much it returned in `$TMPDIR/gentjin-retrieval.log` — never note contents. Full
-settings, result statuses, and privacy boundaries: [`docs/per-request-retrieval.md`](docs/per-request-retrieval.md).
 
 ---
 
@@ -242,28 +238,28 @@ contradicting each other.
 
 ```text
         A clear request
-              │
-              ▼
+              â”‚
+              â–¼
      Understand the change
- requirements · architecture
-              │
-              ▼
+ requirements Â· architecture
+              â”‚
+              â–¼
           Plan and build
-              │
-              ▼
+              â”‚
+              â–¼
         /changes-review
    when the implementation
       needs a review
-              │
-              ▼
+              â”‚
+              â–¼
          /cleanup
   when the work is finished
-              │
-              ▼
+              â”‚
+              â–¼
      /deployment-check
    before production
-              │
-              ▼
+              â”‚
+              â–¼
         /git-push
    when you ask for it
 ```
@@ -353,15 +349,15 @@ PORTABLE CORE            OPENCODE ADAPTER
 AGENTS.md                src/
 command/*.md             registry/
 skills/*/SKILL.md        plugins/
-                         evals/ · scripts/ · docs/
-                         test/ · schemas/ · guardrails/
+                         evals/ Â· scripts/ Â· docs/
+                         test/ Â· schemas/ Â· guardrails/
                          package.json
 ```
 
 A foreign harness installs the core and skips the adapter, and loses no
 behavior, because no skill depends on the adapter to be understood. The shared
 skill contract is one directory per skill containing `SKILL.md` with `name` and
-`description` frontmatter, where `name` equals the directory name — the format
+`description` frontmatter, where `name` equals the directory name â€” the format
 most agent harnesses already read.
 
 ```bash
@@ -428,7 +424,7 @@ of asking the agent to remember every rule at once.
 - Preserve decisions, rejected approaches, and meaningful discoveries.
 - Track temporary QA, test, debug, seed, mock, and fixture artifacts in the
   WIP ledger as they are created.
-- Write or update the durable change audit as the task evolves — previous
+- Write or update the durable change audit as the task evolves â€” previous
   implementation, what changed, why, affected files, actual verification.
 
 ### Before handoff
@@ -451,7 +447,7 @@ of asking the agent to remember every rule at once.
 Every task that modifies a project leaves a durable change audit in the
 project's `changes/` folder, following the canonical template. The audit
 records the previous implementation, what changed, why it changed, affected
-files, and what was actually verified — so the repository's history stays
+files, and what was actually verified â€” so the repository's history stays
 explainable later without relying on chat memory.
 
 Before any GitHub push, a mandatory cleanup gate scans the diff for
@@ -482,86 +478,85 @@ GENTJIN is designed to make the cautious path the easy path:
 
 ```text
 .
-├── AGENTS.md                 Global behavior and project-agnostic rules
-├── INSTALL.md                Agent-assisted installation runbook
-├── command/                  Reusable slash commands
-│   ├── changes-review.md
-│   ├── cleanup.md
-│   ├── deployment-check.md
-│   ├── git-push.md
-│   ├── install-gentjin.md
-│   ├── learn-skills.md
-│   ├── pause.md
-│   ├── project-review.md
-│   ├── report.md
-│   ├── resume.md
-│   ├── setup-git-guardrails.md
-│   ├── status.md
-│   ├── task.md
-│   └── update-gentjin.md
-├── skills/                   Focused, trigger-based workflows
-│   ├── api-design/
-│   ├── architecture-review/
-│   ├── backend-review/
-│   ├── cleanup/
-│   ├── compaction/
-│   ├── database-review/
-│   ├── dependency-review/
-│   ├── deployment-readiness/
-│   ├── frontend-review/
-│   ├── git-workflow/
-│   ├── incident-response/
-│   ├── integration-review/
-│   ├── knowledge-vault/
-│   ├── performance-review/
-│   ├── project-conventions/
-│   ├── refactoring-migration/
-│   ├── reporting/
-│   ├── requirements-review/
-│   ├── review-orchestrator/
-│   ├── security-review/
-│   ├── skill-authoring/
-│   ├── systematic-debugging/
-│   ├── test-strategy/
-│   └── work-in-progress/
-├── schemas/                   Portable JSON Schema contracts
-│   ├── task-record.schema.json
-│   └── task-event.schema.json
-├── guardrails/                Opt-in git guardrail plugin, not auto-installed
-├── src/                       Enforcement layer (Node 24, zero dependencies)
-│   ├── schema/validate.mjs    JSON Schema subset validator
-│   ├── task/record.mjs        Lifecycle, states, action capture
-│   ├── task/completion-gate.mjs
-│   ├── routing/route.mjs      Routing, scope and capability contracts
-│   ├── memory/retrieve.mjs    Per-request vault retrieval and ranking
-│   ├── memory/vault.mjs       Vault scanning, parsing, link extraction
-│   ├── memory/failure-awareness.mjs
-│   ├── plugin-api.mjs         Plugin.define with an identity fallback
-│   ├── trace/writer.mjs       JSONL traces, redaction, coverage
-│   ├── trace/plugin-body.mjs  Trace plugin implementation
-│   ├── trace/plugin-support.mjs
-│   └── guardrails/git-guardrails.mjs
-├── registry/skills.json       Generated skill and capability registry
-├── plugins/gentjin-trace.js  Trace plugin using real OpenCode hooks
-│   ├── gentjin-capabilities.ts  Capability loader, discovery gate, prompt retrieval
-├── src/capabilities/         Registry, resolution, loader, adherence state
-├── src/discovery/            Project resolution and discovery readiness gate
-├── src/release/              Release-notes collection, rendering, vault save
-├── registry/capabilities.json  Unified skill + command catalog
-├── scripts/build-registry.mjs
-├── scripts/build-capabilities.mjs
-├── evals/                     Executable evaluation suite
-│   ├── run.mjs                Contract and live modes
-│   ├── cases.mjs
-│   ├── workflow-scenarios.mjs 14 roadmap scenario checks
-│   ├── graders/index.mjs
-│   ├── scenarios/             11 scenario definitions
-│   └── fixtures/              Synthetic, non-secret data only
-├── test/                      117 unit and contract tests
-├── docs/
-│   ├── architecture.md
-│   └── deferred.md
-└── opencode.jsonc            Local OpenCode configuration (not installed)
+â”œâ”€â”€ AGENTS.md                 Global behavior and project-agnostic rules
+â”œâ”€â”€ INSTALL.md                Agent-assisted installation runbook
+â”œâ”€â”€ command/                  Reusable slash commands
+â”‚   â”œâ”€â”€ changes-review.md
+â”‚   â”œâ”€â”€ cleanup.md
+â”‚   â”œâ”€â”€ deployment-check.md
+â”‚   â”œâ”€â”€ git-push.md
+â”‚   â”œâ”€â”€ install-gentjin.md
+â”‚   â”œâ”€â”€ learn-skills.md
+â”‚   â”œâ”€â”€ pause.md
+â”‚   â”œâ”€â”€ project-review.md
+â”‚   â”œâ”€â”€ report.md
+â”‚   â”œâ”€â”€ resume.md
+â”‚   â”œâ”€â”€ setup-git-guardrails.md
+â”‚   â”œâ”€â”€ status.md
+â”‚   â”œâ”€â”€ task.md
+â”‚   â””â”€â”€ update-gentjin.md
+â”œâ”€â”€ skills/                   Focused, trigger-based workflows
+â”‚   â”œâ”€â”€ api-design/
+â”‚   â”œâ”€â”€ architecture-review/
+â”‚   â”œâ”€â”€ backend-review/
+â”‚   â”œâ”€â”€ cleanup/
+â”‚   â”œâ”€â”€ compaction/
+â”‚   â”œâ”€â”€ database-review/
+â”‚   â”œâ”€â”€ dependency-review/
+â”‚   â”œâ”€â”€ deployment-readiness/
+â”‚   â”œâ”€â”€ frontend-review/
+â”‚   â”œâ”€â”€ git-workflow/
+â”‚   â”œâ”€â”€ incident-response/
+â”‚   â”œâ”€â”€ integration-review/
+â”‚   â”œâ”€â”€ knowledge-vault/
+â”‚   â”œâ”€â”€ performance-review/
+â”‚   â”œâ”€â”€ project-conventions/
+â”‚   â”œâ”€â”€ refactoring-migration/
+â”‚   â”œâ”€â”€ reporting/
+â”‚   â”œâ”€â”€ requirements-review/
+â”‚   â”œâ”€â”€ review-orchestrator/
+â”‚   â”œâ”€â”€ security-review/
+â”‚   â”œâ”€â”€ skill-authoring/
+â”‚   â”œâ”€â”€ systematic-debugging/
+â”‚   â”œâ”€â”€ test-strategy/
+â”‚   â””â”€â”€ work-in-progress/
+â”œâ”€â”€ schemas/                   Portable JSON Schema contracts
+â”‚   â”œâ”€â”€ task-record.schema.json
+â”‚   â””â”€â”€ task-event.schema.json
+â”œâ”€â”€ guardrails/                Opt-in git guardrail plugin, not auto-installed
+â”œâ”€â”€ src/                       Enforcement layer (Node 24, zero dependencies)
+â”‚   â”œâ”€â”€ schema/validate.mjs    JSON Schema subset validator
+â”‚   â”œâ”€â”€ task/record.mjs        Lifecycle, states, action capture
+â”‚   â”œâ”€â”€ task/completion-gate.mjs
+â”‚   â”œâ”€â”€ routing/route.mjs      Routing, scope and capability contracts
+â”‚   â”œâ”€â”€ memory/vault.mjs       Vault scanning, parsing, link extraction
+â”‚   â”œâ”€â”€ memory/failure-awareness.mjs
+â”‚   â”œâ”€â”€ plugin-api.mjs         Plugin.define with an identity fallback
+â”‚   â”œâ”€â”€ trace/writer.mjs       JSONL traces, redaction, coverage
+â”‚   â”œâ”€â”€ trace/plugin-body.mjs  Trace plugin implementation
+â”‚   â”œâ”€â”€ trace/plugin-support.mjs
+â”‚   â””â”€â”€ guardrails/git-guardrails.mjs
+â”œâ”€â”€ registry/skills.json       Generated skill and capability registry
+â”œâ”€â”€ plugins/gentjin-trace.js  Trace plugin using real OpenCode hooks
+â”‚   â”œâ”€â”€ gentjin-capabilities.ts  Capability loader and discovery gate
+â”œâ”€â”€ src/capabilities/         Registry, resolution, loader, adherence state
+â”œâ”€â”€ src/discovery/            Project resolution and discovery readiness gate
+â”œâ”€â”€ src/release/              Release-notes collection, rendering, vault save
+â”œâ”€â”€ registry/capabilities.json  Unified skill + command catalog
+â”œâ”€â”€ scripts/build-registry.mjs
+â”œâ”€â”€ scripts/build-capabilities.mjs
+â”œâ”€â”€ evals/                     Executable evaluation suite
+â”‚   â”œâ”€â”€ run.mjs                Contract and live modes
+â”‚   â”œâ”€â”€ cases.mjs
+â”‚   â”œâ”€â”€ workflow-scenarios.mjs 14 roadmap scenario checks
+â”‚   â”œâ”€â”€ graders/index.mjs
+â”‚   â”œâ”€â”€ scenarios/             11 scenario definitions
+â”‚   â””â”€â”€ fixtures/              Synthetic, non-secret data only
+â”œâ”€â”€ test/                      117 unit and contract tests
+â”œâ”€â”€ docs/
+â”‚   â”œâ”€â”€ architecture.md
+â”‚   â””â”€â”€ deferred.md
+â””â”€â”€ opencode.jsonc            Local OpenCode configuration (not installed)
 ```
 
 ## Verifying an installation

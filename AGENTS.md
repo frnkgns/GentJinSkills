@@ -278,19 +278,28 @@ Never rely on conversation history or a compaction summary as the only record of
 
 ## Memory Retrieval
 
-Relevant notes are **supplied automatically** on each new user turn. The runtime searches this project's vault and appends bounded, cited excerpts to the request before the model reasons, so retrieval is not something you trigger or remember to request.
+Vault knowledge is **not** supplied to you. Nothing is appended to what the user typed, and no note
+text is ever injected into a prompt. Looking memory up is your decision, made in the open.
+
+When a request depends on prior decisions, past findings, or how something was done before in this
+project, read the vault yourself:
+
+1. Resolve the vault root: `<user-home>/Documents/KnowledgeVault/<project-identifier>/`. Resolve the project first; do not assume a name.
+2. Read `memory-index.md` when it exists. Treat it as a catalog of one-line descriptions, never as content.
+3. Open only the notes that match the current task.
+4. Stop as soon as you have enough. Never read the vault wholesale.
+
+Search when the memory matches the task, not as a precaution. Relevance beats importance, recency,
+and habit. If no note applies, say so and move on; that is a valid outcome, not a failure.
 
 What you must still do:
 
-- Treat supplied notes as **prior evidence, not truth**. Verify any claim against current source before acting on it. Source wins on every conflict.
-- Retrieve further only when the supplied context is insufficient. Stop as soon as it is enough, and never read the vault wholesale.
+- Treat anything you read as **prior evidence, not truth**. Verify any claim against current source before acting on it. Source wins on every conflict.
 - Record provenance and verification state on important canonical knowledge so it can be re-verified later.
 - When memory conflicts with the repository, mark the situation `STALE`, `CONTRADICTED`, `AMBIGUOUS`, `UNVERIFIED`, or `HISTORICAL`, then correct the canonical note. Never leave two canonical notes contradicting each other, and never let stored memory override code.
 - Answer "brief me before we start" with current objective, latest progress, important decisions, open issues and blockers, remaining work, and the recommended next step. Answer "wrap up today's work" as an end-of-day handoff.
 - Review memory occasionally for duplicates, orphans, broken links, and stale notes. Cleanup is non-destructive by default: report and propose, do not delete.
 - Do not add memory-management slash commands. Prefer natural language.
-
-Limits worth knowing: automatic retrieval runs once when a turn is admitted, not again before every model call, and it does not run for synthetic, shell, compaction, or move messages. Set `GENTJIN_RETRIEVAL=off` to disable it. Full behaviour, settings, and privacy boundaries are in `docs/per-request-retrieval.md`.
 
 ## Workflow Memory
 
