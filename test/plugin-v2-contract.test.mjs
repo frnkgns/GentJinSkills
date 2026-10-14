@@ -54,7 +54,6 @@ async function mount(sessionID) {
     sessionHooks,
     before: (event) => hooks.get("execute.before")(event),
     after: (event) => hooks.get("execute.after")(event),
-    prompt: (event) => sessionHooks.get("prompt")(event),
     status: () => call("gentjin_discovery", { action: "status" }),
     /**
      * True while readiness still reports that no recorded read touched the target.
@@ -148,28 +147,13 @@ test("an ordinary command is not refused by the workflow guard", async () => {
   plugin.cleanup()
 })
 
-test("the plugin registers the v2 prompt hook used for per-request retrieval", async () => {
-  // The prompt hook is what makes retrieval happen before the model reasons. If the plugin
-  // ever stops registering it, retrieval silently degrades to nothing while every other
-  // test still passes.
-  const plugin = await mount("v2-prompt-hook")
+test("the plugin never mutates a user prompt", async () => {
+  // Vault content must never be appended to what the user typed. Looking memory up is the
+  // model's job, driven by the instruction files, not something the runtime does behind the
+  // user's back. Registering any session hook here is how that came back once already.
+  const plugin = await mount("v2-no-prompt-mutation")
 
-  assert.equal(typeof sessionHooksFor(plugin).get("prompt"), "function")
-
-  plugin.cleanup()
-})
-
-function sessionHooksFor(plugin) {
-  return plugin.sessionHooks
-}
-
-test("the prompt hook leaves a request with no vault unchanged", async () => {
-  const plugin = await mount("v2-prompt-no-vault")
-
-  const event = { prompt: { text: "Tell me about the release process" } }
-  await plugin.prompt(event)
-
-  assert.equal(event.prompt.text, "Tell me about the release process")
+  assert.deepEqual([...plugin.sessionHooks.keys()], [], "the plugin must register no session hook")
 
   plugin.cleanup()
 })

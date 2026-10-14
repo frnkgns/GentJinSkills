@@ -278,19 +278,62 @@ Never rely on conversation history or a compaction summary as the only record of
 
 ## Memory Retrieval
 
-Relevant notes are **supplied automatically** on each new user turn. The runtime searches this project's vault and appends bounded, cited excerpts to the request before the model reasons, so retrieval is not something you trigger or remember to request.
+**Looking up project memory before you act is required, not optional.** It is the first step of
+discovery, and the discovery gate refuses your project edits until you have recorded a memory
+result. Skipping it does not save time. It gets your edit refused, and you restart the sequence
+from the beginning.
+
+Vault knowledge is **not** supplied to you. Nothing is appended to what the user typed, and no note
+text is ever injected into a prompt. Every lookup below is a read you perform yourself.
+
+### When to look it up
+
+Default to looking it up. When in doubt, look, then record what you found.
+
+**Look up — a task or a question about this project.** These are the normal case:
+
+- A task: *"fix the failing test"*, *"rename this"*, *"add pagination"*, *"why is this failing"*
+- A question about how something works or was decided: *"why does this use SQLite"*, *"what did we decide about caching"*, *"when did we add that"*, *"how does the gate decide"*, *"what broke last time"*
+- Anything referencing the code, the project, the repository, or past work
+- Anything you are not certain you can answer from what is in front of you
+
+A question counts even when it is short. *"Why does this use SQLite"* is a question. *"What were we doing yesterday"* is a question. Questions are the case most likely to be silently skipped, so treat them as requiring the lookup rather than as optional.
+
+**Do not look up — small talk and filler.** There is nothing in a vault worth reading for these:
+
+- Greetings and acknowledgements: *"hi"*, *"hey"*, *"thanks"*, *"ok"*, *"yes"*, *"sure"*, *"got it"*
+- Restating what you just said: *"do that again"*, *"continue"*, *"go on"*
+- Meta questions about this conversation rather than the project: *"are you working?"*, *"what did you just do?"*
+- Something fully answered by the code, error output, or file already in front of you
+
+The test is not how formal the message is. It is whether the message is *about the project or its history*. *"Fix the build"* is three words and needs a lookup. *"Hey, can you help me with something?"* is eight and does not.
+
+### How to look it up
+
+1. Resolve the project and its vault root. Do not assume the names match: a repository name and a vault folder name often differ.
+2. Read `memory-index.md` when it exists. It is a catalog of one-line descriptions, never content.
+3. Open only the notes relevant to what the user actually asked. Relevance is the filter, not the shape of the request.
+4. Record the result with `gentjin_discovery` action `memory`, then continue.
+5. Stop as soon as you have enough. Never read the vault wholesale.
+
+**Recording "no relevant notes" is a complete, valid answer.** It is one cheap tool call, it is the
+correct result whenever nothing in the vault bears on the question, and it satisfies the gate. Do
+not stretch to find a note just to have one; that is as wrong as skipping the lookup.
+
+If you cannot retrieve because the project has no vault, record that fact rather than leaving it
+blank.
+
+The gate enforces this on the edit path. It cannot enforce it on a spoken answer, so for questions
+this is on you.
 
 What you must still do:
 
-- Treat supplied notes as **prior evidence, not truth**. Verify any claim against current source before acting on it. Source wins on every conflict.
-- Retrieve further only when the supplied context is insufficient. Stop as soon as it is enough, and never read the vault wholesale.
+- Treat anything you read as **prior evidence, not truth**. Verify any claim against current source before acting on it. Source wins on every conflict.
 - Record provenance and verification state on important canonical knowledge so it can be re-verified later.
 - When memory conflicts with the repository, mark the situation `STALE`, `CONTRADICTED`, `AMBIGUOUS`, `UNVERIFIED`, or `HISTORICAL`, then correct the canonical note. Never leave two canonical notes contradicting each other, and never let stored memory override code.
 - Answer "brief me before we start" with current objective, latest progress, important decisions, open issues and blockers, remaining work, and the recommended next step. Answer "wrap up today's work" as an end-of-day handoff.
 - Review memory occasionally for duplicates, orphans, broken links, and stale notes. Cleanup is non-destructive by default: report and propose, do not delete.
 - Do not add memory-management slash commands. Prefer natural language.
-
-Limits worth knowing: automatic retrieval runs once when a turn is admitted, not again before every model call, and it does not run for synthetic, shell, compaction, or move messages. Set `GENTJIN_RETRIEVAL=off` to disable it. Full behaviour, settings, and privacy boundaries are in `docs/per-request-retrieval.md`.
 
 ## Workflow Memory
 

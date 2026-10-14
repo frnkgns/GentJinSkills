@@ -253,7 +253,7 @@ export const scenarios = [
       const installPath = join(repoRoot, "INSTALL.md")
       const install = existsSync(installPath) ? readFileSync(installPath, "utf8") : ""
       const preserves = install === "" || /file under `command\/` or `skills\/` that is not listed is user-owned/.test(install)
-      const additive = install === "" || /except for the additive permission change defined/.test(install)
+      const additive = install === "" || /except for the additive permission change/.test(install)
       const guardrailNotAutoInstalled = !install.includes("guardrails/gentjin-guardrails.js")
       return {
         pass: preserves && additive && guardrailNotAutoInstalled,
