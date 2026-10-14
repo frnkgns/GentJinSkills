@@ -1,6 +1,6 @@
 import test from "node:test"
 import assert from "node:assert/strict"
-import { readFileSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import { PAYLOAD_DIRECTORIES, PAYLOAD_FILES } from "../src/install/apply.mjs"
@@ -9,6 +9,17 @@ const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..")
 
 function read(...parts) {
   return readFileSync(join(repoRoot, ...parts), "utf-8")
+}
+
+/**
+ * The runbook is a repository document and is deliberately never installed, so these checks can
+ * only run where it exists. The payload ships whole, and a guard that fails for a missing
+ * document it never claimed would train everyone to ignore a real drift signal.
+ */
+const runbookAbsent = {
+  skip: existsSync(join(repoRoot, "INSTALL.md"))
+    ? false
+    : "INSTALL.md is a repository document and is not part of the installed payload",
 }
 
 /**
@@ -22,7 +33,7 @@ function claimedPaths(text) {
   )
 }
 
-test("the runbook's executable install step carries the whole payload", () => {
+test("the runbook's executable install step carries the whole payload", runbookAbsent, () => {
   // The mapping table and the executable step are separate blocks in one file, and they
   // drifted apart: the table listed plugins/ and src/, the step copied three paths, and
   // every install obeyed the step. Anything in the payload must appear in the step.
@@ -39,7 +50,7 @@ test("the runbook's executable install step carries the whole payload", () => {
   assert.deepEqual(missing, [], `install step omits payload: ${missing.join(", ")}`)
 })
 
-test("the mapping table and the install step agree", () => {
+test("the mapping table and the install step agree", runbookAbsent, () => {
   const install = read("INSTALL.md")
   const tableStart = install.indexOf("Installation direction:")
   const tableEnd = install.indexOf("Expected end state")
