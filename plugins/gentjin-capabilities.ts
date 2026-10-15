@@ -153,12 +153,14 @@ export default {
           "Load the complete canonical instructions for a GENTJIN skill or command before performing any action it governs. " +
           "Use this whenever a GENTJIN workflow applies and you need its full body rather than its summary. " +
           "Examples: id update-gentjin, install-gentjin, git-push, systematic-debugging. " +
-          "Pass kind as command or skill when you know it.",
+          "Pass kind as command, skill, or reference when you know it. " +
+          "A skill may advertise reference ids for its deferred detail; load one only when the active " +
+          "workflow actually needs that section.",
         input: {
           type: "object",
           properties: {
-            id: { type: "string", description: "Capability id, for example update-gentjin or systematic-debugging" },
-            kind: { type: "string", description: "Optional: command or skill" },
+            id: { type: "string", description: "Capability id, for example update-gentjin, systematic-debugging, or knowledge-vault-templates" },
+            kind: { type: "string", description: "Optional: command, skill, or reference" },
           },
           required: ["id"],
           additionalProperties: false,
@@ -167,7 +169,11 @@ export default {
           const result = loader.load(args?.id, args?.kind)
           if (!result.ok) return { content: `CAPABILITY_UNAVAILABLE: ${result.reason}` }
           const header = `# ${result.id} (${result.kind}) - canonical instructions loaded from ${result.path}`
-          return { content: [header, "", result.instructions].join("\n") }
+          const references = result.references ?? []
+          const footer = references.length > 0
+            ? `\n\nDeferred detail available as references: ${references.join(", ")}. Load one with gentjin_capability only if this workflow needs it.`
+            : ""
+          return { content: [header, "", result.instructions, footer].join("\n") }
         },
       })
 

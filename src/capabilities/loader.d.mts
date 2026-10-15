@@ -1,4 +1,4 @@
-export type CapabilityKind = "command" | "skill"
+export type CapabilityKind = "command" | "skill" | "reference"
 
 export interface Capability {
   id: string
@@ -9,6 +9,8 @@ export interface Capability {
   intent?: string[]
   aliases?: string[]
   exclusions?: string[]
+  references?: string[]
+  parent?: string
   guarded?: boolean
 }
 
@@ -28,6 +30,7 @@ export interface LoadResult {
   instructions?: string
   cached?: boolean
   exclusions?: string[]
+  references?: string[]
   required_preconditions?: string[]
 }
 

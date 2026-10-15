@@ -27,6 +27,30 @@ Do not rewrite a consistent, valid project style into a generic best-practice st
 
 Write human-readable code: descriptive names, straightforward control flow, minimal nesting, small focused functions, and clear self-documenting code. Avoid clever one-liners, giant mixed-responsibility functions, magic values, and abstraction for its own sake.
 
+## The Smallest Complete Change
+
+Take the first option that fully works, and stop climbing:
+
+1. **Does it need to exist?** A vague request gets the smallest version that does the core job. Skip options, flags, and flexibility nobody asked for, and name them in one line so the user can still ask.
+2. **Is it already in this project?** A helper, component, service, query, or pattern. Use it the way the surrounding code uses it, per [Search Before Create](#search-before-create).
+3. **Does the language or runtime already do it?** A standard-library or platform primitive, unless the project has a house abstraction, in which case the house one wins.
+4. **Is it already installed?** An existing dependency or first-party tool. Never add a dependency for a few lines of code.
+5. **Is it one line a reader gets at a glance?** One line. A one-liner that needs decoding is not short.
+6. **Otherwise: the minimum that works.**
+
+Lazy about the solution, never about the change itself. A rung-6 patch still finishes everything the task needs, including the callers, tests, fixtures, and error paths the change breaks.
+
+When two options are the same size, take the one that is correct on edge cases.
+
+Never cut: validation at trust boundaries, error handling that prevents data loss, authorization, security, accessibility, required logging, anything the user asked for, or the check that proves the change works. Small and correct beats small and broken.
+
+### Worked decisions
+
+- **Reuse wins.** A date picker is requested and the project already has an `Input` component. Extend `Input` with a `type` prop rather than installing a date-picker library or hand-building a calendar. Rung 2.
+- **A new helper is justified.** Two callers need the same non-trivial transformation and neither is a natural home for it. One small named helper is less code than two copies and clearer at both call sites. Rung 6 is the right answer here, not a failure to reuse.
+- **Shorter would introduce a defect.** Collapsing a validated branch into a one-liner removes a check at a trust boundary. That is not rung 5; it is a correctness regression, and the longer form ships.
+- **Doing nothing is correct.** The reported defect does not reproduce, or the described behavior already matches the request. Say so and stop, rather than making a change that cannot be justified.
+
 ## Comments
 
 Do not add comments to new or modified code. The code must read as plainly as the surrounding project code without them.
