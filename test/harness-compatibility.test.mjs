@@ -29,12 +29,22 @@ test.after(() => {
 })
 
 test("a harness the user named is supported", () => {
-  for (const id of ["opencode", "claude-code", "codex", "cursor", "windsurf", "gemini-cli", "github-copilot", "cline", "aider"]) {
+  for (const id of ["opencode", "opencode-project", "claude-code", "codex", "cursor", "windsurf", "gemini-cli", "github-copilot", "cline", "aider"]) {
     assert.ok(
       HARNESS_TARGETS.some((h) => h.id === id),
       `missing harness entry: ${id}`,
     )
   }
+})
+
+test("the repository carries a project-local .opencode for a fresh clone", () => {
+  // A clone has no global install, so without this a contributor gets AGENTS.md and nothing else.
+  const root = fixture()
+  installHarnesses({ sourceRoot: root, harnessIds: ["opencode-project"] })
+
+  assert.ok(existsSync(join(root, ".opencode", "skills", "alpha", "SKILL.md")))
+  assert.ok(existsSync(join(root, ".opencode", "command", "review.md")))
+  assert.ok(!existsSync(join(root, ".opencode", "skills", "skills")), "no doubled directory name")
 })
 
 test("an unknown harness id is refused rather than silently ignored", () => {

@@ -88,6 +88,18 @@ export const HARNESS_TARGETS = [
     },
   },
   {
+    id: "opencode-project",
+    label: "OpenCode, project-local",
+    configRoot: "<repository-root>/.opencode",
+    layout: { commands: "command/", skills: "skills/" },
+    adapter: {
+      required: [],
+      optional: ["plugins/, to dogfood a project-local plugin"],
+      note:
+        "Makes the clone self-contained: a fresh checkout works without a global install. The root-level AGENTS.md and skills/ already apply, so nothing else is generated here.",
+    },
+  },
+  {
     id: "claude-code",
     label: "Claude Code",
     configRoot: "<repository-root>",

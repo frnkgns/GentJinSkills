@@ -9,6 +9,7 @@ import { HARNESS_TARGETS } from "../src/portability/contract.mjs"
 const IMPORT_SYNTAX = {
   "claude-code": "@AGENTS.md",
   "claude-skills": null,
+  "opencode-project": null,
   codex: null,
   "agents-md": null,
   cursor: "@AGENTS.md",

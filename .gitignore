@@ -10,6 +10,8 @@ todo.md
 # Skill and command trees copied by scripts/install-harnesses.mjs. The pointer files next to
 # them are committed; the copies are not, because they duplicate skills/ and command/ verbatim.
 .claude/skills/
+.opencode/skills/
+.opencode/command/
 .cursor/commands/
 .windsurf/skills/
 .windsurf/workflows/
