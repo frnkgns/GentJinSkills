@@ -12,6 +12,8 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test \"test/**/*.test.mjs\"",
     "registry": "node scripts/build-registry.mjs && node scripts/build-capabilities.mjs",
+    "harnesses": "node scripts/install-harnesses.mjs",
+    "export:portable": "node scripts/export-portable.mjs",
     "eval": "node evals/run.mjs"
   },
   "devDependencies": {

@@ -372,6 +372,33 @@ and `git` are optional.
 
 See [docs/portability.md](docs/portability.md) for the full contract.
 
+### Harness compatibility
+
+The instruction layer is not locked to OpenCode. `npm run harnesses` writes the project-local layout each supported host actually reads:
+
+| Host | Reads | Generated |
+| --- | --- | --- |
+| OpenCode | `AGENTS.md`, `skills/` | already native |
+| Claude Code | `CLAUDE.md` | `@AGENTS.md` import |
+| Codex | `AGENTS.md` | already native |
+| Cursor | `.cursor/rules/*.mdc` | rule with `alwaysApply` |
+| Windsurf | `.windsurf/rules/` | rule with `trigger: always_on` |
+| Gemini CLI | `GEMINI.md` | `@./AGENTS.md` import |
+| GitHub Copilot | `.github/copilot-instructions.md` | pointer |
+| Cline / Roo | `.clinerules/` | `@AGENTS.md` import |
+| Aider | `CONVENTIONS.md` | pointer |
+
+```bash
+npm run harnesses                    # every project-scoped host
+npm run harnesses cursor windsurf    # only these
+```
+
+`AGENTS.md` stays the single source of truth. Hosts that support an import get a one-line pointer, because a copied instruction file diverges the first time the source changes. Only the tiny pointer files are committed; the copied skill and command trees are ignored and regenerated, since they duplicate `skills/` and `command/` verbatim.
+
+`.claude/skills/` is the highest-leverage one. OpenCode v2 discovers it as a compatibility path, so a single copy of the skills serves Claude Code and OpenCode at the same time.
+
+Harnesses that install into your user profile rather than the repository are reported, not written, so nothing outside this directory changes without you asking.
+
 ## Skills
 
 Each skill is a focused playbook. GENTJIN loads the relevant guidance instead
