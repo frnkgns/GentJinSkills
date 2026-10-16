@@ -2,7 +2,7 @@ import { readFileSync, readdirSync, existsSync } from "node:fs"
 import { join } from "node:path"
 import { validate } from "../schema/validate.mjs"
 
-export const KINDS = ["skill", "command"]
+export const KINDS = ["skill", "command", "reference"]
 
 export const GUARDED_COMMANDS = {
   "update-gentjin": {
@@ -145,6 +145,44 @@ const EXCLUSIONS = {
   "project-review": ["reports findings without applying fixes"],
 }
 
+/**
+ * Reference files are a skill's deferred detail. They are registered as their own capability so a
+ * session pays for them only when the active workflow actually needs that section, and the parent
+ * skill advertises them by id so the model knows they exist before deciding to load one.
+ */
+function buildReferences(repoRoot, skillName) {
+  const dir = join(repoRoot, "skills", skillName, "references")
+  if (!existsSync(dir)) return []
+  const found = []
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (!entry.isFile() || !entry.name.endsWith(".md")) continue
+    const base = entry.name.replace(/\.md$/, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+    if (!base) continue
+    const relative = `skills/${skillName}/references/${entry.name}`
+    const body = readFileSync(join(repoRoot, relative), "utf8")
+    const front = parseFrontmatter(body)
+    const heading = /^#\s+(.+)$/m.exec(body)
+    found.push({
+      id: `${skillName}-${base}`,
+      kind: "reference",
+      path: relative,
+      parent: skillName,
+      description: front.description ?? heading?.[1]?.trim() ?? `${base} reference material for ${skillName}`,
+      intent: [],
+      aliases: [],
+      prerequisites: [],
+      scope: "reference_material",
+      grants_code_change_authority: false,
+      review_only: false,
+      guarded: false,
+      allowed_actions: ["read"],
+      exclusions: [],
+      waivable_steps: [],
+    })
+  }
+  return found.sort((a, b) => a.id.localeCompare(b.id))
+}
+
 export function buildCapabilityRegistry(repoRoot) {
   const capabilities = []
 
@@ -158,6 +196,7 @@ export function buildCapabilityRegistry(repoRoot) {
       const front = parseFrontmatter(body)
       const waivable = parseWaivableSteps(body)
       const reviewOnly = REVIEW_ONLY_SKILLS.has(name.name)
+      const references = buildReferences(repoRoot, name.name)
       capabilities.push({
         id: name.name,
         kind: "skill",
@@ -166,6 +205,7 @@ export function buildCapabilityRegistry(repoRoot) {
         intent: SKILL_TRIGGERS[name.name] ?? [],
         aliases: [],
         prerequisites: [],
+        references: references.map((r) => r.id),
         scope: reviewOnly ? "review_and_report" : "implement_and_verify",
         grants_code_change_authority: false,
         review_only: reviewOnly,
@@ -176,6 +216,7 @@ export function buildCapabilityRegistry(repoRoot) {
         exclusions: [],
         waivable_steps: waivable,
       })
+      capabilities.push(...references)
     }
   }
 
@@ -249,6 +290,8 @@ const capabilitySchema = {
           intent: { type: "array", items: { type: "string" } },
           aliases: { type: "array", items: { type: "string" } },
           prerequisites: { type: "array", items: { type: "string" } },
+          references: { type: "array", items: { type: "string", pattern: "^[a-z0-9][a-z0-9-]*$" } },
+          parent: { type: "string", pattern: "^[a-z0-9][a-z0-9-]*$" },
           scope: { type: "string", minLength: 1 },
           grants_code_change_authority: { type: "boolean" },
           review_only: { type: "boolean" },

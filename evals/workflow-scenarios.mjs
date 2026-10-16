@@ -1,4 +1,4 @@
-import { readFileSync, existsSync } from "node:fs"
+import { readFileSync, existsSync, readdirSync } from "node:fs"
 import { join, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 import { routeForRequest } from "../src/routing/route.mjs"
@@ -15,6 +15,22 @@ import { loadTraceEvents } from "../src/task/evidence-resolution.mjs"
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..")
 const registry = buildRegistry()
+
+/**
+ * A requirement may live in a skill entrypoint or in one of its references. Asserting it in one
+ * fixed file makes a legitimate split look like a deleted requirement, so checks follow the split.
+ */
+function skillMaterial(id) {
+  const dir = join(repoRoot, "skills", id)
+  const files = [join(dir, "SKILL.md")]
+  const references = join(dir, "references")
+  if (existsSync(references)) {
+    for (const entry of readdirSync(references)) {
+      if (entry.endsWith(".md")) files.push(join(references, entry))
+    }
+  }
+  return files.filter((f) => existsSync(f)).map((f) => readFileSync(f, "utf8")).join("\n")
+}
 
 async function observed(record, options = {}) {
   const dir = mkdtempSync(join(tmpdir(), "gentjin-eval-"))
@@ -228,9 +244,7 @@ export const scenarios = [
       const map = readFileSync(join(repoRoot, "docs", "integration-map.md"), "utf8")
       const trackerDeferred = /tracker state machine and label vocabulary/i.test(map)
       const noMandatoryTracker = /mandatory tracker/i.test(map)
-      const vaultNoTracker = /Do not require every note to use a template/.test(
-        readFileSync(join(repoRoot, "skills", "knowledge-vault", "SKILL.md"), "utf8"),
-      )
+      const vaultNoTracker = /Do not require every note to use a template/.test(skillMaterial("knowledge-vault"))
       const files = [".github", "JIRA", "linear.app"].filter((m) => {
         try {
           readFileSync(join(repoRoot, m))

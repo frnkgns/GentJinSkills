@@ -61,6 +61,7 @@ export function createLoader(options = {}) {
             instructions: cached.body,
             revision: cached.revision,
             exclusions: capability.exclusions ?? [],
+            references: capability.references ?? [],
             required_preconditions: capability.required_preconditions ?? [],
           }
         }
@@ -82,6 +83,7 @@ export function createLoader(options = {}) {
         revision,
         instructions: read.body,
         exclusions: capability.exclusions ?? [],
+        references: capability.references ?? [],
         required_preconditions: capability.required_preconditions ?? [],
       }
     },

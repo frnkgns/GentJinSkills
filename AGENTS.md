@@ -164,7 +164,8 @@ Source-of-truth hierarchy, highest first: `current source code → explicit user
 - Keep generated code human-readable: descriptive names, straightforward control flow, minimal nesting, focused functions, and clear self-documenting code. Avoid clever one-liners, giant mixed-responsibility functions and components, magic values, and premature abstraction.
 - Do not add comments to new or modified code. Code must read as plainly as the surrounding project code without them. Add a comment only when the user explicitly asks for one, or when a genuinely non-obvious constraint would be unsafe to leave unexplained. Never add section banners, file headers, restated code, commented-out code, or "why this works" narration of straightforward logic.
 - Persist stable discovered conventions through `knowledge-vault` without waiting to be asked.
-- Use `project-conventions` for existing-project learning and reuse discovery, and `architecture-review` for new-project scaffolding and structural risk.
+- Prefer the smallest change that fully solves the task. Take the first option that works: no change at all, reuse of existing project code, a language or runtime primitive, an already installed dependency, a single readable line, and only then new code. Name what you skipped so the user can still ask for it. Never cut validation at trust boundaries, error handling that prevents data loss, authorization, security, accessibility, required logging, or the check that proves the change works.
+- Use `project-conventions` for existing-project learning, the ordered decision ladder, and reuse discovery, and `architecture-review` for new-project scaffolding and structural risk.
 
 ## Avoid Over-Orchestration
 
