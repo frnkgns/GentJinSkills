@@ -323,7 +323,7 @@
     {
       "skill": "frontend-review",
       "version": 1,
-      "description": "Review changed frontend/UI code for responsive design, UX consistency, accessibility, optimistic interactions, loading/error/empty states, real data usage, and frontend performance. Use for UI changes, frontend QA, responsive/mobile review, or as part of cleanup when user-facing screens changed.",
+      "description": "Review changed frontend/UI code for responsive design, UX consistency, accessibility, optimistic interactions, loading/error/empty states, real data usage, and frontend performance. Run it yourself before reporting any task complete that changed a user-facing screen, without waiting to be asked. Also use for explicit UI review, frontend QA, responsive/mobile review, or as part of cleanup when user-facing screens changed.",
       "triggers": [
         "ui",
         "responsive",
