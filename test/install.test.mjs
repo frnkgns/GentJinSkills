@@ -175,12 +175,37 @@ test("regenerating the registry is deterministic", () => {
   assert.equal(a, b)
 })
 
+/**
+ * The skills an install root owns are the ones its manifest claims. A user may keep their own
+ * skills beside GENTJIN's, and those must not make the committed registry look stale.
+ */
+function ownedSkillNames() {
+  const manifestPath = join(repoRoot, ".gentjin", "manifest.json")
+  if (existsSync(manifestPath)) {
+    const manifest = JSON.parse(readFileSync(manifestPath, "utf8"))
+    return manifest.managedFiles
+      .map((f) => f.path)
+      .filter((p) => p.startsWith("skills/") && p.endsWith("/SKILL.md"))
+      .map((p) => p.split("/")[1])
+      .sort()
+  }
+  return buildRegistry().skills.map((s) => s.skill).sort()
+}
+
 test("the committed registry matches a fresh build", () => {
   const committed = JSON.parse(readFileSync(join(repoRoot, "registry", "skills.json"), "utf8"))
   const fresh = buildRegistry()
+  const committedNames = committed.skills.map((s) => s.skill).sort()
+  const freshNames = fresh.skills.map((s) => s.skill).sort()
+
   assert.deepEqual(
-    committed.skills.map((s) => s.skill).sort(),
-    fresh.skills.map((s) => s.skill).sort(),
+    ownedSkillNames().filter((name) => !committedNames.includes(name)),
+    [],
     "registry/skills.json is stale; run node scripts/build-registry.mjs",
+  )
+  assert.deepEqual(
+    committedNames.filter((name) => !freshNames.includes(name)),
+    [],
+    "a registered skill is missing from a fresh build",
   )
 })
