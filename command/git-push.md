@@ -10,7 +10,7 @@ Run the guarded push workflow for the current repository's pending changes, foll
 
 3. Detect the repository's branch naming format before naming anything. List the existing branches (`git branch -a` or `git for-each-ref`) and look for a pattern such as `GJ-01-<description>`, `ABC-123-<description>`, or `feature/<name>`. If the repository has its own format, follow it and derive the next name (for example, increment the next free number).
 
-4. If the repository has no recognisable branch format, propose the default `<project-initials>-<zero-padded-increment>-<description>` using initials derived from the project name and a zero-padded sequence (for example GentJin → `GJ-01-changes-in-here`, `GJ-02-changes-in-here`). Increment beyond the highest existing number, if any.
+4. If the repository has no recognisable branch format, propose the default `<project-initials>-<zero-padded-increment>-<description>` using initials derived from the project name and a zero-padded sequence (for example Overgeared Skills → `OS-01-changes-in-here`, `OS-02-changes-in-here`). Increment beyond the highest existing number, if any.
 
 5. Show the user the exact branch name you plan to create and ask for explicit approval before creating it, committing on it, or pushing. If the user does not want the proposed name, let them type their own preferred branch name and use that instead.
 
@@ -108,7 +108,7 @@ Rules:
 
 - Use a numbered list, 3–10 items for a substantial change. Use fewer when only one or two meaningful changes exist. Never invent filler to reach a count.
 - One outcome per item, usually one sentence. Aim for roughly 15–30 words rather than a rigid truncation limit.
-- Use everyday language, naming the affected feature, page, or skill when useful. GENTJIN's readers are developers, so meaningful developer-facing improvements count.
+- Use everyday language, naming the affected feature, page, or skill when useful. Readers of Overgeared Skills are developers, so meaningful developer-facing improvements count.
 - Group related internal edits by their outcome.
 - Exclude file paths, symbol names, loader mechanics, stack traces, investigation narratives, and test inventories by default.
 - Avoid sections such as Root Cause, Implementation, Testing, Notes, or Documentation in the default body.

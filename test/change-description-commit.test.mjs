@@ -19,7 +19,7 @@ function makeTempRepo() {
   created.push(dir)
   git(dir, "init", "-q", "-b", "main")
   git(dir, "config", "user.email", "test@example.invalid")
-  git(dir, "config", "user.name", "GENTJIN Test")
+  git(dir, "config", "user.name", "Overgeared Skills Test")
   return dir
 }
 

@@ -1,5 +1,5 @@
 ---
-description: Load the full text of every installed GENTJIN skill into the current context so routing, skill boundaries, and skill contents are known rather than inferred from descriptions. Use when the user asks to learn the skills, load all skills, read all skills, explain what each skill does, or check for gaps or overlap between skills.
+description: Load the full text of every installed skill into the current context so routing, skill boundaries, and skill contents are known rather than inferred from descriptions. Use when the user asks to learn the skills, load all skills, read all skills, explain what each skill does, or check for gaps or overlap between skills.
 ---
 
 OpenCode normally sees only each skill's `name` and `description`. That is enough to route a task, but not enough to answer questions about what a skill actually contains, whether two skills overlap, or whether a rule is stated twice. This command puts the real bodies in context.

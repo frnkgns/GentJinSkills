@@ -69,20 +69,20 @@ test("the install and update commands name the whole payload, not just the instr
   // These commands are what the model actually follows. Naming only AGENTS.md, command/,
   // and skills/ is what left the entire runtime layer uninstalled.
   const expected = [...PAYLOAD_DIRECTORIES, ...PAYLOAD_FILES]
-  const named = [...claimedPaths(read("command", "install-gentjin.md"))]
+  const named = [...claimedPaths(read("command", "install-overgeared-skills.md"))]
 
   const missing = expected.filter((name) => !named.includes(name))
-  assert.deepEqual(missing, [], `/install-gentjin omits payload: ${missing.join(", ")}`)
+  assert.deepEqual(missing, [], `/install-overgeared-skills omits payload: ${missing.join(", ")}`)
 
-  const update = read("command", "update-gentjin.md")
+  const update = read("command", "update-overgeared-skills.md")
   for (const name of expected) {
-    assert.ok(update.includes(`${name}/`) || update.includes(name), `/update-gentjin omits ${name}`)
+    assert.ok(update.includes(`${name}/`) || update.includes(name), `/update-overgeared-skills omits ${name}`)
   }
 })
 
 test("both commands tell the operator to verify the runtime layer loaded", () => {
   // Verification that only checks skills and commands passes while every plugin is dead.
-  for (const name of ["install-gentjin.md", "update-gentjin.md"]) {
+  for (const name of ["install-overgeared-skills.md", "update-overgeared-skills.md"]) {
     const text = read("command", name)
     assert.match(text, /<opencode-root>\/plugins\//, `${name} must verify plugins/`)
     assert.match(text, /failed to load plugin/, `${name} must check the plugin load log`)

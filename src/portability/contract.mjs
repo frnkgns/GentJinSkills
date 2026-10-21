@@ -1,7 +1,7 @@
 /**
  * Portability contract.
  *
- * GENTJIN's payload is portable Markdown. This module is the single place that decides
+ * The Overgeared Skills payload is portable Markdown. This module is the single place that decides
  * which files belong to the portable core and which belong to an OpenCode adapter, so a
  * harness that is not OpenCode can take the core and skip the adapter without reading prose
  * to work out the difference.
@@ -31,7 +31,7 @@ export const ADAPTER_DIRECTORIES = [
 export const ADAPTER_FILES = ["package.json"]
 
 /**
- * The neutral skill contract. This is the format GENTJIN already writes and the format most
+ * The neutral skill contract. This is the format Overgeared Skills already writes and the format most
  * agent harnesses read, so a foreign harness maps one file to one skill with no conversion.
  */
 export const SKILL_FORMAT = {

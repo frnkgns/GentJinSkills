@@ -1,17 +1,17 @@
 import test from "node:test"
 import assert from "node:assert/strict"
 import { evaluateGitCommand, guardrailRules } from "../src/guardrails/git-guardrails.mjs"
-import guardrailPlugin from "../guardrails/gentjin-guardrails.js"
+import guardrailPlugin from "../guardrails/overgeared-skills-guardrails.js"
 
 function withAllow(value, fn) {
-  const previous = process.env.GENTJIN_ALLOW_GIT
-  if (value === undefined) delete process.env.GENTJIN_ALLOW_GIT
-  else process.env.GENTJIN_ALLOW_GIT = value
+  const previous = process.env.OVERGEARED_SKILLS_ALLOW_GIT
+  if (value === undefined) delete process.env.OVERGEARED_SKILLS_ALLOW_GIT
+  else process.env.OVERGEARED_SKILLS_ALLOW_GIT = value
   try {
     return fn()
   } finally {
-    if (previous === undefined) delete process.env.GENTJIN_ALLOW_GIT
-    else process.env.GENTJIN_ALLOW_GIT = previous
+    if (previous === undefined) delete process.env.OVERGEARED_SKILLS_ALLOW_GIT
+    else process.env.OVERGEARED_SKILLS_ALLOW_GIT = previous
   }
 }
 
@@ -98,9 +98,9 @@ test("every rule carries a reason", () => {
 })
 
 test("the guardrail plugin exports only the definition object OpenCode 2 requires", async () => {
-  const mod = await import("../guardrails/gentjin-guardrails.js")
+  const mod = await import("../guardrails/overgeared-skills-guardrails.js")
   assert.deepEqual(Object.keys(mod), ["default"])
-  assert.equal(guardrailPlugin.id, "gentjin-guardrails")
+  assert.equal(guardrailPlugin.id, "overgeared-skills-guardrails")
   assert.equal(typeof guardrailPlugin.setup, "function")
 })
 
@@ -123,7 +123,7 @@ test("the plugin refuses a blocked command by throwing", async () => {
 
   await assert.rejects(
     () => before({ tool: "shell", input: { command: "git push origin main" } }),
-    /Blocked by GENTJIN git guardrails/,
+    /Blocked by Overgeared Skills git guardrails/,
   )
 })
 
@@ -144,6 +144,6 @@ test("the plugin still blocks the legacy V1 bash tool name", async () => {
   const before = await mountGuardrails()
   await assert.rejects(
     () => before({ tool: "bash", input: { command: "git push origin main" } }),
-    /Blocked by GENTJIN git guardrails/,
+    /Blocked by Overgeared Skills git guardrails/,
   )
 })

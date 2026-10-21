@@ -33,7 +33,7 @@ test("a clean install copies the full runtime payload into a temporary location"
     }
     assert.ok(existsSync(join(target, "AGENTS.md")))
     assert.ok(existsSync(join(target, "skills", "knowledge-vault", "SKILL.md")))
-    assert.ok(existsSync(join(target, "plugins", "gentjin-trace.js")))
+    assert.ok(existsSync(join(target, "plugins", "overgeared-skills-trace.js")))
     assert.ok(existsSync(join(target, "src", "trace", "plugin-body.mjs")))
     assert.ok(existsSync(join(target, "src", "trace", "plugin-support.mjs")))
     assert.ok(existsSync(join(target, "registry", "skills.json")))
@@ -50,8 +50,8 @@ test("the payload ships the typecheck config, because without it the typecheck s
 test("the payload ships the plugins that OpenCode 2 requires a definition object from", () => {
   inTemp((target) => {
     installTo(target)
-    const plugin = readFileSync(join(target, "plugins", "gentjin-capabilities.ts"), "utf8")
-    assert.match(plugin, /id: "gentjin"/, "the plugin must export a V2 definition object")
+    const plugin = readFileSync(join(target, "plugins", "overgeared-skills-capabilities.ts"), "utf8")
+    assert.match(plugin, /id: "overgeared-skills"/, "the plugin must export a V2 definition object")
     assert.match(plugin, /async setup\(ctx/, "the plugin must initialize inside setup")
   })
 })
@@ -177,10 +177,10 @@ test("regenerating the registry is deterministic", () => {
 
 /**
  * The skills an install root owns are the ones its manifest claims. A user may keep their own
- * skills beside GENTJIN's, and those must not make the committed registry look stale.
+ * skills beside the installed ones, and those must not make the committed registry look stale.
  */
 function ownedSkillNames() {
-  const manifestPath = join(repoRoot, ".gentjin", "manifest.json")
+  const manifestPath = join(repoRoot, ".overgeared-skills", "manifest.json")
   if (existsSync(manifestPath)) {
     const manifest = JSON.parse(readFileSync(manifestPath, "utf8"))
     return manifest.managedFiles

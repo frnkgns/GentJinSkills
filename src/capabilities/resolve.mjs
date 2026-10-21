@@ -1,4 +1,9 @@
 const UPDATE_TARGET_TERMS = [
+  "overgeared-skills",
+  "overgeared-skills installation",
+  "overgeared skills",
+  "overgeared skills installation",
+  "overgeared",
   "gentjin",
   "gent jin",
   "gentyin",
@@ -69,6 +74,12 @@ function matchCommands(registry, text, options) {
     return resolved(byId.get(slash[1]), "exact named command", "exact_slash")
   }
 
+  const rebrandBareName = text.match(/\b(update|install)-overgeared-skills\b/)
+  if (rebrandBareName) {
+    const id = `${rebrandBareName[1]}-overgeared-skills`
+    if (byId.has(id)) return resolved(byId.get(id), "named command without slash", "exact_name")
+  }
+
   const bareName = text.match(/\b(update|install|push|review|resume|pause|report|status|task|cleanup|learn|setup)-?(gentjin|git)\b/)
   if (bareName) {
     const id = `${bareName[1]}-${bareName[2]}`
@@ -76,11 +87,11 @@ function matchCommands(registry, text, options) {
   }
 
   const wantsUpdate = /\b(update|upgrade|sync|refresh|upgrade|bring)\b/.test(text)
-  const targetsGentJin = UPDATE_TARGET_TERMS.some((term) => text.includes(term))
+  const targetsOvergeared = UPDATE_TARGET_TERMS.some((term) => text.includes(term))
   const targetsOther = NON_TARGET_UPDATE_TERMS.some((term) => text.includes(term))
 
-  if (wantsUpdate && targetsOther && !targetsGentJin) {
-    return { resolved: false, reason: "update request targets something other than the GENTJIN installation" }
+  if (wantsUpdate && targetsOther && !targetsOvergeared) {
+    return { resolved: false, reason: "update request targets something other than the Overgeared Skills installation" }
   }
 
   let best = null
@@ -92,8 +103,8 @@ function matchCommands(registry, text, options) {
   }
 
   if (best) {
-    if (wantsUpdate && !targetsGentJin && best.capability.id !== "update-gentjin") {
-      return { resolved: false, reason: "generic update request is not about the GENTJIN installation" }
+    if (wantsUpdate && !targetsOvergeared && best.capability.id !== "update-overgeared-skills") {
+      return { resolved: false, reason: "generic update request is not about the Overgeared Skills installation" }
     }
     return resolved(best.capability, `natural-language intent "${best.intent}"`, "intent_match")
   }

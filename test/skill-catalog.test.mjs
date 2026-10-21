@@ -37,15 +37,15 @@ test("no two skills claim the same trigger phrase", async () => {
 test("the guardrail plugin ships as inert source and is not auto-installed", async () => {
   const { existsSync } = await import("node:fs")
   assert.ok(
-    existsSync(join(repoRoot, "guardrails", "gentjin-guardrails.js")),
+    existsSync(join(repoRoot, "guardrails", "overgeared-skills-guardrails.js")),
     "guardrail source must ship",
   )
   assert.equal(
-    existsSync(join(repoRoot, "plugins", "gentjin-guardrails.js")),
+    existsSync(join(repoRoot, "plugins", "overgeared-skills-guardrails.js")),
     false,
     "guardrails must never land in plugins/, where OpenCode auto-loads them",
   )
-  assert.ok(existsSync(join(repoRoot, "plugins", "gentjin-trace.js")), "the trace plugin must ship")
+  assert.ok(existsSync(join(repoRoot, "plugins", "overgeared-skills-trace.js")), "the trace plugin must ship")
 
   const installFile = join(repoRoot, "INSTALL.md")
   if (existsSync(installFile)) {

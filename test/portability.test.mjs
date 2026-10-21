@@ -97,7 +97,7 @@ test("the manifest is buildable without the generated registry", () => {
     mkdirSync(payload, { recursive: true })
     fakePayload(payload)
     const manifest = buildCapabilityManifest(payload)
-    assert.equal(manifest.name, "gentjin")
+    assert.equal(manifest.name, "overgeared-skills")
     assert.equal(manifest.capabilities.count, 1)
     assert.equal(manifest.capabilities.list[0].id, "alpha")
     assert.deepEqual(manifest.commands.list, ["alpha"])
@@ -121,7 +121,7 @@ test("every skill in the manifest points at a real SKILL.md", () => {
   }
 })
 
-test("the manifest names the host capabilities GENTJIN needs", () => {
+test("the manifest names the host capabilities Overgeared Skills needs", () => {
   const manifest = buildCapabilityManifest(repoRoot)
   const ids = manifest.required_host_capabilities.map((c) => c.id)
   assert.deepEqual(ids, REQUIRED_HOST_CAPABILITIES.map((c) => c.id))

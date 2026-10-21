@@ -2,7 +2,7 @@ import test, { after } from "node:test"
 import assert from "node:assert/strict"
 import { join, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
-import tracePlugin from "../plugins/gentjin-trace.js"
+import tracePlugin from "../plugins/overgeared-skills-trace.js"
 import { registerTracePlugin } from "../src/trace/plugin-body.mjs"
 import { pluginManifest, traceDirIsOutsideRepo, PLUGIN_NAME } from "../src/trace/plugin-support.mjs"
 import { readTrace, assertTraceIntegrity } from "../src/trace/writer.mjs"
@@ -12,7 +12,7 @@ import { rmSync, writeFileSync, readdirSync, mkdirSync } from "node:fs"
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..")
 const traceDir = join(repoRoot, ".tmp-trace-test")
 
-process.env.GENTJIN_TRACE_DIR = traceDir
+process.env.OVERGEARED_SKILLS_TRACE_DIR = traceDir
 
 after(() => {
   rmSync(traceDir, { recursive: true, force: true })
@@ -76,12 +76,12 @@ async function mountTracePlugin(directory = repoRoot) {
 
 test("the plugin default export is the definition object OpenCode 2 requires", () => {
   assert.equal(typeof tracePlugin, "object")
-  assert.equal(tracePlugin.id, "gentjin-trace")
+  assert.equal(tracePlugin.id, "overgeared-skills-trace")
   assert.equal(typeof tracePlugin.setup, "function")
 })
 
 test("the plugin module exports nothing else", async () => {
-  const mod = await import("../plugins/gentjin-trace.js")
+  const mod = await import("../plugins/overgeared-skills-trace.js")
   assert.deepEqual(Object.keys(mod), ["default"])
 })
 
@@ -102,23 +102,23 @@ test("plugin manifest names its install location and required hooks", () => {
 })
 
 test("the default trace directory lives outside the repository", () => {
-  const saved = process.env.GENTJIN_TRACE_DIR
-  delete process.env.GENTJIN_TRACE_DIR
+  const saved = process.env.OVERGEARED_SKILLS_TRACE_DIR
+  delete process.env.OVERGEARED_SKILLS_TRACE_DIR
   try {
     assert.equal(traceDirIsOutsideRepo(repoRoot), true)
   } finally {
-    if (saved !== undefined) process.env.GENTJIN_TRACE_DIR = saved
+    if (saved !== undefined) process.env.OVERGEARED_SKILLS_TRACE_DIR = saved
   }
 })
 
 test("an overridden trace directory inside the repo is detected as unsafe", () => {
-  const saved = process.env.GENTJIN_TRACE_DIR
-  process.env.GENTJIN_TRACE_DIR = join(repoRoot, "traces")
+  const saved = process.env.OVERGEARED_SKILLS_TRACE_DIR
+  process.env.OVERGEARED_SKILLS_TRACE_DIR = join(repoRoot, "traces")
   try {
     assert.equal(traceDirIsOutsideRepo(repoRoot), false)
   } finally {
-    if (saved === undefined) delete process.env.GENTJIN_TRACE_DIR
-    else process.env.GENTJIN_TRACE_DIR = saved
+    if (saved === undefined) delete process.env.OVERGEARED_SKILLS_TRACE_DIR
+    else process.env.OVERGEARED_SKILLS_TRACE_DIR = saved
   }
 })
 
@@ -193,11 +193,11 @@ test("a failing tool call through the plugin is recorded as an error", async () 
 })
 
 test("plugin degrades safely when the trace writer cannot load", async () => {
-  const saved = process.env.GENTJIN_TRACE_DIR
+  const saved = process.env.OVERGEARED_SKILLS_TRACE_DIR
   const blocked = join(repoRoot, ".tmp-trace-blocked")
   rmSync(blocked, { recursive: true, force: true })
   writeFileSync(blocked, "not a directory")
-  process.env.GENTJIN_TRACE_DIR = join(blocked, "traces")
+  process.env.OVERGEARED_SKILLS_TRACE_DIR = join(blocked, "traces")
 
   try {
     const { registered, cleanup } = await mountTracePlugin()
@@ -205,8 +205,8 @@ test("plugin degrades safely when the trace writer cannot load", async () => {
     await cleanup()
     assert.equal(result, undefined, "a trace failure must not throw into the session")
   } finally {
-    if (saved === undefined) delete process.env.GENTJIN_TRACE_DIR
-    else process.env.GENTJIN_TRACE_DIR = saved
+    if (saved === undefined) delete process.env.OVERGEARED_SKILLS_TRACE_DIR
+    else process.env.OVERGEARED_SKILLS_TRACE_DIR = saved
     rmSync(blocked, { recursive: true, force: true })
   }
 })

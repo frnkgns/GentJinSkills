@@ -28,7 +28,7 @@ const READ_ONLY_COMMANDS = [
   "npm test",
   "git status",
   "git log --oneline -5",
-  "cat ~/.config/opencode/.gentjin/manifest.json",
+  "cat ~/.config/opencode/.overgeared-skills/manifest.json",
   "grep -rn pattern ~/.config/opencode/skills",
   "node --version",
   "node --test test/x.mjs",

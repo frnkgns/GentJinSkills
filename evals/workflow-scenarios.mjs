@@ -268,7 +268,7 @@ export const scenarios = [
       const install = existsSync(installPath) ? readFileSync(installPath, "utf8") : ""
       const preserves = install === "" || /file under `command\/` or `skills\/` that is not listed is user-owned/.test(install)
       const additive = install === "" || /except for the additive permission change/.test(install)
-      const guardrailNotAutoInstalled = !install.includes("guardrails/gentjin-guardrails.js")
+      const guardrailNotAutoInstalled = !install.includes("guardrails/overgeared-skills-guardrails.js")
       return {
         pass: preserves && additive && guardrailNotAutoInstalled,
         detail: `unmanaged preserved=${preserves}; permission additive=${additive}; guardrails opt-in=${guardrailNotAutoInstalled}`,
@@ -307,7 +307,7 @@ export const scenarios = [
       const preservesUser = /user command was destroyed/.test(installTest)
       const obsoleteMjs = (() => {
         try {
-          readFileSync(join(repoRoot, "plugins", "gentjin-trace.mjs"))
+          readFileSync(join(repoRoot, "plugins", "overgeared-skills-trace.mjs"))
           return true
         } catch {
           return false
@@ -315,7 +315,7 @@ export const scenarios = [
       })()
       const pluginIsJs = (() => {
         try {
-          readFileSync(join(repoRoot, "plugins", "gentjin-trace.js"))
+          readFileSync(join(repoRoot, "plugins", "overgeared-skills-trace.js"))
           return true
         } catch {
           return false

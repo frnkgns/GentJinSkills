@@ -1,9 +1,9 @@
-# GENTJIN Agent-Assisted Installation
+# Overgeared Skills Agent-Assisted Installation
 
 Use this runbook when the user says:
 
 ```text
-Install GENTJIN by following INSTALL.md
+Install Overgeared Skills by following INSTALL.md
 ```
 
 Perform the installation with OpenCode's available file tools and platform APIs.
@@ -12,13 +12,13 @@ installer script.
 
 ## Architecture
 
-GENTJIN installs directly into OpenCode's native runtime directories. It never
+Overgeared Skills installs directly into OpenCode's native runtime directories. It never
 keeps a second copy of itself inside the OpenCode configuration directory.
 
 ```text
-<source-root>       Cloned or temporary GENTJIN source
+<source-root>       Cloned or temporary Overgeared Skills source
 <opencode-root>     <user-home>/.config/opencode
-<metadata-root>     <opencode-root>/.gentjin
+<metadata-root>     <opencode-root>/.overgeared-skills
 ```
 
 Installation direction:
@@ -66,13 +66,13 @@ Expected end state of an installation:
 ├── docs/
 ├── test/
 ├── opencode.jsonc
-└── .gentjin/
+└── .overgeared-skills/
     ├── manifest.json
     └── version.json
 ```
 
 ```md
-Do not create or retain a full GENTJIN source copy inside the OpenCode config
+Do not create or retain a full Overgeared Skills source copy inside the OpenCode config
 directory.
 ```
 
@@ -99,7 +99,7 @@ Resolve:
 
 ```text
 <opencode-root> = <user-home>/.config/opencode
-<metadata-root> = <opencode-root>/.gentjin
+<metadata-root> = <opencode-root>/.overgeared-skills
 ```
 
 Use the platform's native path separator. If `OPENCODE_CONFIG` or another
@@ -111,12 +111,12 @@ conflict.
 
 ## Resolve the source
 
-Prefer an existing GENTJIN checkout:
+Prefer an existing Overgeared Skills checkout:
 
-1. The current working directory, when it is a GENTJIN source.
+1. The current working directory, when it is an Overgeared Skills checkout.
 2. The nearest ancestor directory containing `AGENTS.md`, `command/`, and
    `skills/`.
-3. A GENTJIN checkout the user names.
+3. An Overgeared Skills checkout the user names.
 
 If none is available, create a temporary shallow checkout of the branch recorded
 in `<metadata-root>/manifest.json`, or the default branch when no metadata
@@ -138,14 +138,14 @@ not install `.git/`, `node_modules/`, package metadata, temporary files,
 credentials, `.env` files, generated caches, `README.md`, or `INSTALL.md`.
 
 Never copy the source `opencode.jsonc` into the destination. It is user
-configuration, not a GENTJIN payload. Preserve all providers, plugins, settings,
+configuration, not an Overgeared Skills payload. Preserve all providers, plugins, settings,
 permissions, MCP configuration, authentication data, and unrelated files in the
 user's global `opencode.jsonc`, except for the additive permission changes defined
 below.
 
 ## Add the required global permissions
 
-GENTJIN needs explicit OpenCode permissions so it can read and write the
+Overgeared Skills needs explicit OpenCode permissions so it can read and write the
 Knowledge Vault outside the active project:
 
 ```jsonc
@@ -187,7 +187,7 @@ Apply these rules only to `<opencode-root>/opencode.jsonc`:
 - Read only the structure needed for this merge. Never print, copy, log, or
   record secrets, tokens, credentials, or unrelated configuration values.
 - Do not add `opencode.jsonc` to the manifest; it remains user-owned. Record any
-  GENTJIN-required configuration state in `<metadata-root>/manifest.json` if it is
+  configuration state required by Overgeared Skills in `<metadata-root>/manifest.json` if it is
   needed for a later update or uninstall.
 
 The addition must be idempotent. A repeated install or update must not create
@@ -196,7 +196,7 @@ permissions already exist.
 
 ## Use the metadata for ownership
 
-`<metadata-root>/manifest.json` is the GENTJIN ownership record. Create or
+`<metadata-root>/manifest.json` is the Overgeared Skills ownership record. Create or
 update it after each successful installation or update. `<metadata-root>` holds
 metadata only; it must never contain `AGENTS.md`, `command/`, `skills/`,
 `README.md`, `INSTALL.md`, or any source checkout.
@@ -239,17 +239,17 @@ shape.
 
 Ownership rules:
 
-- A file listed in `managedFiles` is GENTJIN-owned.
+- A file listed in `managedFiles` is Overgeared Skills-owned.
 - A file under `command/` or `skills/` that is not listed is user-owned or
   third-party. Never modify or delete it.
-- `AGENTS.md` is GENTJIN-managed when the manifest records it. When GENTJIN owns
+- `AGENTS.md` is Overgeared Skills-managed when the manifest records it. When Overgeared Skills owns
   the whole file, update it directly. When it merges into a user-authored file,
   preserve the existing merge boundaries or markers and update only the
-  GENTJIN-owned section. Never create `.gentjin/AGENTS.md` or
+  Overgeared Skills-owned section. Never create `.overgeared-skills/AGENTS.md` or
   `GentJin/AGENTS.md`; the active runtime file is always
   `<opencode-root>/AGENTS.md`.
 - A file recorded as managed in a previous manifest but absent from the current
-  payload is a stale GENTJIN-owned file. Remove it only after the rules below
+  payload is a stale Overgeared Skills-owned file. Remove it only after the rules below
   allow it, and never remove a similarly named file that the manifest does not
   claim.
 
@@ -257,10 +257,10 @@ Classify every destination file with this table:
 
 | Destination state | Action |
 | --- | --- |
-| Missing expected GENTJIN file | Install automatically; no prompt |
+| Missing expected Overgeared Skills file | Install automatically; no prompt |
 | Manifest-managed and hash matches the recorded hash | Update automatically; no prompt |
 | Manifest-managed and hash differs | Treat as locally modified; ask before replacing |
-| Previously managed, no longer in the payload | Stale GENTJIN-owned file; remove when the table above allows |
+| Previously managed, no longer in the payload | Stale Overgeared Skills-owned file; remove when the table above allows |
 | Existing but not manifest-managed and byte-identical to source | Adopt as managed; no prompt |
 | Existing but not manifest-managed and different | Treat as user-owned or ambiguous; ask before replacing |
 | Invalid metadata, unreadable file, or file/directory type mismatch | Stop that path and ask |
@@ -299,7 +299,7 @@ Do not create backup or snapshot directories. Do not copy any file before
 replacing it. When the run finishes, the only things that exist are the runtime
 files, `<metadata-root>`, and the user's own configuration.
 
-GENTJIN payload files are always restorable from the source repository. For
+Overgeared Skills payload files are always restorable from the source repository. For
 `<opencode-root>/opencode.jsonc` and Obsidian's saved vault registry, rely on the
 explicit approval step and the minimal targeted edit instead of a stored copy.
 Verify the result after the change rather than keeping a copy beforehand.
@@ -331,7 +331,7 @@ carry the same set as the installation-direction table in section 1:
 `plugins/` and `src/` are load-bearing, not optional. OpenCode discovers a
 global plugin from `<opencode-root>/plugins/`, and each plugin imports its
 supporting modules from `<opencode-root>/src/`. Installing the instruction layer
-alone leaves every runtime tool, hook, and gate unregistered, so GENTJIN appears
+alone leaves every runtime tool, hook, and gate unregistered, so Overgeared Skills appears
 installed while nothing it documents as enforced is actually running.
 
 Install missing files automatically. Update unchanged manifest-managed files
@@ -341,7 +341,7 @@ Preserve extra files in existing `command/` and `skills/` directories. Never
 remove unrelated files, plugins, settings, or configuration. The global
 `opencode.jsonc` is not part of the payload; change it only in step 6.
 
-### 4. Remove stale GENTJIN-owned files
+### 4. Remove stale Overgeared Skills-owned files
 
 For each path recorded in a previous manifest that the current payload no longer
 contains, remove it from the runtime only when it was manifest-managed with a
@@ -392,7 +392,7 @@ command/changes-review.md
 command/cleanup.md
 command/deployment-check.md
 command/git-push.md
-command/install-gentjin.md
+command/install-overgeared-skills.md
 command/learn-skills.md
 command/pause.md
 command/project-review.md
@@ -401,7 +401,7 @@ command/setup-git-guardrails.md
 command/resume.md
 command/status.md
 command/task.md
-command/update-gentjin.md
+command/update-overgeared-skills.md
 skills/api-design/SKILL.md
 skills/architecture-review/SKILL.md
 skills/backend-review/SKILL.md
@@ -452,8 +452,8 @@ src/discovery/gate.mjs
 src/discovery/gate.d.mts
 registry/skills.json
 registry/capabilities.json
-plugins/gentjin-trace.js
-plugins/gentjin-capabilities.ts
+plugins/overgeared-skills-trace.js
+plugins/overgeared-skills-capabilities.ts
 scripts/build-registry.mjs
 scripts/build-capabilities.mjs
 evals/run.mjs
@@ -520,11 +520,11 @@ Only after steps 1 through 8 succeed, and only when
 
 1. Inspect the legacy folder: its `install-manifest.json`, managed file
    ownership, hashes, and timestamps.
-2. Confirm the active runtime already contains every required GENTJIN-managed
+2. Confirm the active runtime already contains every required Overgeared Skills-managed
    file, and that each matches the verified source. If any runtime file is
    missing or stale, install it from the current source, verify it, and update
    the ownership metadata first.
-3. Confirm no GENTJIN-managed runtime file is locally modified without the
+3. Confirm no Overgeared Skills-managed runtime file is locally modified without the
    required approval, and that unrelated files under `command/` or `skills/` are
    untouched.
 4. Preserve the required metadata. Ownership, hashes, and the installed commit
@@ -553,7 +553,7 @@ safely, and the failure must be reported clearly.
 
 ## Install on another harness
 
-GENTJIN's instructions are portable; only the runtime around them is OpenCode-specific. To install
+The instructions in Overgeared Skills are portable; only the runtime around them is OpenCode-specific. To install
 into a harness that is not OpenCode, take the portable core and skip the adapter.
 
 ```text
@@ -583,8 +583,8 @@ npm run export:portable
 This writes `AGENTS.md`, `command/`, `skills/`, plus two metadata files:
 
 - `capabilities.json` — every skill and command with description, path, and prerequisites, plus the
-  declared skill format and the host capabilities GENTJIN requires. A harness reads this to decide
-  what to surface without running any GENTJIN tooling.
+  declared skill format and the host capabilities Overgeared Skills requires. A harness reads this to decide
+  what to surface without running any Overgeared Skills tooling.
 - `INTEGRATION.md` — generated per-harness install steps.
 
 The shared skill contract is one directory per skill containing `SKILL.md` with `name` and
@@ -624,15 +624,15 @@ move, migrate, or delete any vault.
 
 `<metadata-root>/manifest.json` plus the repository source are sufficient for
 later update, repair, and uninstall workflows. No permanent local copy of the
-GENTJIN source is required or retained.
+Overgeared Skills source is required or retained.
 
-`/update-gentjin` must be sufficient for normal updates: detect a legacy
+`/update-overgeared-skills` must be sufficient for normal updates: detect a legacy
 installation, migrate metadata, reconcile runtime files, retire the legacy
-folder, retrieve the current source, update only GENTJIN-owned files, remove
-stale GENTJIN-owned files, preserve user-owned files, update
+folder, retrieve the current source, update only Overgeared Skills-owned files, remove
+stale Overgeared Skills-owned files, preserve user-owned files, update
 `<metadata-root>/manifest.json` and `version.json`, and verify the result.
 
-Retrieve the current source from an existing GENTJIN checkout when one is
+Retrieve the current source from an existing Overgeared Skills checkout when one is
 available, otherwise from a temporary shallow checkout that is removed when the
 run finishes. Never require the user to keep a clone, and never recreate
 `<opencode-root>/GentJin/`.
