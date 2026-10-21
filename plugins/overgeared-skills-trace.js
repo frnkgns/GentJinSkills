@@ -7,7 +7,7 @@ import { registerTracePlugin } from "../src/trace/plugin-body.mjs"
  * ../src/trace/plugin-body.mjs so the unit tests can import it directly.
  */
 export default {
-  id: "gentjin-trace",
+  id: "overgeared-skills-trace",
   setup(ctx) {
     return registerTracePlugin(ctx)
   },

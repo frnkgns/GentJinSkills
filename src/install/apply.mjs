@@ -52,7 +52,7 @@ export function payloadFiles(payloadRoot) {
 }
 
 /**
- * Refuses to touch an installation unless the payload looks like a real GENTJIN tree. A stale,
+ * Refuses to touch an installation unless the payload looks like a real Overgeared Skills tree. A stale,
  * truncated, or wrong-directory payload must never be able to delete a working installation.
  */
 export function preflightPayload(payloadRoot) {
@@ -61,7 +61,7 @@ export function preflightPayload(payloadRoot) {
 
   const isDir = existsSync(join(payloadRoot, "command")) && existsSync(join(payloadRoot, "skills"))
   if (!isDir) {
-    return { ok: false, reason: "payload does not contain both command/ and skills/, so it is not a GENTJIN tree" }
+    return { ok: false, reason: "payload does not contain both command/ and skills/, so it is not an Overgeared Skills tree" }
   }
 
   const commands = listFiles(payloadRoot, "command").filter((p) => p.endsWith(".md"))
@@ -159,10 +159,10 @@ export function applyPayload({ root, payloadRoot, manifest, branch, commit }) {
     managedFiles: managedFiles.sort((a, b) => a.path.localeCompare(b.path)),
   }
 
-  mkdirSync(join(root, ".gentjin"), { recursive: true })
-  writeFileSync(join(root, ".gentjin", "manifest.json"), `${JSON.stringify(next, null, 2)}\n`)
+  mkdirSync(join(root, ".overgeared-skills"), { recursive: true })
+  writeFileSync(join(root, ".overgeared-skills", "manifest.json"), `${JSON.stringify(next, null, 2)}\n`)
   writeFileSync(
-    join(root, ".gentjin", "version.json"),
+    join(root, ".overgeared-skills", "version.json"),
     `${JSON.stringify({ version: commit, branch }, null, 2)}\n`,
   )
 

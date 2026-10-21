@@ -38,7 +38,7 @@ const BLOCKED = [
 
 function allowedKeys() {
   return new Set(
-    String(process.env.GENTJIN_ALLOW_GIT ?? "")
+    String(process.env.OVERGEARED_SKILLS_ALLOW_GIT ?? process.env.GENTJIN_ALLOW_GIT ?? "")
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean),
@@ -65,7 +65,7 @@ export function evaluateGitCommand(command) {
     rule: matched.id,
     reason: matched.why,
     allMatched: hits.map((h) => h.id),
-    override: `Set GENTJIN_ALLOW_GIT=${matched.id} for this session only if you are certain.`,
+    override: `Set OVERGEARED_SKILLS_ALLOW_GIT=${matched.id} for this session only if you are certain.`,
   }
 }
 
@@ -73,6 +73,6 @@ export const guardrailRules = BLOCKED.map((r) => ({ id: r.id, why: r.why }))
 
 /**
  * This module is a rule evaluator, not a plugin entry point. The plugin that applies these rules
- * lives in guardrails/gentjin-guardrails.js, because OpenCode 2.0.28 loads a plugin only from a
+ * lives in guardrails/overgeared-skills-guardrails.js, because OpenCode 2.0.28 loads a plugin only from a
  * default export that is a definition object with an id and a setup function.
  */

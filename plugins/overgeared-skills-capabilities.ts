@@ -1,7 +1,7 @@
 /**
- * Makes GENTJIN capabilities loadable and enforceable at runtime.
+ * Makes Overgeared Skills capabilities loadable and enforceable at runtime.
  *
- * Registers `gentjin_capability`, which returns the complete canonical body of a skill or
+ * Registers `overgeared_skills_capability`, which returns the complete canonical body of a skill or
  * command; a tool.execute.before hook that refuses workflow-owned commands until those
  * instructions are loaded; and an event subscription that checks adherence when the turn ends.
  *
@@ -122,13 +122,13 @@ interface PluginContext {
 }
 
 function resolveOpenCodeRoot(): string {
-  if (process.env.GENTJIN_ROOT) return process.env.GENTJIN_ROOT
+  if (process.env.OVERGEARED_SKILLS_ROOT) return process.env.OVERGEARED_SKILLS_ROOT
   const here = dirname(fileURLToPath(import.meta.url))
   return resolve(here, "..")
 }
 
 export default {
-  id: "gentjin",
+  id: "overgeared-skills",
 
   async setup(ctx: PluginContext) {
     const loader: CapabilityLoader = createLoader({ opencodeRoot: resolveOpenCodeRoot() })
@@ -148,18 +148,18 @@ export default {
 
     await ctx.tool.transform((editor) => {
       editor.add({
-        name: "gentjin_capability",
+        name: "overgeared_skills_capability",
         description:
-          "Load the complete canonical instructions for a GENTJIN skill or command before performing any action it governs. " +
-          "Use this whenever a GENTJIN workflow applies and you need its full body rather than its summary. " +
-          "Examples: id update-gentjin, install-gentjin, git-push, systematic-debugging. " +
+          "Load the complete canonical instructions for a skill or command in Overgeared Skills before performing any action it governs. " +
+          "Use this whenever an Overgeared Skills workflow applies and you need its full body rather than its summary. " +
+          "Examples: id update-overgeared-skills, install-overgeared-skills, git-push, systematic-debugging. " +
           "Pass kind as command, skill, or reference when you know it. " +
           "A skill may advertise reference ids for its deferred detail; load one only when the active " +
           "workflow actually needs that section.",
         input: {
           type: "object",
           properties: {
-            id: { type: "string", description: "Capability id, for example update-gentjin, systematic-debugging, or knowledge-vault-templates" },
+            id: { type: "string", description: "Capability id, for example update-overgeared-skills, systematic-debugging, or knowledge-vault-templates" },
             kind: { type: "string", description: "Optional: command, skill, or reference" },
           },
           required: ["id"],
@@ -171,7 +171,7 @@ export default {
           const header = `# ${result.id} (${result.kind}) - canonical instructions loaded from ${result.path}`
           const references = result.references ?? []
           const footer = references.length > 0
-            ? `\n\nDeferred detail available as references: ${references.join(", ")}. Load one with gentjin_capability only if this workflow needs it.`
+            ? `\n\nDeferred detail available as references: ${references.join(", ")}. Load one with overgeared_skills_capability only if this workflow needs it.`
             : ""
           return { content: [header, "", result.instructions, footer].join("\n") }
         },
@@ -387,7 +387,7 @@ export default {
         throw new Error(
           [
             `Blocked: ${names} owns this action and ${possessive} instructions were not loaded in this session.`,
-            `Call the gentjin_capability tool with that id first, then follow those instructions.`,
+            `Call the overgeared_skills_capability tool with that id first, then follow those instructions.`,
             "Do not substitute a remembered procedure, a summary, or a custom script for the canonical workflow.",
           ].join("\n"),
         )
@@ -416,7 +416,7 @@ export default {
         const report = loader.completionReport()
         if (report.findings.length === 0) continue
         try {
-          appendFileSync(join(tmpdir(), "gentjin-adherence.log"), `${JSON.stringify(report)}\n`)
+          appendFileSync(join(tmpdir(), "overgeared-skills-adherence.log"), `${JSON.stringify(report)}\n`)
         } catch {
           // A session-end finding must never break the session.
         }

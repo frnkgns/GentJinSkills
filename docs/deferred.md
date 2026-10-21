@@ -22,7 +22,7 @@ Not implemented. No measured requirement exists, and both would need separate ap
 
 The live mode path exists and is wired to `opencode run`, but it has never been executed. It requires provider credentials and incurs real model cost, so it was not run without explicit authorization.
 
-This means there is no measured live success rate for GENTJIN. Any claim about how the agent performs in a live session is currently unsupported. The implementation is complete and validated by contract tests; live validation is pending.
+This means there is no measured live success rate for Overgeared Skills. Any claim about how the agent performs in a live session is currently unsupported. The implementation is complete and validated by contract tests; live validation is pending.
 
 Consequence: the roadmap's own bar applies. Report this as implementation complete with live validation pending, never as evaluated end to end.
 

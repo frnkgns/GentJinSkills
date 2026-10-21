@@ -1,5 +1,5 @@
 /**
- * Exports the portable GENTJIN core for a non-OpenCode harness.
+ * Exports the portable Overgeared Skills core for a non-OpenCode harness.
  *
  * Usage:
  *   node scripts/export-portable.mjs [output-directory]
@@ -25,7 +25,7 @@ if (existsSync(target) && !process.argv.includes("--force")) {
 const result = exportPortable({ payloadRoot: repoRoot, exportDir: target })
 const contract = describeContract()
 
-console.log("Portable GENTJIN core exported.")
+console.log("Portable Overgeared Skills core exported.")
 console.log(`  output      : ${result.exportDir}`)
 console.log(`  core files  : ${result.coreFiles.length}`)
 console.log(`  skills      : ${result.skills}`)

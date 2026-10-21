@@ -18,7 +18,7 @@ const USER_STYLE = `Improves tracing, optional Git safeguards, and engineering w
 4. Strengthened testing guidance to check meaningful behavior.
 5. Improved feature planning with clear requirements and implementation tasks.
 6. Improved knowledge capture for bugs, terms, and important decisions.
-7. Added guidance for creating and maintaining GentJin skills.`
+7. Added guidance for creating and maintaining skills.`
 
 const VERBOSE_NEGATIVE = `The trace plugin had never run once. Two separate defects, both verified
 against the installed binary:
@@ -28,7 +28,7 @@ against the installed binary:
 - Only an inline export default is invoked. A named export referenced as the
   default is imported and then discarded, which contradicts the documentation.
 
-The plugin now ships as plugins/gentjin-trace.js exporting only its default,
+The plugin now ships as plugins/overgeared-skills-trace.js exporting only its default,
 with its implementation moved to src/trace/plugin-body.mjs so tests can import
 it without adding exports the loader would choke on. A live session now writes
 schema-valid traces; previously it wrote nothing.

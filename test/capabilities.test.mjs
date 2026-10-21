@@ -35,11 +35,11 @@ test("entries are derived from real files, not a hardcoded catalog", () => {
 })
 
 test("a command is never mislabeled as a skill", () => {
-  const wrong = findCapabilityOfKind(registry, "update-gentjin", "skill")
+  const wrong = findCapabilityOfKind(registry, "update-overgeared-skills", "skill")
   assert.equal(wrong.found, false)
   assert.match(wrong.reason, /is a command, not a skill/)
 
-  const right = findCapabilityOfKind(registry, "update-gentjin", "command")
+  const right = findCapabilityOfKind(registry, "update-overgeared-skills", "command")
   assert.equal(right.found, true)
 })
 
@@ -50,10 +50,13 @@ test("an unknown capability id cannot pass a scope check", () => {
 })
 
 const NO_SLASH = [
-  ["Update GentJin", "command", "update-gentjin"],
-  ["Please refresh my GentJin installation", "command", "update-gentjin"],
-  ["update the genthin, meaning the installed skill suite", "command", "update-gentjin"],
-  ["Install GentJin", "command", "install-gentjin"],
+  ["Update GentJin", "command", "update-overgeared-skills"],
+  ["Please refresh my GentJin installation", "command", "update-overgeared-skills"],
+  ["update the genthin, meaning the installed skill suite", "command", "update-overgeared-skills"],
+  ["Install GentJin", "command", "install-overgeared-skills"],
+  ["Update Overgeared Skills", "command", "update-overgeared-skills"],
+  ["Please refresh my Overgeared Skills installation", "command", "update-overgeared-skills"],
+  ["Install Overgeared Skills", "command", "install-overgeared-skills"],
   ["Investigate why this table is empty.", "skill", "systematic-debugging"],
   ["Investigate why data is returned but no table rows appear", "skill", "systematic-debugging"],
   ["Review my changes", "command", "changes-review"],
@@ -76,10 +79,12 @@ for (const [request, kind, id] of NO_SLASH) {
 }
 
 const EXCLUSIONS = [
-  ["What does /update-gentjin do?", "asks about the capability"],
+  ["What does /update-overgeared-skills do?", "asks about the capability"],
   ["Do not update GentJin; explain the steps", "explicitly declines"],
+  ["Do not update Overgeared Skills; explain the steps", "explicitly declines"],
   ["Update this dependency", "different update target"],
   ["Review the GentJin README", "not a workflow invocation"],
+  ["Review the Overgeared Skills README", "not a workflow invocation"],
 ]
 
 for (const [request, why] of EXCLUSIONS) {
@@ -96,30 +101,30 @@ test("a quoted transcript containing a command does not execute it", () => {
 })
 
 test("the four adherence states advance in order and cannot be skipped", () => {
-  const capability = registry.capabilities.find((c) => c.id === "update-gentjin")
+  const capability = registry.capabilities.find((c) => c.id === "update-overgeared-skills")
   const state = createSessionState()
 
   assert.throws(() => markLoaded(state, capability, "x"), /cannot be marked loaded before it is selected/)
 
   markSelected(state, capability)
-  assert.equal(adherenceOf(state, "update-gentjin").instructions_loaded, false)
+  assert.equal(adherenceOf(state, "update-overgeared-skills").instructions_loaded, false)
 
-  markLoaded(state, capability, "loaded command/update-gentjin.md")
+  markLoaded(state, capability, "loaded command/update-overgeared-skills.md")
   assert.throws(() => markVerified(state, capability, "done"), /cannot be verified before its required steps/)
 
   markPerformed(state, capability, [{ step: "reconcile", status: "performed", evidence: { source: "observed", kind: "command_exit_code", reference: "exit 0" } }])
   markVerified(state, capability, "exit 0")
-  assert.equal(adherenceOf(state, "update-gentjin").outcome_verified, true)
+  assert.equal(adherenceOf(state, "update-overgeared-skills").outcome_verified, true)
 })
 
 test("selection without loading is never reported as workflow execution", () => {
-  const capability = registry.capabilities.find((c) => c.id === "update-gentjin")
+  const capability = registry.capabilities.find((c) => c.id === "update-overgeared-skills")
   const state = createSessionState()
   markSelected(state, capability)
 
-  assert.throws(() => assertFollowed(state, "update-gentjin"), /instructions were never loaded/)
+  assert.throws(() => assertFollowed(state, "update-overgeared-skills"), /instructions were never loaded/)
 
-  const findings = completionFindings(state, "update-gentjin")
+  const findings = completionFindings(state, "update-overgeared-skills")
   assert.equal(findings.ok, false)
   assert.match(findings.reasons.join(" "), /never loaded/)
 })
@@ -140,7 +145,7 @@ test("a self-reported claim without loading evidence is not accepted", () => {
 })
 
 test("a skipped required step blocks completion", () => {
-  const capability = registry.capabilities.find((c) => c.id === "update-gentjin")
+  const capability = registry.capabilities.find((c) => c.id === "update-overgeared-skills")
   const state = createSessionState()
   markSelected(state, capability)
   markLoaded(state, capability, "loaded")
@@ -149,19 +154,19 @@ test("a skipped required step blocks completion", () => {
     { step: "cleanup gate", status: "blocked" },
   ])
 
-  const findings = completionFindings(state, "update-gentjin")
+  const findings = completionFindings(state, "update-overgeared-skills")
   assert.equal(findings.ok, false)
   assert.match(findings.reasons.join(" "), /cleanup gate.*is blocked/)
 })
 
 test("a not_applicable step is refused unless the workflow declares that waiver", () => {
-  const capability = registry.capabilities.find((c) => c.id === "update-gentjin")
+  const capability = registry.capabilities.find((c) => c.id === "update-overgeared-skills")
   const state = createSessionState()
   markSelected(state, capability)
   markLoaded(state, capability, "loaded")
 
   assert.throws(
-    () => recordStep(state, "update-gentjin", "stale cleanup", "not_applicable", null, { reason: "nothing to do" }),
+    () => recordStep(state, "update-overgeared-skills", "stale cleanup", "not_applicable", null, { reason: "nothing to do" }),
     /declares no waiver for it/,
     "an undeclared waiver must be refused",
   )
@@ -169,7 +174,7 @@ test("a not_applicable step is refused unless the workflow declares that waiver"
 
 test("a declared waiver with its own reason is accepted", () => {
   const capability = {
-    ...registry.capabilities.find((c) => c.id === "update-gentjin"),
+    ...registry.capabilities.find((c) => c.id === "update-overgeared-skills"),
     waivable_steps: [{ step: "legacy migration", reason: "only when a legacy directory exists" }],
   }
   const state = createSessionState()
@@ -186,7 +191,7 @@ test("a declared waiver with its own reason is accepted", () => {
 
 test("a declared waiver presented with a different reason is refused", () => {
   const capability = {
-    ...registry.capabilities.find((c) => c.id === "update-gentjin"),
+    ...registry.capabilities.find((c) => c.id === "update-overgeared-skills"),
     waivable_steps: [{ step: "legacy migration", reason: "only when a legacy directory exists" }],
   }
   const state = createSessionState()
@@ -200,7 +205,7 @@ test("a declared waiver presented with a different reason is refused", () => {
 })
 
 test("a performed step is refused without observed evidence", () => {
-  const capability = registry.capabilities.find((c) => c.id === "update-gentjin")
+  const capability = registry.capabilities.find((c) => c.id === "update-overgeared-skills")
   const state = createSessionState()
   markSelected(state, capability)
   markLoaded(state, capability, "loaded")
@@ -235,7 +240,7 @@ test("guarded actions are detected without blocking unrelated or read-only comma
     "npm test",
     "git status",
     "echo hi",
-    "cat ~/.config/opencode/.gentjin/manifest.json",
+    "cat ~/.config/opencode/.overgeared-skills/manifest.json",
     "grep -r pattern ~/.config/opencode/skills",
   ]
   for (const command of allowed) {
@@ -244,27 +249,27 @@ test("guarded actions are detected without blocking unrelated or read-only comma
 })
 
 test("a guarded path with several owners reports all of them", () => {
-  const verdict = isGuardedAction("rm -rf ~/.config/opencode/.gentjin", registry)
+  const verdict = isGuardedAction("rm -rf ~/.config/opencode/.overgeared-skills", registry)
   assert.equal(verdict.guarded, true)
   const ids = verdict.owners.map((o) => o.capability.id).sort()
-  assert.deepEqual(ids, ["install-gentjin", "update-gentjin"])
+  assert.deepEqual(ids, ["install-overgeared-skills", "update-overgeared-skills"])
 })
 
 test("the loader returns the canonical body and caches repeat loads", () => {
   const loader = createLoader({ opencodeRoot: repoRoot, registry })
-  const first = loader.load("update-gentjin", "command")
+  const first = loader.load("update-overgeared-skills", "command")
   assert.equal(first.ok, true)
   assert.equal(first.kind, "command")
   assert.match(first.instructions, /Confirm Activation/)
   assert.ok(first.bytes > 500)
 
-  const second = loader.load("update-gentjin", "command")
+  const second = loader.load("update-overgeared-skills", "command")
   assert.equal(second.cached, true)
 })
 
 test("the loader refuses a wrong kind and an unknown id", () => {
   const loader = createLoader({ opencodeRoot: repoRoot, registry })
-  const wrongKind = loader.load("update-gentjin", "skill")
+  const wrongKind = loader.load("update-overgeared-skills", "skill")
   assert.equal(wrongKind.ok, false)
   assert.match(wrongKind.reason, /not a skill/)
 
@@ -292,7 +297,7 @@ test("a bypassed workflow leaves an open reconciliation that blocks completion",
 
   const bypassed = markReconciliation(base, {
     trigger: "guard_blocked",
-    capability: "update-gentjin",
+    capability: "update-overgeared-skills",
     checks_needed: ["confirm which locally modified files to replace", "verify manifest hashes after write"],
   })
 
@@ -306,7 +311,7 @@ test("a bypassed workflow leaves an open reconciliation that blocks completion",
   assert.match(result.reasons.join(" "), /confirm which locally modified files to replace/)
   assert.ok(result.blocking_criteria.includes("__reconciliation__"))
 
-  const resolved = resolveReconciliation(bypassed, "update-gentjin", ["manifest verified: 0 mismatches"])
+  const resolved = resolveReconciliation(bypassed, "update-overgeared-skills", ["manifest verified: 0 mismatches"])
   assert.equal(openReconciliations(resolved).length, 0)
   assert.equal(resolved.reconciliation[0].resolution_evidence.length, 1)
 })

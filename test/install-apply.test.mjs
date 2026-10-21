@@ -49,7 +49,7 @@ test("a valid payload installs and records metadata", () => {
     assert.equal(result.applied, true)
     assert.ok(result.replaced.includes("skills/alpha/SKILL.md") || result.replaced.length >= 0)
     assert.equal(existsSync(join(root, "skills", "alpha", "SKILL.md")), true)
-    assert.equal(JSON.parse(readFileSync(join(root, ".gentjin", "version.json"), "utf8")).version, "abc1234")
+    assert.equal(JSON.parse(readFileSync(join(root, ".overgeared-skills", "version.json"), "utf8")).version, "abc1234")
   } finally {
     rmSync(base, { recursive: true, force: true })
   }
@@ -60,7 +60,7 @@ test("regression: a stale payload with no commands removes nothing", () => {
   try {
     const payload = join(base, "stale-payload")
     mkdirSync(payload, { recursive: true })
-    writeFileSync(join(payload, "readme.txt"), "not a GENTJIN tree\n")
+    writeFileSync(join(payload, "readme.txt"), "not an Overgeared Skills tree\n")
 
     const result = applyPayload({ root, payloadRoot: payload, manifest, branch: "main", commit: "abc1234" })
 
@@ -89,7 +89,7 @@ test("regression: a missing payload path removes nothing and writes no metadata"
 
     assert.equal(result.applied, false)
     assert.equal(result.staleRemoved.length, 0)
-    assert.equal(existsSync(join(root, ".gentjin", "manifest.json")), false, "no metadata written on refusal")
+    assert.equal(existsSync(join(root, ".overgeared-skills", "manifest.json")), false, "no metadata written on refusal")
     assert.equal(existsSync(join(root, "command", "one.md")), true)
   } finally {
     rmSync(base, { recursive: true, force: true })
@@ -163,7 +163,7 @@ test("recovery preserves unrelated user files under command/ and skills/", () =>
     assert.equal(existsSync(join(root, "skills", "my-skill", "SKILL.md")), true)
     assert.equal(result.staleRemoved.includes("command/my-own.md"), false)
 
-    const unclaimed = listUnclaimed(root, JSON.parse(readFileSync(join(root, ".gentjin", "manifest.json"), "utf8")))
+    const unclaimed = listUnclaimed(root, JSON.parse(readFileSync(join(root, ".overgeared-skills", "manifest.json"), "utf8")))
     assert.ok(unclaimed.includes("command/my-own.md"))
   } finally {
     rmSync(base, { recursive: true, force: true })
@@ -176,7 +176,7 @@ test("a refused payload leaves unrelated files and metadata untouched on a secon
     writeFileSync(join(root, "command", "my-own.md"), "# mine\n")
     const good = goodPayload(base)
     applyPayload({ root, payloadRoot: good, manifest, branch: "main", commit: "first" })
-    const manifestPath = join(root, ".gentjin", "manifest.json")
+    const manifestPath = join(root, ".overgeared-skills", "manifest.json")
     const before = readFileSync(manifestPath, "utf8")
 
     const refused = applyPayload({
@@ -189,7 +189,7 @@ test("a refused payload leaves unrelated files and metadata untouched on a secon
 
     assert.equal(refused.applied, false)
     assert.equal(readFileSync(manifestPath, "utf8"), before, "metadata unchanged on refusal")
-    assert.equal(JSON.parse(readFileSync(join(root, ".gentjin", "version.json"), "utf8")).version, "first")
+    assert.equal(JSON.parse(readFileSync(join(root, ".overgeared-skills", "version.json"), "utf8")).version, "first")
   } finally {
     rmSync(base, { recursive: true, force: true })
   }

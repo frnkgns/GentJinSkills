@@ -289,8 +289,8 @@ export function isGuardedAction(command, registry) {
   const phraseSegments = segments.map((s) => stripQuotedContent(s).toLowerCase())
 
   const targetsByCapability = {
-    "update-gentjin": [".config/opencode", ".gentjin"],
-    "install-gentjin": [".config/opencode", ".gentjin"],
+    "update-overgeared-skills": [".config/opencode", ".overgeared-skills", ".gentjin"],
+    "install-overgeared-skills": [".config/opencode", ".overgeared-skills", ".gentjin"],
     "git-push": ["git push", "git commit", "git checkout -b", "git merge"],
   }
 

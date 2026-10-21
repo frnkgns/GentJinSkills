@@ -279,31 +279,31 @@ test("no tags means no version is proposed", () => {
 
 test("the rendered body follows the requested template", () => {
   const body = renderReleaseBody({
-    project: "GentJin",
+    project: "Overgeared Skills",
     theme: "Discovery Readiness",
     intro: ["One paragraph.", "Second paragraph."],
     items: [{ title: "Alpha", detail: "does a thing" }, { title: "Beta" }],
     why: "Practical value.",
-    repository: "https://github.com/frnkgns/GentJin",
+    repository: "https://github.com/frnkgns/GentJinSkills",
     projectContext: "Context line.",
     limitations: ["still limited"],
   })
 
-  assert.match(body, /^# GentJin — Discovery Readiness\n/)
+  assert.match(body, /^# Overgeared Skills — Discovery Readiness\n/)
   assert.match(body, /\n## What's New\n/)
   assert.match(body, /\n1\. \*\*Alpha\*\* — does a thing\n2\. \*\*Beta\*\*\n/)
   assert.match(body, /\n## Why This Matters\n/)
   assert.match(body, /\n## Limitations\n/)
   assert.match(body, /- still limited/)
   assert.match(body, /\n## Project\n/)
-  assert.match(body, /Repository: \[https:\/\/github\.com\/frnkgns\/GentJin\]/)
+  assert.match(body, /Repository: \[https:\/\/github\.com\/frnkgns\/GentJinSkills\]/)
   assert.equal(/passed|console/i.test(body), false, "no console or test output leaks into the body")
 })
 
 test("the package is prepared, not published, and links to manual creation", () => {
   const pkg = renderReleasePackage({
-    project: "GentJin",
-    repository: "https://github.com/frnkgns/GentJin",
+    project: "Overgeared Skills",
+    repository: "https://github.com/frnkgns/GentJinSkills",
     version: { version: "v1.2.0", provisional: true, reason: "proposed" },
     items: [{ title: "X" }],
     target: { branch: "main", sha: "abc123" },
@@ -337,8 +337,8 @@ test("repeated generation updates one note instead of creating duplicates", () =
   const kr = mkdtempSync(join(tmpdir(), "gentjin-relvault-"))
   try {
     const pkg = renderReleasePackage({
-      project: "GentJin",
-      repository: "https://github.com/frnkgns/GentJin",
+      project: "Overgeared Skills",
+      repository: "https://github.com/frnkgns/GentJinSkills",
       version: { version: "v1.2.0", provisional: true },
       items: [{ title: "X" }],
       target: { branch: "main", sha: "sha" },
@@ -364,8 +364,8 @@ test("saved notes record truthful prepared status and never claim publication", 
   const kr = mkdtempSync(join(tmpdir(), "gentjin-relvault-"))
   try {
     const pkg = renderReleasePackage({
-      project: "GentJin",
-      repository: "https://github.com/frnkgns/GentJin",
+      project: "Overgeared Skills",
+      repository: "https://github.com/frnkgns/GentJinSkills",
       version: { version: "v2.0.0", provisional: true },
       items: [{ title: "X" }],
       target: { branch: "main", sha: "sha" },
@@ -380,7 +380,7 @@ test("saved notes record truthful prepared status and never claim publication", 
     assert.match(text, /published: false/)
     assert.match(text, /previous_boundary: v1\.9\.0/)
     assert.match(text, /commit a1b2c3d/)
-    assert.match(text, /# GentJin —/)
+    assert.match(text, /# Overgeared Skills —/)
   } finally {
     rmSync(kr, { recursive: true, force: true })
   }
@@ -551,17 +551,17 @@ test("the saved metadata carries the repository rather than leaving it blank", (
   const kr = mkdtempSync(join(tmpdir(), "gentjin-relrepo-"))
   try {
     const pkg = renderReleasePackage({
-      project: "GentJin",
-      repository: "https://github.com/frnkgns/GentJin",
+      project: "Overgeared Skills",
+      repository: "https://github.com/frnkgns/GentJinSkills",
       version: { version: "v3.0.0", provisional: true },
       items: [{ title: "X" }],
       target: { branch: "main", sha: "sha" },
       boundary: { tag: "v2.0.0", verified: true, selected: true, publication: { state: "unknown", verified: false } },
     })
-    assert.equal(pkg.repository, "https://github.com/frnkgns/GentJin")
+    assert.equal(pkg.repository, "https://github.com/frnkgns/GentJinSkills")
     saveReleaseNote({ knowledgeRoot: kr, pkg })
     const text = readFileSync(join(kr, "reports", "releases", "v3.0.0.md"), "utf8")
-    assert.match(text, /repository: https:\/\/github\.com\/frnkgns\/GentJin/)
+    assert.match(text, /repository: https:\/\/github\.com\/frnkgns\/GentJinSkills/)
   } finally {
     rmSync(kr, { recursive: true, force: true })
   }

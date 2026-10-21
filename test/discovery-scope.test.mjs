@@ -146,7 +146,7 @@ test("scope ordering does not weaken the check once discovery has started", () =
 test("regression: the plugin resolve handler starts discovery instead of returning a null record", () => {
   const { readFileSync } = require("node:fs")
   const { join: joinPath } = require("node:path")
-  const source = readFileSync(joinPath(process.cwd(), "plugins", "gentjin-capabilities.ts"), "utf8")
+  const source = readFileSync(joinPath(process.cwd(), "plugins", "overgeared-skills-capabilities.ts"), "utf8")
 
   assert.match(
     source,

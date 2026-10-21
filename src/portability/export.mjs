@@ -1,7 +1,7 @@
 /**
  * Portable export.
  *
- * Produces a harness-neutral copy of the GENTJIN core plus the metadata a foreign host needs
+ * Produces a harness-neutral copy of the Overgeared Skills core plus the metadata a foreign host needs
  * to detect and install it. The export never touches a destination; it only writes into a
  * staging directory the caller chooses, so it is safe to run for inspection.
  */
@@ -33,7 +33,7 @@ export function portableFiles(payloadRoot) {
 }
 
 /**
- * Capability manifest for a host that cannot run GENTJIN's own tooling. Prefers the generated
+ * Capability manifest for a host that cannot run Overgeared Skills tooling. Prefers the generated
  * registry when present, and falls back to parsing the payload frontmatter so a plain clone is
  * still describable.
  */
@@ -86,7 +86,7 @@ export function buildCapabilityManifest(payloadRoot) {
   const contract = describeContract()
   return {
     schema_version: 1,
-    name: "gentjin",
+    name: "overgeared-skills",
     kind: "agent-orchestration-layer",
     generated_from: "repository payload frontmatter",
     core: contract.core,
@@ -126,7 +126,7 @@ function renderIntegrationGuide(manifest) {
     })
     .join("\n")
 
-  return `# GENTJIN Integration
+  return `# Overgeared Skills Integration
 
 Portable core. \`${manifest.capabilities.count}\` skills and \`${manifest.commands.count}\` commands, plain Markdown.
 
@@ -149,7 +149,7 @@ ${targets}
 ## Reading the capabilities
 
 \`capabilities.json\` lists every skill with its description, path, and prerequisites, so a
-host can decide what to surface without executing GENTJIN's own scripts.
+host can decide what to surface without executing Overgeared Skills scripts.
 `
 }
 

@@ -20,7 +20,7 @@ const syntheticAwsKey = secretValue("aws_access_key")
 const syntheticPassword = "SYNTHETIC-password-not-real"
 
 async function withTempDir(fn) {
-  const dir = mkdtempSync(join(tmpdir(), "gentjin-trace-"))
+  const dir = mkdtempSync(join(tmpdir(), "overgeared-skills-trace-"))
   try {
     return await fn(dir)
   } finally {
@@ -45,7 +45,7 @@ function baseEvent(overrides = {}) {
 }
 
 test("traces are stored outside Git-tracked project paths by default", () => {
-  const defaultDir = process.env.GENTJIN_TRACE_DIR
+  const defaultDir = process.env.OVERGEARED_SKILLS_TRACE_DIR
   assert.ok(
     defaultDir === undefined || defaultDir.startsWith(process.env.TEMP ?? tmpdir()),
     "default trace directory must not be inside the repository",

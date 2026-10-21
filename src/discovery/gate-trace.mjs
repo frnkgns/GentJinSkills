@@ -3,7 +3,7 @@ import { tmpdir } from "node:os"
 import { basename, dirname, isAbsolute, join, relative } from "node:path"
 import { createHash } from "node:crypto"
 
-const DEFAULT_FILE = join(tmpdir(), "gentjin-gate-decisions.jsonl")
+const DEFAULT_FILE = join(tmpdir(), "overgeared-skills-gate-decisions.jsonl")
 
 function anonymize(value) {
   return createHash("sha256").update(String(value ?? "")).digest("hex").slice(0, 12)
@@ -14,7 +14,9 @@ function anonymize(value) {
  * content, no command text, no conversation. Paths are relativized against the project root so a
  * trace never carries an absolute user path.
  */
-export function createGateTracer({ file = process.env.GENTJIN_GATE_LOG ?? DEFAULT_FILE } = {}) {
+export function createGateTracer({
+  file = process.env.OVERGEARED_SKILLS_GATE_LOG ?? process.env.GENTJIN_GATE_LOG ?? DEFAULT_FILE,
+} = {}) {
   let enabled = true
 
   return {

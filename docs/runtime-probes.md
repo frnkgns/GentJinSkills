@@ -1,6 +1,6 @@
 # Runtime probes: discovery readiness gate
 
-Every probe below was run against OpenCode 1.18.35 using the **installed** GENTJIN plugin, in a
+Every probe below was run against OpenCode 1.18.35 using the **installed** Overgeared Skills plugin, in a
 fresh process each time. Expected outcomes were written before running. Fixture-only checks are
 labelled separately and are never presented as installed-runtime evidence.
 
@@ -22,14 +22,16 @@ ported on 2026-10-13:
   permission action, so `write` and `edit` are the file mutators now.
 
 **These probes have not been re-run against V2.** Treat the table below as a baseline and re-probe
-before citing it as current.
+before citing it as current. Command and capability names in the recorded output predate the
+rebrand; the current names are `overgeared_skills_capability`, `install-overgeared-skills`, and
+`update-overgeared-skills`.
 
 ## Probe 1 — a project edit is refused before discovery
 
 | | |
 | --- | --- |
 | Setup | `/tmp/gp4`, fresh, `src/app.js` containing `module.exports = 1` |
-| Request | native `edit` tool, change `1` to `2`. Explicitly instructed not to call any GENTJIN tool |
+| Request | native `edit` tool, change `1` to `2`. Explicitly instructed not to call any Overgeared Skills tool |
 | **Expected** | edit refused; readiness `not_started`; file still `module.exports = 1`; a refusal written to the gate trace |
 | **Actual** | refused; readiness `not_started`; file still `module.exports = 1`; trace shows `refused | not_started | path=src/app.js` |
 | Verdict | pass |

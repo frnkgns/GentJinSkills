@@ -2,10 +2,14 @@ import { existsSync } from "node:fs"
 import { homedir } from "node:os"
 import { join } from "node:path"
 
-export const PLUGIN_NAME = "gentjin-trace"
+export const PLUGIN_NAME = "overgeared-skills-trace"
 
 export function traceDirIsOutsideRepo(repoRoot) {
-  const dir = (process.env.GENTJIN_TRACE_DIR ?? join(homedir(), ".local", "state", "gentjin", "traces")).replace(
+  const dir = (
+    process.env.OVERGEARED_SKILLS_TRACE_DIR ??
+    process.env.GENTJIN_TRACE_DIR ??
+    join(homedir(), ".local", "state", "overgeared-skills", "traces")
+  ).replace(
     /\\/g,
     "/",
   )
@@ -20,10 +24,11 @@ export function pluginIsInstalled(opencodeRoot) {
 export const pluginManifest = {
   name: PLUGIN_NAME,
   description:
-    "Records GENTJIN task traces from real OpenCode hooks. Installs into ~/.config/opencode/plugins/.",
-  location: "~/.config/opencode/plugins/gentjin-trace.js",
+    "Records Overgeared Skills task traces from real OpenCode hooks. Installs into ~/.config/opencode/plugins/.",
+  location: "~/.config/opencode/plugins/overgeared-skills-trace.js",
   required_hooks: ["tool.execute.before", "tool.execute.after", "event"],
-  trace_location: process.env.GENTJIN_TRACE_DIR ?? "~/.local/state/gentjin/traces",
+  trace_location:
+    process.env.OVERGEARED_SKILLS_TRACE_DIR ?? process.env.GENTJIN_TRACE_DIR ?? "~/.local/state/overgeared-skills/traces",
   coverage_note:
     "Skill selection is not observable through any hook. Routing recorded alongside traces is inferred and must be labeled as such.",
   load_contract:

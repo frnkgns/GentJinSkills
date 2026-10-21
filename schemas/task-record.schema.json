@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://gentjin.local/schemas/task-record.schema.json",
-  "title": "GENTJIN Task Record",
+  "$id": "https://overgeared-skills.local/schemas/task-record.schema.json",
+  "title": "Overgeared Skills Task Record",
   "description": "One versioned record per task. Authoritative for lifecycle state and completion eligibility.",
   "type": "object",
   "additionalProperties": false,

@@ -11,7 +11,7 @@ const target = join(repoRoot, "package.json")
  * hook contract can be exercised without a running OpenCode server.
  */
 async function mount(sessionID) {
-  const module = await import("../plugins/gentjin-capabilities.ts")
+  const module = await import("../plugins/overgeared-skills-capabilities.ts")
   const hooks = new Map()
   const sessionHooks = new Map()
   const tools = new Map()
@@ -163,7 +163,7 @@ test("the plugin registers all three tools on a v2 context", async () => {
 
   assert.deepEqual(
     [...plugin.tools.keys()].sort(),
-    ["gentjin_capability", "gentjin_discovery", "gentjin_release_notes"],
+    ["gentjin_discovery", "gentjin_release_notes", "overgeared_skills_capability"],
   )
 
   for (const tool of plugin.tools.values()) {
@@ -177,7 +177,7 @@ test("the plugin registers all three tools on a v2 context", async () => {
 test("every registered tool returns structured content", async () => {
   const plugin = await mount("v2-content")
 
-  const result = await plugin.tools.get("gentjin_capability").execute({ id: "does-not-exist" })
+  const result = await plugin.tools.get("overgeared_skills_capability").execute({ id: "does-not-exist" })
   assert.equal(typeof result.content, "string")
   assert.match(result.content, /CAPABILITY_UNAVAILABLE/)
 

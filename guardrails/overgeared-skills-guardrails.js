@@ -13,7 +13,7 @@ import { evaluateGitCommand } from "../src/guardrails/git-guardrails.mjs"
 const SHELL_TOOLS = new Set(["bash", "shell"])
 
 export default {
-  id: "gentjin-guardrails",
+  id: "overgeared-skills-guardrails",
 
   async setup(ctx) {
     await ctx.tool.hook("execute.before", async (event) => {
@@ -26,7 +26,7 @@ export default {
 
       throw new Error(
         [
-          `Blocked by GENTJIN git guardrails (${verdict.rule}).`,
+          `Blocked by Overgeared Skills git guardrails (${verdict.rule}).`,
           `Reason: ${verdict.reason}`,
           `Matched: ${verdict.allMatched.join(", ")}`,
           verdict.override,

@@ -1,6 +1,6 @@
 ---
 name: skill-authoring
-description: Author, extend, or retire a GENTJIN skill safely. Use when creating a new skill, changing an existing skill's triggers or scope, deciding whether a new skill is justified, or auditing skills for overlapping triggers, contradictory rules, broken references, or recursive delegation.
+description: Author, extend, or retire a skill in Overgeared Skills safely. Use when creating a new skill, changing an existing skill's triggers or scope, deciding whether a new skill is justified, or auditing skills for overlapping triggers, contradictory rules, broken references, or recursive delegation.
 ---
 # Skill Authoring
 

@@ -15,9 +15,9 @@ the V2 upgrade and are recorded here rather than edited into the probe output:
   applicable, but new work must not assume `bash`.
 - **The plugin entrypoint contract is different.** V2 requires the default export to be a
   definition object with an `id` and a `setup` function. Both plugins were rewritten, and the
-  rewrite was confirmed by a clean load in `opencode.log` plus the `gentjin_capability` and
-  `gentjin_discovery` tools becoming callable. The V1 shape is rejected, so the probes would need
-  re-running against a V2 plugin before being cited as current.
+  rewrite was confirmed by a clean load in `opencode.log` plus the capability tool (then named
+  `gentjin_capability`) and `gentjin_discovery` becoming callable. The V1 shape is rejected, so
+  the probes would need re-running against a V2 plugin before being cited as current.
 
 ## What is enforced at runtime today
 

@@ -1,17 +1,17 @@
 <div align="center">
 
-<img src="./assets/gentjin-logo.png" alt="GENTJIN logo" width="240" />
+<img src="./assets/overgeared.png" alt="Overgeared Skills logo" width="240" />
 
-# GENTJIN
+# Overgeared Skills
 
 ### A modular development system for [OpenCode](https://opencode.ai/docs/)
 
 **Less prompt noise. More deliberate engineering.**
 
-GENTJIN gives OpenCode a focused operating system for planning, building,
+Overgeared Skills gives OpenCode a focused operating system for planning, building,
 reviewing, and learning from real software work.
 
-[Explore the workflow](#workflow-at-a-glance) Â· [Browse the skills](#skills)
+[Explore the workflow](#workflow-at-a-glance) · [Browse the skills](#skills)
 
 </div>
 
@@ -25,18 +25,18 @@ forgotten cleanup step, or a review that only happens when someone remembers.
 That approach creates noise. Important rules compete with one another, context
 gets lost between sessions, and the final review becomes an afterthought.
 
-## The GENTJIN approach
+## The Overgeared Skills approach
 
-GENTJIN keeps the always-loaded rules small and moves specialized workflows
+Overgeared Skills keeps the always-loaded rules small and moves specialized workflows
 into focused skills that are activated when they are relevant.
 
-| Everyday problem | GENTJIN response |
+| Everyday problem | Overgeared Skills response |
 | --- | --- |
 | One oversized instruction file | Modular skills with clear triggers |
 | Skills that only run when remembered | Semantic capability selection, not keyword matching |
 | Work disappears between sessions | Continuous knowledge capture and active WIP |
 | Long multi-part tasks | Bounded, skill-aware agent delegation |
-| â€œIt looked doneâ€ | Cleanup, QA, and explicit verification |
+| “It looked done” | Cleanup, QA, and explicit verification |
 | Reviews happen too late | Read-only `/changes-review` and `/project-review` |
 | Risky defaults | Read-only data access and guarded Git actions |
 | Reports take too long | Consistent, evidence-based reporting |
@@ -45,7 +45,7 @@ into focused skills that are activated when they are relevant.
 
 ## Orchestration
 
-GENTJIN behaves as an orchestration layer rather than a folder of optional
+Overgeared Skills behaves as an orchestration layer rather than a folder of optional
 instructions. For meaningful work it:
 
 - inspects and learns an existing project before changing it, so new code
@@ -74,17 +74,17 @@ override, not the only way the workflow runs.
 
 ## Project memory
 
-GENTJIN keeps a small, durable understanding of each project so a later session
+Overgeared Skills keeps a small, durable understanding of each project so a later session
 does not rediscover what an earlier one already learned. Each project vault gets
 a `project/` area:
 
 ```text
 project/
-â”œâ”€â”€ overview.md    what this repository is
-â”œâ”€â”€ structure.md   layout, directory responsibilities, relationships
-â”œâ”€â”€ stack.md       verified runtime, frameworks, data layer, tooling
-â”œâ”€â”€ commands.md    verified install, dev, build, test, lint, type-check
-â””â”€â”€ state.md       identity, known roots, last verified revision
+├── overview.md    what this repository is
+├── structure.md   layout, directory responsibilities, relationships
+├── stack.md       verified runtime, frameworks, data layer, tooling
+├── commands.md    verified install, dev, build, test, lint, type-check
+└── state.md       identity, known roots, last verified revision
 ```
 
 The behavior it enables:
@@ -110,7 +110,7 @@ not a conversation log, and not a reason to scan the whole project each time.
 
 ## Continuity memory
 
-Context is temporary; the vault is durable. GENTJIN keeps enough state to answer
+Context is temporary; the vault is durable. Overgeared Skills keeps enough state to answer
 ordinary questions about previous work without relying on the conversation:
 
 ```text
@@ -130,8 +130,8 @@ That means these work in plain conversation, with no command:
 "Didn't we try this before?"   "What changed this week?"
 ```
 
-A briefing stays compact â€” latest work, completed, key decisions, issues and
-discoveries, still in progress, next recommended step â€” and never presents an
+A briefing stays compact — latest work, completed, key decisions, issues and
+discoveries, still in progress, next recommended step — and never presents an
 older session as current when Git or WIP shows newer work. Git is evidence for
 what changed; the notes hold the reasoning.
 
@@ -181,7 +181,7 @@ later turn, which pays for the same content twice and puts text in the transcrip
 typed. Lookup you can see is lookup you can trust.
 
 Lookup is deterministic: no embeddings, no vector store, no database, no external service.
-The index is only ever a hint â€” a missing or stale one never hides a note.
+The index is only ever a hint — a missing or stale one never hides a note.
 
 ### Three kinds of memory, three different jobs
 
@@ -200,7 +200,7 @@ Only the active project's vault is read. Notes from another project are never op
 and neither are personal directories, unless you explicitly ask. Links that point outside
 the resolved vault are ignored.
 
-If your repository name and vault folder differ, point GENTJIN at the right place with a
+If your repository name and vault folder differ, point Overgeared Skills at the right place with a
 `.project-agent.md` in the repository root:
 
 ```markdown
@@ -232,73 +232,73 @@ situation is marked `STALE`, `CONTRADICTED`, `AMBIGUOUS`, `UNVERIFIED`, or
 `HISTORICAL`, and the note is corrected. Two canonical notes never end up
 contradicting each other.
 
-"GentJin should become better at remembering without becoming heavier to use."
+"Overgeared Skills should become better at remembering without becoming heavier to use."
 
 ## Workflow at a glance
 
 ```text
         A clear request
-              â”‚
+              │
               â–¼
      Understand the change
- requirements Â· architecture
-              â”‚
+ requirements · architecture
+              │
               â–¼
           Plan and build
-              â”‚
+              │
               â–¼
         /changes-review
    when the implementation
       needs a review
-              â”‚
+              │
               â–¼
          /cleanup
   when the work is finished
-              â”‚
+              │
               â–¼
      /deployment-check
    before production
-              â”‚
+              │
               â–¼
         /git-push
    when you ask for it
 ```
 
 `/project-review` is the optional deeper audit of an entire codebase, not
-something expected on every feature. GENTJIN supports the full development loop
+something expected on every feature. Overgeared Skills supports the full development loop
 without forcing every workflow into every conversation.
 
 ## Quick start
 
-Clone the repository, open it in OpenCode, and let the agent install GENTJIN
+Clone the repository, open it in OpenCode, and let the agent install Overgeared Skills
 for you:
 
 ```bash
-git clone https://github.com/frnkgns/GentJin.git
-cd GentJin
+git clone https://github.com/frnkgns/GentJinSkills.git
+cd GentJinSkills
 opencode
 ```
 
 Then enter this command in OpenCode:
 
 ```text
-Install GENTJIN by following INSTALL.md
+Install Overgeared Skills by following INSTALL.md
 ```
 
-GENTJIN installs directly into OpenCode's existing runtime directories:
+Overgeared Skills installs directly into OpenCode's existing runtime directories:
 
 - `<user-home>/.config/opencode/AGENTS.md`
 - `<user-home>/.config/opencode/command/`
 - `<user-home>/.config/opencode/skills/`
 
-GENTJIN keeps only lightweight installation metadata under:
+Overgeared Skills keeps only lightweight installation metadata under:
 
 ```text
-<user-home>/.config/opencode/.gentjin/
+<user-home>/.config/opencode/.overgeared-skills/
 ```
 
 ```text
-No duplicate GENTJIN source tree is retained after installation.
+No duplicate Overgeared Skills source tree is retained after installation.
 ```
 
 OpenCode detects your operating system and configuration paths, installs the
@@ -315,14 +315,14 @@ For path detection, conflict handling, updates, and troubleshooting, see
 The cloned repository is not required after a successful installation and can be
 deleted.
 
-Run `/update-gentjin` for normal updates. It uses `<user-home>/.config/opencode/.gentjin/manifest.json` to refresh only GENTJIN-owned files, asks before replacing anything you modified yourself, removes stale GENTJIN-owned files the repository no longer contains, preserves your own skills and commands, retires an old `<user-home>/.config/opencode/GentJin/` folder if one is present, and re-checks the Knowledge Vault permission. It retrieves the current source from an existing clone when one is available, otherwise from a temporary checkout that it removes afterwards. No backup copies are kept.
+Run `/update-overgeared-skills` for normal updates. It uses `<user-home>/.config/opencode/.overgeared-skills/manifest.json` to refresh only Overgeared Skills-owned files, asks before replacing anything you modified yourself, removes stale Overgeared Skills-owned files the repository no longer contains, preserves your own skills and commands, retires an old `<user-home>/.config/opencode/GentJin/` folder if one is present, and re-checks the Knowledge Vault permission. It retrieves the current source from an existing clone when one is available, otherwise from a temporary checkout that it removes afterwards. No backup copies are kept.
 
 ## Commands
 
 | Command | Use it when you want to... |
 | --- | --- |
-| `/install-gentjin` | Install GENTJIN into your global OpenCode configuration. |
-| `/update-gentjin` | Update the installed GENTJIN copy from a newer repository state. |
+| `/install-overgeared-skills` | Install Overgeared Skills into your global OpenCode configuration. |
+| `/update-overgeared-skills` | Update the installed Overgeared Skills copy from a newer repository state. |
 | `/learn-skills` | Load the full text of every installed skill into context for routing questions and corpus audits. |
 | `/setup-git-guardrails` | Install, verify, or remove the guardrail that blocks destructive git commands. Never installed automatically. |
 | `/cleanup` | Finish current work with QA, cleanup, and a final report. |
@@ -337,11 +337,13 @@ Run `/update-gentjin` for normal updates. It uses `<user-home>/.config/opencode/
 | `/git-push` | Commit and push the current changes on a new branch, asking for approval first. |
 
 Commands are intentionally short entry points into larger, repeatable
-workflows.
+workflows. Commands and plugins now use the Overgeared Skills name. The
+`gentjin_discovery` and `gentjin_release_notes` tool identifiers keep their
+original names so existing tool contracts continue to work.
 
 ## Portability
 
-GENTJIN is not OpenCode-only. The instructions are plain Markdown; only the
+Overgeared Skills is not OpenCode-only. The instructions are plain Markdown; only the
 runtime and tooling around them are OpenCode-specific.
 
 ```text
@@ -349,15 +351,15 @@ PORTABLE CORE            OPENCODE ADAPTER
 AGENTS.md                src/
 command/*.md             registry/
 skills/*/SKILL.md        plugins/
-                         evals/ Â· scripts/ Â· docs/
-                         test/ Â· schemas/ Â· guardrails/
+                         evals/ · scripts/ · docs/
+                         test/ · schemas/ · guardrails/
                          package.json
 ```
 
 A foreign harness installs the core and skips the adapter, and loses no
 behavior, because no skill depends on the adapter to be understood. The shared
 skill contract is one directory per skill containing `SKILL.md` with `name` and
-`description` frontmatter, where `name` equals the directory name â€” the format
+`description` frontmatter, where `name` equals the directory name — the format
 most agent harnesses already read.
 
 ```bash
@@ -366,7 +368,7 @@ npm run export:portable
 
 This writes a ready-to-consume copy: the core plus `capabilities.json`, a
 machine-readable catalog of every skill and command with the host capabilities
-GENTJIN needs, and `INTEGRATION.md` with generated per-harness steps. Hosts need
+Overgeared Skills needs, and `INTEGRATION.md` with generated per-harness steps. Hosts need
 `file-read`, `file-write`, and `shell`; `network`, an Obsidian-compatible vault,
 and `git` are optional.
 
@@ -401,7 +403,7 @@ Harnesses that install into your user profile rather than the repository are rep
 
 ## Skills
 
-Each skill is a focused playbook. GENTJIN loads the relevant guidance instead
+Each skill is a focused playbook. Overgeared Skills loads the relevant guidance instead
 of asking the agent to remember every rule at once.
 
 | Skill | Focus |
@@ -451,7 +453,7 @@ of asking the agent to remember every rule at once.
 - Preserve decisions, rejected approaches, and meaningful discoveries.
 - Track temporary QA, test, debug, seed, mock, and fixture artifacts in the
   WIP ledger as they are created.
-- Write or update the durable change audit as the task evolves â€” previous
+- Write or update the durable change audit as the task evolves — previous
   implementation, what changed, why, affected files, actual verification.
 
 ### Before handoff
@@ -474,7 +476,7 @@ of asking the agent to remember every rule at once.
 Every task that modifies a project leaves a durable change audit in the
 project's `changes/` folder, following the canonical template. The audit
 records the previous implementation, what changed, why it changed, affected
-files, and what was actually verified â€” so the repository's history stays
+files, and what was actually verified — so the repository's history stays
 explainable later without relying on chat memory.
 
 Before any GitHub push, a mandatory cleanup gate scans the diff for
@@ -487,11 +489,11 @@ stays in the change audit, not in the PR body.
 
 ## Safe by default
 
-GENTJIN is designed to make the cautious path the easy path:
+Overgeared Skills is designed to make the cautious path the easy path:
 
 - Database access is read-only unless write access is explicitly authorized.
 - Commits, pushes, merges, and history changes require an explicit request.
-- Global OpenCode configuration is additive: GENTJIN adds only its required
+- Global OpenCode configuration is additive: Overgeared Skills adds only its required
   Knowledge Vault permission and never removes existing entries.
 - The legacy `Documents/ObsidianVault` folder is renamed to
   `Documents/KnowledgeVault` only with explicit approval, and Obsidian's saved
@@ -505,85 +507,100 @@ GENTJIN is designed to make the cautious path the easy path:
 
 ```text
 .
-â”œâ”€â”€ AGENTS.md                 Global behavior and project-agnostic rules
-â”œâ”€â”€ INSTALL.md                Agent-assisted installation runbook
-â”œâ”€â”€ command/                  Reusable slash commands
-â”‚   â”œâ”€â”€ changes-review.md
-â”‚   â”œâ”€â”€ cleanup.md
-â”‚   â”œâ”€â”€ deployment-check.md
-â”‚   â”œâ”€â”€ git-push.md
-â”‚   â”œâ”€â”€ install-gentjin.md
-â”‚   â”œâ”€â”€ learn-skills.md
-â”‚   â”œâ”€â”€ pause.md
-â”‚   â”œâ”€â”€ project-review.md
-â”‚   â”œâ”€â”€ report.md
-â”‚   â”œâ”€â”€ resume.md
-â”‚   â”œâ”€â”€ setup-git-guardrails.md
-â”‚   â”œâ”€â”€ status.md
-â”‚   â”œâ”€â”€ task.md
-â”‚   â””â”€â”€ update-gentjin.md
-â”œâ”€â”€ skills/                   Focused, trigger-based workflows
-â”‚   â”œâ”€â”€ api-design/
-â”‚   â”œâ”€â”€ architecture-review/
-â”‚   â”œâ”€â”€ backend-review/
-â”‚   â”œâ”€â”€ cleanup/
-â”‚   â”œâ”€â”€ compaction/
-â”‚   â”œâ”€â”€ database-review/
-â”‚   â”œâ”€â”€ dependency-review/
-â”‚   â”œâ”€â”€ deployment-readiness/
-â”‚   â”œâ”€â”€ frontend-review/
-â”‚   â”œâ”€â”€ git-workflow/
-â”‚   â”œâ”€â”€ incident-response/
-â”‚   â”œâ”€â”€ integration-review/
-â”‚   â”œâ”€â”€ knowledge-vault/
-â”‚   â”œâ”€â”€ performance-review/
-â”‚   â”œâ”€â”€ project-conventions/
-â”‚   â”œâ”€â”€ refactoring-migration/
-â”‚   â”œâ”€â”€ reporting/
-â”‚   â”œâ”€â”€ requirements-review/
-â”‚   â”œâ”€â”€ review-orchestrator/
-â”‚   â”œâ”€â”€ security-review/
-â”‚   â”œâ”€â”€ skill-authoring/
-â”‚   â”œâ”€â”€ systematic-debugging/
-â”‚   â”œâ”€â”€ test-strategy/
-â”‚   â””â”€â”€ work-in-progress/
-â”œâ”€â”€ schemas/                   Portable JSON Schema contracts
-â”‚   â”œâ”€â”€ task-record.schema.json
-â”‚   â””â”€â”€ task-event.schema.json
-â”œâ”€â”€ guardrails/                Opt-in git guardrail plugin, not auto-installed
-â”œâ”€â”€ src/                       Enforcement layer (Node 24, zero dependencies)
-â”‚   â”œâ”€â”€ schema/validate.mjs    JSON Schema subset validator
-â”‚   â”œâ”€â”€ task/record.mjs        Lifecycle, states, action capture
-â”‚   â”œâ”€â”€ task/completion-gate.mjs
-â”‚   â”œâ”€â”€ routing/route.mjs      Routing, scope and capability contracts
-â”‚   â”œâ”€â”€ memory/vault.mjs       Vault scanning, parsing, link extraction
-â”‚   â”œâ”€â”€ memory/failure-awareness.mjs
-â”‚   â”œâ”€â”€ plugin-api.mjs         Plugin.define with an identity fallback
-â”‚   â”œâ”€â”€ trace/writer.mjs       JSONL traces, redaction, coverage
-â”‚   â”œâ”€â”€ trace/plugin-body.mjs  Trace plugin implementation
-â”‚   â”œâ”€â”€ trace/plugin-support.mjs
-â”‚   â””â”€â”€ guardrails/git-guardrails.mjs
-â”œâ”€â”€ registry/skills.json       Generated skill and capability registry
-â”œâ”€â”€ plugins/gentjin-trace.js  Trace plugin using real OpenCode hooks
-â”‚   â”œâ”€â”€ gentjin-capabilities.ts  Capability loader and discovery gate
-â”œâ”€â”€ src/capabilities/         Registry, resolution, loader, adherence state
-â”œâ”€â”€ src/discovery/            Project resolution and discovery readiness gate
-â”œâ”€â”€ src/release/              Release-notes collection, rendering, vault save
-â”œâ”€â”€ registry/capabilities.json  Unified skill + command catalog
-â”œâ”€â”€ scripts/build-registry.mjs
-â”œâ”€â”€ scripts/build-capabilities.mjs
-â”œâ”€â”€ evals/                     Executable evaluation suite
-â”‚   â”œâ”€â”€ run.mjs                Contract and live modes
-â”‚   â”œâ”€â”€ cases.mjs
-â”‚   â”œâ”€â”€ workflow-scenarios.mjs 14 roadmap scenario checks
-â”‚   â”œâ”€â”€ graders/index.mjs
-â”‚   â”œâ”€â”€ scenarios/             11 scenario definitions
-â”‚   â””â”€â”€ fixtures/              Synthetic, non-secret data only
-â”œâ”€â”€ test/                      117 unit and contract tests
-â”œâ”€â”€ docs/
-â”‚   â”œâ”€â”€ architecture.md
-â”‚   â””â”€â”€ deferred.md
-â””â”€â”€ opencode.jsonc            Local OpenCode configuration (not installed)
+├── AGENTS.md                 Global behavior and project-agnostic rules
+├── INSTALL.md                Agent-assisted installation runbook
+├── command/                  Reusable slash commands
+│   ├── changes-review.md
+│   ├── cleanup.md
+│   ├── deployment-check.md
+│   ├── git-push.md
+│   ├── install-overgeared-skills.md
+│   ├── learn-skills.md
+│   ├── pause.md
+│   ├── project-review.md
+│   ├── report.md
+│   ├── resume.md
+│   ├── setup-git-guardrails.md
+│   ├── status.md
+│   ├── task.md
+│   └── update-overgeared-skills.md
+├── skills/                   Focused, trigger-based workflows
+│   ├── api-design/
+│   ├── architecture-review/
+│   ├── backend-review/
+│   ├── cleanup/
+│   ├── compaction/
+│   ├── database-review/
+│   ├── dependency-review/
+│   ├── deployment-readiness/
+│   ├── frontend-review/
+│   ├── git-workflow/
+│   ├── incident-response/
+│   ├── integration-review/
+│   ├── knowledge-vault/
+│   ├── performance-review/
+│   ├── project-conventions/
+│   ├── refactoring-migration/
+│   ├── reporting/
+│   ├── requirements-review/
+│   ├── review-orchestrator/
+│   ├── security-review/
+│   ├── skill-authoring/
+│   ├── systematic-debugging/
+│   ├── test-strategy/
+│   └── work-in-progress/
+├── schemas/                   Portable JSON Schema contracts
+│   ├── task-record.schema.json
+│   └── task-event.schema.json
+├── guardrails/                Opt-in git guardrail plugin, not auto-installed
+├── src/                       Enforcement layer (Node 24, zero dependencies)
+│   ├── schema/validate.mjs    JSON Schema subset validator
+│   ├── task/record.mjs        Lifecycle, states, action capture
+│   ├── task/completion-gate.mjs
+│   ├── routing/route.mjs      Routing, scope and capability contracts
+│   ├── memory/vault.mjs       Vault scanning, parsing, link extraction
+│   ├── memory/failure-awareness.mjs
+│   ├── plugin-api.mjs         Plugin.define with an identity fallback
+│   ├── trace/writer.mjs       JSONL traces, redaction, coverage
+│   ├── trace/plugin-body.mjs  Trace plugin implementation
+│   ├── trace/plugin-support.mjs
+│   └── guardrails/git-guardrails.mjs
+├── registry/
+│   ├── skills.json            Generated skill contracts
+│   └── capabilities.json      Unified skill + command catalog
+├── plugins/
+│   ├── overgeared-skills-capabilities.ts  Capability loader and discovery gate
+│   └── overgeared-skills-trace.js         Trace plugin using real OpenCode hooks
+├── src/                       Enforcement layer (Node 24, zero dependencies)
+│   ├── schema/validate.mjs    JSON Schema subset validator
+│   ├── task/record.mjs        Lifecycle, states, action capture
+│   ├── task/completion-gate.mjs
+│   ├── routing/route.mjs      Routing, scope and capability contracts
+│   ├── memory/vault.mjs       Vault scanning, parsing, link extraction
+│   ├── memory/failure-awareness.mjs
+│   ├── capabilities/          Registry, resolution, loader, adherence state
+│   ├── discovery/             Project resolution and discovery readiness gate
+│   ├── release/               Release-notes collection, rendering, vault save
+│   ├── trace/writer.mjs       JSONL traces, redaction, coverage
+│   ├── trace/plugin-body.mjs  Trace plugin implementation
+│   ├── trace/plugin-support.mjs
+│   ├── guardrails/git-guardrails.mjs
+│   └── plugin-api.mjs         Plugin.define with an identity fallback
+├── scripts/
+│   ├── build-registry.mjs
+│   └── build-capabilities.mjs
+├── evals/                     Executable evaluation suite
+│   ├── run.mjs                Contract and live modes
+│   ├── cases.mjs
+│   ├── workflow-scenarios.mjs 14 roadmap scenario checks
+│   ├── graders/index.mjs
+│   ├── scenarios/             Scenario definitions
+│   └── fixtures/              Synthetic, non-secret data only
+├── test/                      Unit and contract tests
+├── docs/
+│   ├── architecture.md
+│   └── deferred.md
+└── opencode.jsonc             Local OpenCode configuration (not installed)
 ```
 
 ## Verifying an installation
@@ -606,10 +623,10 @@ ls ~/.config/opencode/plugins ~/.config/opencode/src    # both must be non-empty
 
 Then confirm the plugin loaded:
 
-- `gentjin_capability`, `gentjin_discovery`, and `gentjin_release_notes` appear as
+- `overgeared_skills_capability`, `gentjin_discovery`, and `gentjin_release_notes` appear as
   available tools.
 - The server log at `~/.local/share/opencode/log/opencode.log` contains no
-  `message="failed to load plugin"` line whose `target=` names a GENTJIN plugin.
+  `message="failed to load plugin"` line whose `target=` names an Overgeared Skills plugin.
 
 `opencode plugin list` will not help here: it lists only *package* plugins, so local files
 under `plugins/` never appear in it. Filtering the log on the words "failed to load plugin"

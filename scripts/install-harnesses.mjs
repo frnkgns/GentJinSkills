@@ -55,12 +55,12 @@ function copyTree(sourceRoot, from, to) {
 function pointerBody(target) {
   const syntax = IMPORT_SYNTAX[target.id]
   if (syntax === null) return null
-  const body = `# GENTJIN\n\n${NOTE}\n\n${syntax}\n`
+  const body = `# Overgeared Skills\n\n${NOTE}\n\n${syntax}\n`
   if (target.id === "cursor") {
-    return `---\ndescription: GENTJIN orchestration, skills, and memory rules\nalwaysApply: true\n---\n\n${body}`
+    return `---\ndescription: Overgeared Skills orchestration, skills, and memory rules\nalwaysApply: true\n---\n\n${body}`
   }
   if (target.id === "windsurf") {
-    return `---\ntrigger: always_on\ndescription: GENTJIN orchestration, skills, and memory rules\n---\n\n${body}`
+    return `---\ntrigger: always_on\ndescription: Overgeared Skills orchestration, skills, and memory rules\n---\n\n${body}`
   }
   return body
 }

@@ -1,6 +1,6 @@
 # Portability
 
-GENTJIN's instructions are plain Markdown. The runtime and tooling around them are not, so this
+The instructions in Overgeared Skills are plain Markdown. The runtime and tooling around them are not, so this
 document defines exactly where that line sits, and how a harness that is not OpenCode installs the
 portable half.
 
@@ -29,7 +29,7 @@ and `isAdapter` are mutually exclusive and cover every payload file.
 
 ## Skill format
 
-The shared contract, and what GENTJIN already writes:
+The shared contract, and what Overgeared Skills already writes:
 
 ```text
 skills/<name>/SKILL.md
@@ -98,7 +98,7 @@ The export produces:
 
 `capabilities.json` lists every skill and command with its description, path, and prerequisites,
 along with the contract and host capabilities. A host can therefore decide what to surface without
-executing any of GENTJIN's own tooling.
+executing any Overgeared Skills tooling.
 
 The export never deletes anything in its destination and refuses to write into a non-empty directory
 without `--force`. It writes only core files, so adapter code cannot leak into a foreign install.

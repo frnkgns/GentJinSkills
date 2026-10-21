@@ -64,7 +64,7 @@ import { readFileSync } from "node:fs"
 import { join } from "node:path"
 
 test("the release workflow is reachable through a plugin-owned tool, not an external path", () => {
-  const source = readFileSync(join(process.cwd(), "plugins", "gentjin-capabilities.ts"), "utf8")
+  const source = readFileSync(join(process.cwd(), "plugins", "overgeared-skills-capabilities.ts"), "utf8")
 
   assert.match(source, /name: "gentjin_release_notes"/, "the plugin must own the release-notes tool")
   assert.match(source, /action === "collect"|args\?\.action === "collect"/)
@@ -78,7 +78,7 @@ test("the release workflow is reachable through a plugin-owned tool, not an exte
 })
 
 test("the release tool never claims to publish or create a tag", () => {
-  const source = readFileSync(join(process.cwd(), "plugins", "gentjin-capabilities.ts"), "utf8")
+  const source = readFileSync(join(process.cwd(), "plugins", "overgeared-skills-capabilities.ts"), "utf8")
   const block = source.slice(
     source.indexOf('name: "gentjin_release_notes"'),
     source.indexOf('name: "gentjin_discovery"'),
