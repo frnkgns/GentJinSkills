@@ -8,7 +8,7 @@ import { buildRegistry } from "../scripts/build-registry.mjs"
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..")
 
 function inTemp(fn) {
-  const dir = mkdtempSync(join(process.env.TEMP, "gentjin-install-"))
+  const dir = mkdtempSync(join(process.env.TEMP, "overgeared-skills-install-"))
   try {
     return fn(dir)
   } finally {
@@ -51,7 +51,7 @@ test("a clean install copies the full runtime payload into a temporary location"
     }
     assert.ok(existsSync(join(target, "AGENTS.md")))
     assert.ok(existsSync(join(target, "skills", "knowledge-vault", "SKILL.md")))
-    assert.ok(existsSync(join(target, "plugins", "gentjin-trace.js")))
+    assert.ok(existsSync(join(target, "plugins", "overgeared-skills-trace.js")))
     assert.ok(existsSync(join(target, "src", "trace", "plugin-body.mjs")))
     assert.ok(existsSync(join(target, "src", "trace", "plugin-support.mjs")))
     assert.ok(existsSync(join(target, "registry", "skills.json")))
@@ -156,7 +156,7 @@ test("the scanner detects an absolute user path when one is present", () => {
   assert.equal(ABSOLUTE_USER_PATH.test("~/Documents/KnowledgeVault"), false)
   const appDataSegment = ["App", "Data"].join("")
   assert.equal(APPDATA_PATH.test(`${appDataSegment}${"/"}Local${"/"}Temp`), true)
-  assert.equal(APPDATA_PATH.test(`<user-home>/.local/state/gentjin`), false)
+  assert.equal(APPDATA_PATH.test(`<user-home>/.local/state/overgeared-skills`), false)
 })
 
 test("installed code runs from the temporary location without the repository", () => {

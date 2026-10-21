@@ -67,7 +67,7 @@
   "forbidden": [
     {
       "capability": "external write",
-      "reason": "Not part of any GENTJIN contract. Requires separate authorization."
+      "reason": "Not part of any Overgeared Skills contract. Requires separate authorization."
     },
     {
       "capability": "destructive filesystem operation",
@@ -440,7 +440,7 @@
     {
       "skill": "knowledge-vault",
       "version": 1,
-      "description": "Manage persistent project knowledge in the user's Knowledge Vault, including project/vault discovery, note-first lookup, vault initialization and normalization, automatic knowledge capture, architecture and ADRs, patterns, bugs, enhancements, investigations, work-in-progress, sessions, reports, and migration. MUST be used when durable knowledge is established during a task, even when the user never asks for notes, and when the user says \"remember this\", \"save this workflow\", or \"don't do that again\". This is a core GENTJIN system, not an optional extra: prefer capturing a useful note over skipping one. Never store transcripts, secrets, or cheap-to-rediscover information.",
+      "description": "Manage persistent project knowledge in the user's Knowledge Vault, including project/vault discovery, note-first lookup, vault initialization and normalization, automatic knowledge capture, architecture and ADRs, patterns, bugs, enhancements, investigations, work-in-progress, sessions, reports, and migration. MUST be used when durable knowledge is established during a task, even when the user never asks for notes, and when the user says \"remember this\", \"save this workflow\", or \"don't do that again\". This is a core Overgeared Skills system, not an optional extra: prefer capturing a useful note over skipping one. Never store transcripts, secrets, or cheap-to-rediscover information.",
       "triggers": [
         "remember",
         "knowledge",
@@ -667,7 +667,7 @@
     {
       "skill": "skill-authoring",
       "version": 1,
-      "description": "Author, extend, or retire a GENTJIN skill safely. Use when creating a new skill, changing an existing skill's triggers or scope, deciding whether a new skill is justified, or auditing skills for overlapping triggers, contradictory rules, broken references, or recursive delegation.",
+      "description": "Author, extend, or retire a skill safely. Use when creating a new skill, changing an existing skill's triggers or scope, deciding whether a new skill is justified, or auditing skills for overlapping triggers, contradictory rules, broken references, or recursive delegation.",
       "triggers": [
         "new skill",
         "write a skill",
@@ -753,7 +753,7 @@
     {
       "skill": "work-in-progress",
       "version": 1,
-      "description": "Preserve and resume unfinished development work. MUST be used when the user pauses, holds, stops for now, or asks to continue previous work, and at meaningful milestones during substantial unfinished work, even without an explicit request. Use when work spans sessions, is blocked, or meaningful implementation remains. This is a core GENTJIN system, not an optional extra: keep the active state current rather than reconstructing it later. Maintains WIP state, decisions, rejected approaches, blockers, testing status, files, and one clear next action.",
+      "description": "Preserve and resume unfinished development work. MUST be used when the user pauses, holds, stops for now, or asks to continue previous work, and at meaningful milestones during substantial unfinished work, even without an explicit request. Use when work spans sessions, is blocked, or meaningful implementation remains. This is a core Overgeared Skills system, not an optional extra: keep the active state current rather than reconstructing it later. Maintains WIP state, decisions, rejected approaches, blockers, testing status, files, and one clear next action.",
       "triggers": [
         "pause",
         "stop for now",

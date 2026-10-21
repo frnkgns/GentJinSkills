@@ -1,8 +1,8 @@
 ---
-description: Install, verify, or remove the GENTJIN git guardrail that blocks destructive git commands through the OpenCode tool.execute.before hook. Use when the user asks to add git safety guardrails, block dangerous git commands, verify the guardrail is active, or remove it.
+description: Install, verify, or remove the Overgeared Skills git guardrail that blocks destructive git commands through the OpenCode tool.execute.before hook. Use when the user asks to add git safety guardrails, block dangerous git commands, verify the guardrail is active, or remove it.
 ---
 
-Install the GENTJIN git guardrail. This is an explicitly invoked capability. Never install it as a side effect of ordinary coding work, and never install it without the user asking.
+Install the Overgeared Skills git guardrail. This is an explicitly invoked capability. Never install it as a side effect of ordinary coding work, and never install it without the user asking.
 
 ## What it blocks
 
@@ -20,8 +20,8 @@ Plain `git branch -d` is allowed. `git status`, `git diff`, `git log`, `git add`
 
 ## Resolve paths
 
-- Source: `<source-root>/guardrails/gentjin-guardrails.js`
-- Target: `<opencode-root>/plugins/gentjin-guardrails.js`
+- Source: `<source-root>/guardrails/overgeared-skills-guardrails.js`
+- Target: `<opencode-root>/plugins/overgeared-skills-guardrails.js`
 
 where `<opencode-root>` is `<user-home>/.config/opencode` unless overridden.
 
@@ -48,13 +48,13 @@ Report which rules matched. Never claim the guardrail works because the file is 
 
 ## Per-session override
 
-`GENTJIN_ALLOW_GIT` accepts a comma-separated list of rule ids to permit for one session, for example `GENTJIN_ALLOW_GIT=push`. It overrides only the named rules and nothing else.
+`OVERGEARED_SKILLS_ALLOW_GIT` accepts a comma-separated list of rule ids to permit for one session, for example `OVERGEARED_SKILLS_ALLOW_GIT=push`. It overrides only the named rules and nothing else.
 
 Tell the user to prefer requesting explicit authorization over setting the variable.
 
 ## Remove
 
-1. Delete `<opencode-root>/plugins/gentjin-guardrails.js`.
+1. Delete `<opencode-root>/plugins/overgeared-skills-guardrails.js`.
 2. Confirm it is gone.
 3. Tell the user enforcement ends after OpenCode restarts.
 

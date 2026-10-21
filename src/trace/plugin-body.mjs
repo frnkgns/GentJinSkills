@@ -39,7 +39,7 @@ export async function createTracePlugin(ctx) {
     try {
       const file = join(traceDir, `${Date.now()}-${randomBytes(4).toString("hex")}.jsonl`)
       trace = new TraceWriter({
-        taskId: process.env.GENTJIN_TASK_ID ?? hexId("task"),
+        taskId: process.env.OVERGEARED_SKILLS_TASK_ID ?? hexId("task"),
         projectId: resolveProjectId(ctx),
         sessionId: ctx?.sessionID ?? null,
         file,
@@ -131,10 +131,10 @@ export async function createTracePlugin(ctx) {
 }
 
 export function resolveTraceDir() {
-  if (process.env.GENTJIN_TRACE_DIR) return process.env.GENTJIN_TRACE_DIR
-  return join(homedir(), ".local", "state", "gentjin", "traces")
+  if (process.env.OVERGEARED_SKILLS_TRACE_DIR) return process.env.OVERGEARED_SKILLS_TRACE_DIR
+  return join(homedir(), ".local", "state", "overgeared-skills", "traces")
 }
 
 export function resolveProjectId(ctx) {
-  return ctx?.project?.id ?? ctx?.project?.name ?? process.env.GENTJIN_PROJECT_ID ?? "unknown"
+  return ctx?.project?.id ?? ctx?.project?.name ?? process.env.OVERGEARED_SKILLS_PROJECT_ID ?? "unknown"
 }

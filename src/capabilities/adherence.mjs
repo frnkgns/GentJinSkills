@@ -180,8 +180,8 @@ export function isGuardedAction(command, registry) {
   const text = String(command ?? "").toLowerCase()
 
   const targetsByCapability = {
-    "update-gentjin": [".config/opencode", ".gentjin"],
-    "install-gentjin": [".config/opencode", ".gentjin"],
+    "update-overgeared-skills": [".config/opencode", ".overgeared-skills"],
+    "install-overgeared-skills": [".config/opencode", ".overgeared-skills"],
     "git-push": ["git push", "git commit", "git checkout -b", "git merge"],
   }
 

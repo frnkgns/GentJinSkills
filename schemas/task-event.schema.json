@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://gentjin.local/schemas/task-event.schema.json",
-  "title": "GENTJIN Task Event",
+  "$id": "https://overgeared-skills.local/schemas/task-event.schema.json",
+  "title": "Overgeared Skills Task Event",
   "description": "One append-only trace record. Serialized one JSON object per line to a JSONL file.",
   "type": "object",
   "additionalProperties": false,

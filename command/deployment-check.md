@@ -116,7 +116,7 @@ Dependency Audit:
 
 ## IMPLEMENTATION OPTIONS
 
-The following issues can be implemented by GentJin/OpenCode after approval:
+The following issues can be implemented by Overgeared Skills/OpenCode after approval:
 
 1. Fix ...
 2. Update ...

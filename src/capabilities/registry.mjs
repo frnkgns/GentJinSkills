@@ -5,14 +5,14 @@ import { validate } from "../schema/validate.mjs"
 export const KINDS = ["skill", "command"]
 
 export const GUARDED_COMMANDS = {
-  "update-gentjin": {
+  "update-overgeared-skills": {
     guarded: true,
-    reason: "mutates the installed GENTJIN payload and metadata",
+    reason: "mutates the installed Overgeared Skills payload and metadata",
     preconditions: ["payload reconciled", "conflicts reviewed", "metadata written last"],
   },
-  "install-gentjin": {
+  "install-overgeared-skills": {
     guarded: true,
-    reason: "mutates the installed GENTJIN payload and metadata",
+    reason: "mutates the installed Overgeared Skills payload and metadata",
     preconditions: ["source resolved", "payload installed", "verification passed"],
   },
   "git-push": {
@@ -108,16 +108,29 @@ const SKILL_TRIGGERS = {
 }
 
 const COMMAND_INTENTS = {
-  "update-gentjin": [
-    "update gentjin",
-    "update the gentjin",
-    "refresh my gentjin installation",
+  "update-overgeared-skills": [
+    "update overgeared-skills",
+    "update overgeared skills",
+    "update the overgeared-skills",
+    "update the overgeared skills",
+    "refresh my overgeared-skills installation",
+    "refresh my overgeared skills installation",
     "update the genthin",
-    "upgrade gentjin",
-    "sync gentjin",
-    "bring gentjin up to date",
+    "upgrade overgeared-skills",
+    "upgrade overgeared skills",
+    "sync overgeared-skills",
+    "sync overgeared skills",
+    "bring overgeared-skills up to date",
+    "bring overgeared skills up to date",
   ],
-  "install-gentjin": ["install gentjin", "set up gentjin", "first time install gentjin"],
+  "install-overgeared-skills": [
+    "install overgeared-skills",
+    "install overgeared skills",
+    "set up overgeared-skills",
+    "set up overgeared skills",
+    "first time install overgeared-skills",
+    "first time install overgeared skills",
+  ],
   "git-push": ["push my changes", "commit and push", "prepare my changes for push", "push this branch"],
   "changes-review": ["review what i changed", "review my changes", "review my recent diff", "review the diff"],
   "project-review": ["review the whole project", "full project review"],
@@ -133,14 +146,14 @@ const COMMAND_INTENTS = {
 }
 
 const EXCLUSIONS = {
-  "update-gentjin": [
-    'explaining what "/update-gentjin" does is not an update',
-    '"do not update gentjin, explain the steps" performs no update',
+  "update-overgeared-skills": [
+    'explaining what "/update-overgeared-skills" does is not an update',
+    '"do not update overgeared-skills, explain the steps" performs no update',
     "a quoted transcript containing the phrase does not trigger it",
-    'updating an application dependency is not a GentJin update',
-    'editing GentJin source documentation is not an installation update',
+    'updating an application dependency is not an Overgeared Skills update',
+    'editing Overgeared Skills source documentation is not an installation update',
   ],
-  "install-gentjin": ["re-running install when an installation already exists is an update, not a first install"],
+  "install-overgeared-skills": ["re-running install when an installation already exists is an update, not a first install"],
   "changes-review": ['"review only, do not edit" keeps the workflow read-only'],
   "project-review": ["reports findings without applying fixes"],
 }

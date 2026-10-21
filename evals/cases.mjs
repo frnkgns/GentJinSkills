@@ -61,7 +61,7 @@ export const METRICS = {
 
 export function contractCase(scenario) {
   const registry = buildRegistry()
-  const workspace = mkdtempSync(join(process.env.TEMP ?? process.cwd(), `gentjin-eval-${randomBytes(3).toString("hex")}-`))
+  const workspace = mkdtempSync(join(process.env.TEMP ?? process.cwd(), `overgeared-skills-eval-${randomBytes(3).toString("hex")}-`))
 
   try {
     switch (scenario.id) {
@@ -97,7 +97,7 @@ export function contractCase(scenario) {
 
 function base(scenario, workspace, overrides = {}) {
   return makeTaskRecord({
-    projectId: "gentjin-eval",
+    projectId: "overgeared-skills-eval",
     request: scenario.request,
     task_id: `task-${randomBytes(6).toString("hex")}`,
     scope: { allowed_paths: [], allowed_skills: [], allow_code_changes: true, description: workspace },

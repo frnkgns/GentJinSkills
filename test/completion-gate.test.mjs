@@ -80,7 +80,7 @@ test("task-event schema requires source and forbids invented duration", () => {
     schema_version: 1,
     event_id: "evt-0123456789ab",
     task_id: "task-0123456789ab",
-    project_id: "gentjin",
+    project_id: "overgeared-skills",
     timestamp: new Date().toISOString(),
     phase: "act",
     event_type: "action.executed",
@@ -98,7 +98,7 @@ test("task-event schema requires source and forbids invented duration", () => {
 
 function recordWith(overrides = {}) {
   return makeTaskRecord({
-    projectId: "gentjin",
+    projectId: "overgeared-skills",
     request: "fix empty table",
     criteria: [{ id: "ui-rows", description: "rows render", status: "pass", evidence: ["ev-1"] }],
     ...overrides,

@@ -17,7 +17,7 @@ const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..")
 const registry = buildRegistry()
 
 async function observed(record, options = {}) {
-  const dir = mkdtempSync(join(tmpdir(), "gentjin-eval-"))
+  const dir = mkdtempSync(join(tmpdir(), "overgeared-skills-eval-"))
   const file = join(dir, "trace.jsonl")
   const writer = new TraceWriter({ taskId: record.task_id, projectId: record.project_id, file })
   const { event } = writer.append({
@@ -44,7 +44,7 @@ async function observed(record, options = {}) {
 }
 
 function completedWith(overrides) {
-  let r = makeTaskRecord({ projectId: "gentjin-eval", request: "scenario", ...overrides })
+  let r = makeTaskRecord({ projectId: "overgeared-skills-eval", request: "scenario", ...overrides })
   return r
 }
 
@@ -254,7 +254,7 @@ export const scenarios = [
       const install = existsSync(installPath) ? readFileSync(installPath, "utf8") : ""
       const preserves = install === "" || /file under `command\/` or `skills\/` that is not listed is user-owned/.test(install)
       const additive = install === "" || /except for the additive permission change defined/.test(install)
-      const guardrailNotAutoInstalled = !install.includes("guardrails/gentjin-guardrails.js")
+      const guardrailNotAutoInstalled = !install.includes("guardrails/overgeared-skills-guardrails.js")
       return {
         pass: preserves && additive && guardrailNotAutoInstalled,
         detail: `unmanaged preserved=${preserves}; permission additive=${additive}; guardrails opt-in=${guardrailNotAutoInstalled}`,
@@ -289,11 +289,11 @@ export const scenarios = [
     expect: "install test covers a temp install; no .mjs plugin remains",
     run() {
       const installTest = readFileSync(join(repoRoot, "test", "install.test.mjs"), "utf8")
-      const tempInstall = /gentjin-install-/.test(installTest)
+      const tempInstall = /overgeared-skills-install-/.test(installTest)
       const preservesUser = /user command was destroyed/.test(installTest)
       const obsoleteMjs = (() => {
         try {
-          readFileSync(join(repoRoot, "plugins", "gentjin-trace.mjs"))
+          readFileSync(join(repoRoot, "plugins", "overgeared-skills-trace.mjs"))
           return true
         } catch {
           return false
@@ -301,7 +301,7 @@ export const scenarios = [
       })()
       const pluginIsJs = (() => {
         try {
-          readFileSync(join(repoRoot, "plugins", "gentjin-trace.js"))
+          readFileSync(join(repoRoot, "plugins", "overgeared-skills-trace.js"))
           return true
         } catch {
           return false

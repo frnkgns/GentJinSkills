@@ -1,6 +1,6 @@
 # Architecture
 
-GENTJIN has two layers with different failure modes. Confusing them is the main way to overstate what the system does.
+Overgeared Skills has two layers with different failure modes. Confusing them is the main way to overstate what the system does.
 
 ## Instruction layer
 
@@ -17,7 +17,7 @@ A control belongs in the enforcement layer only when a hook supplies real eviden
 | Component | Path | Responsibility |
 | --- | --- | --- |
 | OpenCode 1.18.34 | external | Model runtime, tools, execution, plugin hooks |
-| GENTJIN plugin | `plugins/gentjin-trace.js` | Records traces from real hooks |
+| Overgeared Skills plugin | `plugins/overgeared-skills-trace.js` | Records traces from real hooks |
 | Trace writer | `src/trace/writer.mjs` | JSONL append-only events, redaction, coverage |
 | Task record | `src/task/record.mjs` | Lifecycle, states, transitions, action capture |
 | Completion gate | `src/task/completion-gate.mjs` | Rejects unsupported completion |
@@ -48,7 +48,7 @@ Plugins load from `~/.config/opencode/plugins/` and `.opencode/plugins/`, plus t
 
 ## What the hooks make possible
 
-`tool.execute.before` and `tool.execute.after` observe genuine tool invocations. The plugin times them itself, so `duration_ms` is measured and never estimated. `tool.execute.before` can throw, which is the documented pattern for refusing an action, so a completion gate can be enforced rather than advised. `event` exposes the runtime event bus. `opencode run` makes live evaluation feasible and `--pure` provides a real baseline where GENTJIN is absent.
+`tool.execute.before` and `tool.execute.after` observe genuine tool invocations. The plugin times them itself, so `duration_ms` is measured and never estimated. `tool.execute.before` can throw, which is the documented pattern for refusing an action, so a completion gate can be enforced rather than advised. `event` exposes the runtime event bus. `opencode run` makes live evaluation feasible and `--pure` provides a real baseline where Overgeared Skills is absent.
 
 ## Known limitations
 
@@ -60,14 +60,14 @@ Tokens and cost are available from `opencode stats` and session export, not from
 
 `duration_ms` is unavailable for events that did not pass through the plugin. The trace schema forbids a negative duration, and the integrity check rejects an observed executed action with no measured duration.
 
-Traces default to `~/.local/state/gentjin/traces`, outside any Git-tracked repository. `GENTJIN_TRACE_DIR` overrides this and a test asserts that an override pointing inside the repository is detected as unsafe.
+Traces default to `~/.local/state/overgeared-skills/traces`, outside any Git-tracked repository. `OVERGEARED_SKILLS_TRACE_DIR` overrides this and a test asserts that an override pointing inside the repository is detected as unsafe.
 
 Contract tests validate schemas, rules, redaction, and graders. They do not demonstrate live agent performance, and the runner prints that distinction on every run.
 
 ## Data flow
 
 ```text
-OpenCode hooks -> gentjin-trace plugin -> TraceWriter -> redacted JSONL
+OpenCode hooks -> overgeared-skills-trace plugin -> TraceWriter -> redacted JSONL
                                         |
 task request -> Router -> skill selection (inferred)
                      |
@@ -84,7 +84,7 @@ task request -> Router -> skill selection (inferred)
 node --test "test/**/*.test.mjs"   # 79 unit and contract tests
 node evals/run.mjs                 # contract evaluation, deterministic
 node evals/run.mjs --mode live     # live runs, needs credentials, costs money
-node evals/run.mjs --baseline      # --pure comparison, GENTJIN disabled
+node evals/run.mjs --baseline      # --pure comparison, Overgeared Skills disabled
 node scripts/build-registry.mjs    # regenerate registry/skills.json
 ```
 

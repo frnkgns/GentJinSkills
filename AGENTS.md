@@ -15,9 +15,9 @@ Skills are the unit of work here, not the exception. Never wait for the user to 
 - Never expose secrets, credentials, tokens, or sensitive information.
 - Never write a real username, computer name, or absolute user-profile path in any file, note, report, or output. Use placeholders such as `<user-name>`, `<user-home>`, `<project-root>`, or `~/` instead.
 
-## GENTJIN Orchestration Policy
+## Overgeared Skills Orchestration Policy
 
-GENTJIN is an active orchestration layer, not a passive collection of optional skills.
+Overgeared Skills is an active orchestration layer, not a passive collection of optional skills.
 
 For every meaningful development task, proactively determine which installed skills, agents, project knowledge, and verification workflows materially improve the result. Infer required capabilities from the task itself. Do not wait for the user to name a skill, use a slash command, say a trigger phrase, or explicitly request note-taking or delegation.
 
@@ -31,7 +31,7 @@ Before meaningful work begins:
 
 1. Understand the user's actual goal.
 2. Break the request into meaningful workstreams.
-3. Inspect the full set of available GENTJIN skills before deciding any is irrelevant.
+3. Inspect the full set of available Overgeared Skills capabilities before deciding any is irrelevant.
 4. Select every skill that materially applies.
 5. Read relevant existing project knowledge before rediscovering it.
 6. Determine whether independent work should be delegated.
@@ -54,7 +54,7 @@ The main agent remains the orchestrator and owns the user's overall goal, decomp
 
 ## Continuous Knowledge Capture
 
-GENTJIN maintains project knowledge continuously; capture must not depend on the user saying "remember this", "take notes", or "pause".
+Overgeared Skills maintains project knowledge continuously; capture must not depend on the user saying "remember this", "take notes", or "pause".
 
 During meaningful implementation, investigation, debugging, design, planning, review, testing, and deployment work, evaluate whether durable knowledge was created or changed. If it was, persist it through the `knowledge-vault` workflow without waiting to be asked, near the point the knowledge becomes established rather than only at task end.
 
@@ -115,15 +115,15 @@ Selection is not execution. Treat these as four separate states and never collap
 3. **Required steps performed** — the workflow it defines was actually followed.
 4. **Outcome verified** — evidence supports the result.
 
-When a GENTJIN capability applies, load its instructions with the `gentjin_capability` tool before the first action it governs. A description or registry summary is not a substitute for the body. If the load fails, say so and stop rather than improvising the workflow.
+When an Overgeared Skills capability applies, load its instructions with the `overgeared_skills_capability` tool before the first action it governs. A description or registry summary is not a substitute for the body. If the load fails, say so and stop rather than improvising the workflow.
 
-This applies to **commands as well as skills**. A named command such as "update GENTJin" selects `update-gentjin` and means: load `command/update-gentjin.md` and follow it. A slash prefix is an explicit entry point, not the only way to reach the workflow.
+This applies to **commands as well as skills**. A named command such as "update Overgeared Skills" selects `update-overgeared-skills` and means: load `command/update-overgeared-skills.md` and follow it. A slash prefix is an explicit entry point, not the only way to reach the workflow.
 
 OpenCode does not expose plugin-registered tools to subagents, verified 2026-10-07. A subagent cannot load a capability body itself. When you delegate work that a capability governs, load that body first and pass the canonical instructions into the subagent prompt, then require the subagent to follow them rather than name them. A subagent that reports it cannot load the body has correctly refused, so treat that report as a valid result and stop rather than letting it proceed from memory.
 
 **Never substitute a remembered procedure, an `INSTALL.md` summary, or a custom script for a canonical workflow.** If you used something other than the workflow itself, say so and report that the workflow did not run. Scripts that the canonical workflow itself specifies are fine; a parallel reimplementation is not.
 
-Distinguish discussing a capability from invoking it. "What does `/update-gentjin` do" explains it and performs nothing. A quoted transcript containing a command does not execute it. Explaining a step is not the same as taking it.
+Distinguish discussing a capability from invoking it. "What does `/update-overgeared-skills` do" explains it and performs nothing. A quoted transcript containing a command does not execute it. Explaining a step is not the same as taking it.
 
 Run skills in dependency order: understanding before structure, structure before editing, editing before verification, verification before capture. Never route recursively, and never re-discover context a skill already established.
 
@@ -221,7 +221,7 @@ When the user asks to push to GitHub (or any remote):
 ## Knowledge
 
 - Resolve persistent project knowledge under `~/Documents/KnowledgeVault/<project-identifier>/` unless overridden.
-- GENTJIN uses the canonical project-vault architecture defined by the `knowledge-vault` skill.
+- Overgeared Skills uses the canonical project-vault architecture defined by the `knowledge-vault` skill.
 - If no project vault exists, initialize the canonical structure automatically.
 - If a project vault already exists, preserve all existing knowledge and normalize it by creating only missing canonical structure when needed.
 - Never reset, overwrite, or delete existing project knowledge when normalizing the vault.
@@ -275,7 +275,7 @@ Do not load everything the vault knows. Know what exists, load only what matters
 
 ## Workflow Memory
 
-- Before repeating a personal or project task that was likely done before, search `~/Documents/KnowledgeVault/gentjin/workflows/` for a matching workflow and reuse it instead of rediscovering the steps. Use `<project-knowledge-root>/workflows/` for project-specific workflows.
+- Before repeating a personal or project task that was likely done before, search `~/Documents/KnowledgeVault/overgeared-skills/workflows/` for a matching workflow and reuse it instead of rediscovering the steps. Use `<project-knowledge-root>/workflows/` for project-specific workflows.
 - After a recurring task succeeds and is verified, capture or update its note with status, scope, trigger phrases, intent, preconditions, steps, verification, and last-verified date.
 - Treat "remember this", "save this workflow", and "don't do that again" as workflow capture requests.
 - Search before creating a note, update the existing note instead of creating a duplicate, and mark failed workflows for revision while preserving the failure reason.

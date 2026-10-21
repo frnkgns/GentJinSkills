@@ -23,7 +23,7 @@ export default async (ctx) => {
 
       const note = await ctx?.client?.app?.log({
         body: {
-          service: "gentjin-guardrails",
+          service: "overgeared-skills-guardrails",
           level: "warn",
           message: `blocked ${verdict.rule}: ${command}`,
         },
@@ -33,7 +33,7 @@ export default async (ctx) => {
 
       throw new Error(
         [
-          `Blocked by GENTJIN git guardrails (${verdict.rule}).`,
+          `Blocked by Overgeared Skills git guardrails (${verdict.rule}).`,
           `Reason: ${verdict.reason}`,
           `Matched: ${verdict.allMatched.join(", ")}`,
           verdict.override,

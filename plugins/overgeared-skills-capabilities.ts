@@ -1,7 +1,7 @@
 /**
- * Makes GENTJIN capabilities loadable and enforceable at runtime.
+ * Makes Overgeared Skills capabilities loadable and enforceable at runtime.
  *
- * Registers `gentjin_capability`, which returns the complete canonical body of a skill or
+ * Registers `overgeared_skills_capability`, which returns the complete canonical body of a skill or
  * command; a `tool.execute.before` hook that refuses workflow-owned commands until those
  * instructions are loaded; and an `event` hook that checks adherence when the turn ends.
  *
@@ -40,7 +40,7 @@ interface PluginEvent {
 }
 
 function resolveOpenCodeRoot(): string {
-  if (process.env.GENTJIN_ROOT) return process.env.GENTJIN_ROOT
+  if (process.env.OVERGEARED_SKILLS_ROOT) return process.env.OVERGEARED_SKILLS_ROOT
   const here = dirname(fileURLToPath(import.meta.url))
   return resolve(here, "..")
 }
@@ -54,21 +54,21 @@ export default async (): Promise<Record<string, unknown>> => {
       const report = loader.completionReport()
       if (report.findings.length === 0) return
       try {
-        appendFileSync(join(tmpdir(), "gentjin-adherence.log"), `${JSON.stringify(report)}\n`)
+        appendFileSync(join(tmpdir(), "overgeared-skills-adherence.log"), `${JSON.stringify(report)}\n`)
       } catch {
         // A session-end finding must never break the session.
       }
     },
 
     tool: {
-      gentjin_capability: {
+      overgeared_skills_capability: {
         description:
-          "Load the complete canonical instructions for a GENTJIN skill or command before performing any action it governs. " +
-          "Use this whenever a GENTJIN workflow applies and you need its full body rather than its summary. " +
-          "Examples: id update-gentjin, install-gentjin, git-push, systematic-debugging. " +
+          "Load the complete canonical instructions for a skill or command before performing any action it governs. " +
+          "Use this whenever an Overgeared Skills workflow applies and you need its full body rather than its summary. " +
+          "Examples: id update-overgeared-skills, install-overgeared-skills, git-push, systematic-debugging. " +
           "Pass kind as command or skill when you know it.",
         args: {
-          id: { type: "string", description: "Capability id, for example update-gentjin or systematic-debugging" },
+          id: { type: "string", description: "Capability id, for example update-overgeared-skills or systematic-debugging" },
           kind: { type: "string", description: "Optional: command or skill" },
         },
         async execute(args: PluginInput): Promise<string> {
@@ -97,7 +97,7 @@ export default async (): Promise<Record<string, unknown>> => {
       throw new Error(
         [
           `Blocked: ${names} owns this action and ${possessive} instructions were not loaded in this session.`,
-          `Call the gentjin_capability tool with that id first, then follow those instructions.`,
+          `Call the overgeared_skills_capability tool with that id first, then follow those instructions.`,
           "Do not substitute a remembered procedure, a summary, or a custom script for the canonical workflow.",
         ].join("\n"),
       )

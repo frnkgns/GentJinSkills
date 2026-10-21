@@ -38,7 +38,7 @@ const BLOCKED = [
 
 function allowedKeys() {
   return new Set(
-    String(process.env.GENTJIN_ALLOW_GIT ?? "")
+    String(process.env.OVERGEARED_SKILLS_ALLOW_GIT ?? "")
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean),
@@ -65,7 +65,7 @@ export function evaluateGitCommand(command) {
     rule: matched.id,
     reason: matched.why,
     allMatched: hits.map((h) => h.id),
-    override: `Set GENTJIN_ALLOW_GIT=${matched.id} for this session only if you are certain.`,
+    override: `Set OVERGEARED_SKILLS_ALLOW_GIT=${matched.id} for this session only if you are certain.`,
   }
 }
 

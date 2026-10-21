@@ -11,7 +11,7 @@ import { nextEventId } from "../src/trace/ids.mjs"
 
 function baseRecord(evidenceRef = "pending-ref") {
   return makeTaskRecord({
-    projectId: "gentjin-test",
+    projectId: "overgeared-skills-test",
     request: "verify evidence",
     state: "completed",
     criteria: [{ id: "c1", description: "step ran", status: "pass", evidence: [evidenceRef] }],
@@ -20,7 +20,7 @@ function baseRecord(evidenceRef = "pending-ref") {
 }
 
 async function recordEvent(record, overrides = {}) {
-  const dir = mkdtempSync(join(tmpdir(), "gentjin-ev-"))
+  const dir = mkdtempSync(join(tmpdir(), "overgeared-skills-ev-"))
   const file = join(dir, "trace.jsonl")
   const writer = new TraceWriter({ taskId: record.task_id, projectId: record.project_id, file })
   const { event } = writer.append({

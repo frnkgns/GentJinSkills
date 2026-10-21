@@ -13,11 +13,11 @@ Support these branches under this command:
 
 Accept equivalent natural-language requests such as `/task vscode expeme`, `/task dev expeme`, "open expeme in VS Code", and "run dev in expeme". Handle all other goals with the general workflow below.
 
-Before executing a recurring or reusable task, use the knowledge-vault skill to search the current project vault and the global GENTJIN workflow store by intent, target, and expected outcome. Reuse a matching workflow only when its scope, preconditions, and verification still match the current environment; current source and permissions take precedence.
+Before executing a recurring or reusable task, use the knowledge-vault skill to search the current project vault and the global Overgeared Skills workflow store by intent, target, and expected outcome. Reuse a matching workflow only when its scope, preconditions, and verification still match the current environment; current source and permissions take precedence.
 
 Treat "remember this", "save this workflow", and "don't do that again" as requests to update workflow memory. After a new workflow succeeds, capture a concise note with trigger phrases, intent, preconditions, steps, verification, scope, and last-verified date. If the user says it did not work, mark the note for revision, preserve the failure reason, and update or replace it after verifying the new solution instead of creating duplicates.
 
-Never store full transcripts, credentials, secrets, one-off requests, or unverified guesses. Store cross-project workflows in the global GENTJIN workflow store and project-specific workflows in the current project vault.
+Never store full transcripts, credentials, secrets, one-off requests, or unverified guesses. Store cross-project workflows in the global Overgeared Skills workflow store and project-specific workflows in the current project vault.
 
 Plan the work and distinguish read-only, reversible, and side-effecting steps. Ask for confirmation before destructive or irreversible actions, external communications, credential or secret access, system-wide configuration changes, software installation, financial actions, or Git mutations unless the user explicitly authorized that exact action. Never treat a broad request as blanket authorization.
 

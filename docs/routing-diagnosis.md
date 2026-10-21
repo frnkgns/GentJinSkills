@@ -45,7 +45,7 @@ model's judgment at the moment it chose a shortcut. Runtime enforcement was requ
 
 Three defects were found only by testing against the running binary:
 
-1. `GENTJIN_ROOT` was unset, so registry construction threw inside the plugin factory and the
+1. `OVERGEARED_SKILLS_ROOT` was unset, so registry construction threw inside the plugin factory and the
    plugin failed to register anything, silently. The guard appeared configured but was absent.
 2. The guard matched on path alone, so a read-only `cat` of a manifest was blocked. Blocking
    reads trains the user to expect spurious refusals and teaches them to bypass.
@@ -67,7 +67,7 @@ Recorded plainly, because the guard is a workflow guard and not a security bound
 
 `registry/capabilities.json` gives every capability one canonical identity and kind.
 `src/capabilities/resolve.mjs` maps a request to exactly one of them, or explicitly to no
-action. `gentjin_capability` serves the real body. `tool.execute.before` refuses a governed
+action. `overgeared_skills_capability` serves the real body. `tool.execute.before` refuses a governed
 mutation until that body is loaded, naming the owning capability and how to load it. Four
 states remain distinct so that selecting a capability can never be reported as following it.
 

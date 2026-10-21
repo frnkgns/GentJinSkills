@@ -1,6 +1,6 @@
 ---
 name: knowledge-vault
-description: Manage persistent project knowledge in the user's Knowledge Vault, including project/vault discovery, note-first lookup, vault initialization and normalization, automatic knowledge capture, architecture and ADRs, patterns, bugs, enhancements, investigations, work-in-progress, sessions, reports, and migration. MUST be used when durable knowledge is established during a task, even when the user never asks for notes, and when the user says "remember this", "save this workflow", or "don't do that again". This is a core GENTJIN system, not an optional extra: prefer capturing a useful note over skipping one. Never store transcripts, secrets, or cheap-to-rediscover information.
+description: Manage persistent project knowledge in the user's Knowledge Vault, including project/vault discovery, note-first lookup, vault initialization and normalization, automatic knowledge capture, architecture and ADRs, patterns, bugs, enhancements, investigations, work-in-progress, sessions, reports, and migration. MUST be used when durable knowledge is established during a task, even when the user never asks for notes, and when the user says "remember this", "save this workflow", or "don't do that again". This is a core Overgeared Skills system, not an optional extra: prefer capturing a useful note over skipping one. Never store transcripts, secrets, or cheap-to-rediscover information.
 ---
 
 # Knowledge Vault
@@ -26,13 +26,13 @@ description: Manage persistent project knowledge in the user's Knowledge Vault, 
 
    unless `.project-agent.md` explicitly overrides it.
 
-5. Keep global GENTJIN configuration project-agnostic.
+5. Keep global Overgeared Skills configuration project-agnostic.
 
 ## Workflow Memory
 
-Use workflow memory for recurring commands, personal automation patterns, and repeatable computer tasks that are likely to be requested again. Keep cross-project workflows in the global GENTJIN workflow store and project-specific workflows in the current project vault.
+Use workflow memory for recurring commands, personal automation patterns, and repeatable computer tasks that are likely to be requested again. Keep cross-project workflows in the global Overgeared Skills workflow store and project-specific workflows in the current project vault.
 
-Use `~/Documents/KnowledgeVault/gentjin/workflows/` as the default global workflow store unless project metadata provides an explicit override. Use `<project-knowledge-root>/workflows/` for project-specific workflows.
+Use `~/Documents/KnowledgeVault/overgeared-skills/workflows/` as the default global workflow store unless project metadata provides an explicit override. Use `<project-knowledge-root>/workflows/` for project-specific workflows.
 
 Before acting on a recurring request:
 
@@ -58,13 +58,13 @@ If the user reports that a workflow did not work, do not mark it verified or cre
 
 ## Knowledge Vault Migration
 
-The legacy-to-canonical vault rename is an install-time concern, not a runtime one. It is owned by the `install-gentjin` and `update-gentjin` commands and by `INSTALL.md`. Do not perform a vault directory rename during ordinary work.
+The legacy-to-canonical vault rename is an install-time concern, not a runtime one. It is owned by the `install-overgeared-skills` and `update-overgeared-skills` commands and by `INSTALL.md`. Do not perform a vault directory rename during ordinary work.
 
 When you encounter an obviously legacy vault layout *inside* a project vault, normalize the internal structure per the mapping below. Never rename or move the vault directory itself as a side effect of ordinary knowledge work.
 
 ## Vault Initialization
 
-GENTJIN uses one canonical vault architecture.
+Overgeared Skills uses one canonical vault architecture.
 
 If the project vault does not exist, initialize the canonical structure automatically.
 
@@ -119,7 +119,7 @@ Do not create empty notes solely to populate directories.
 └── _templates/
 ```
 
-Use this architecture consistently across GENTJIN-managed project vaults.
+Use this architecture consistently across Overgeared Skills-managed project vaults.
 
 Do not create deeper directory structures unless the project's scale clearly requires them.
 

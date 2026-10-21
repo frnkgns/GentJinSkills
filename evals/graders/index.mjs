@@ -22,7 +22,7 @@ function record(overrides = {}) {
   return {
     schema_version: SCHEMA_VERSION,
     task_id: "task-0123456789ab",
-    project_id: "gentjin",
+    project_id: "overgeared-skills",
     parent_task_id: null,
     created_at: "2026-10-05T00:00:00.000Z",
     updated_at: "2026-10-05T00:01:00.000Z",

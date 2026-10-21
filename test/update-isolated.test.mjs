@@ -25,7 +25,7 @@ function listPayload(root, prefix, out = []) {
   return out
 }
 
-const SKIPPED_WHEN_COPYING = new Set(["node_modules", ".git", ".gentjin"])
+const SKIPPED_WHEN_COPYING = new Set(["node_modules", ".git", ".overgeared-skills"])
 
 function copyPayload(destination) {
   cpSync(repoRoot, destination, {
@@ -35,7 +35,7 @@ function copyPayload(destination) {
 }
 
 function buildIsolatedInstall() {
-  const base = mkdtempSync(join(tmpdir(), "gentjin-update-"))
+  const base = mkdtempSync(join(tmpdir(), "overgeared-skills-update-"))
   const root = join(base, "install")
   copyPayload(root)
 
@@ -59,11 +59,11 @@ function buildIsolatedInstall() {
   return { base, root, payloadRoot, manifest }
 }
 
-test("natural language selects update-gentjin with no slash prefix", () => {
+test("natural language selects update-overgeared-skills with no slash prefix", () => {
   const registry = buildCapabilityRegistry(repoRoot)
-  for (const request of ["Update GentJin", "please update gentjin", "update the genthin install"]) {
+  for (const request of ["Update Overgeared Skills", "please update overgeared-skills", "update the genthin install"]) {
     const decision = resolveCapability(registry, request)
-    assert.equal(decision.id, "update-gentjin", request)
+    assert.equal(decision.id, "update-overgeared-skills", request)
     assert.equal(decision.kind, "command", request)
   }
 })
@@ -72,13 +72,13 @@ test("the canonical body loads from the isolated install before any file is touc
   const { base, root } = buildIsolatedInstall()
   try {
     const loader = createLoader({ opencodeRoot: root, repoRoot: root })
-    const result = loader.load("update-gentjin", "command")
+    const result = loader.load("update-overgeared-skills", "command")
 
     assert.equal(result.ok, true)
     assert.match(result.instructions, /manifest\.json/)
     assert.match(result.instructions, /locally modified/)
     assert.match(result.instructions, /version.json.{0,3} last/)
-    assert.equal(loader.isLoaded("update-gentjin"), true)
+    assert.equal(loader.isLoaded("update-overgeared-skills"), true)
   } finally {
     rmSync(base, { recursive: true, force: true })
   }
@@ -87,15 +87,15 @@ test("the canonical body loads from the isolated install before any file is touc
 test("a locally modified managed file becomes a conflict and is never silently replaced", () => {
   const { base, root, payloadRoot, manifest } = buildIsolatedInstall()
   try {
-    const edited = join(root, "command", "update-gentjin.md")
+    const edited = join(root, "command", "update-overgeared-skills.md")
     writeFileSync(edited, "---\ndescription: I edited this locally\n---\n\nmy own version\n")
 
     const plan = planReconcile({ root, payloadRoot, manifest })
 
-    const conflict = plan.conflicts.find((c) => c.path === "command/update-gentjin.md")
+    const conflict = plan.conflicts.find((c) => c.path === "command/update-overgeared-skills.md")
     assert.ok(conflict, "the locally edited file must be reported as a conflict")
     assert.equal(conflict.reason, "locally_modified")
-    assert.equal(plan.safe.some((s) => s.path === "command/update-gentjin.md"), false)
+    assert.equal(plan.safe.some((s) => s.path === "command/update-overgeared-skills.md"), false)
     assert.equal(readFileSync(edited, "utf8").includes("my own version"), true, "the local edit survives planning")
   } finally {
     rmSync(base, { recursive: true, force: true })
@@ -178,7 +178,7 @@ test("planning never writes to the installation", () => {
     const before = JSON.stringify(manifest.managedFiles)
     planReconcile({ root, payloadRoot, manifest })
     assert.equal(JSON.stringify(manifest.managedFiles), before)
-    assert.equal(existsSync(join(root, ".gentjin")), false, "planning must not create metadata")
+    assert.equal(existsSync(join(root, ".overgeared-skills")), false, "planning must not create metadata")
   } finally {
     rmSync(base, { recursive: true, force: true })
   }
@@ -186,15 +186,15 @@ test("planning never writes to the installation", () => {
 test("a local skill that collides with a command id is refused rather than guessed", () => {
   const { base, root } = buildIsolatedInstall()
   try {
-    mkdirSync(join(root, "skills", "update-gentjin"), { recursive: true })
-    writeFileSync(join(root, "skills", "update-gentjin", "SKILL.md"), "# name collision\n")
+    mkdirSync(join(root, "skills", "update-overgeared-skills"), { recursive: true })
+    writeFileSync(join(root, "skills", "update-overgeared-skills", "SKILL.md"), "# name collision\n")
 
     const loader = createLoader({ opencodeRoot: root, repoRoot: root })
-    const result = loader.load("update-gentjin", "command")
+    const result = loader.load("update-overgeared-skills", "command")
 
     assert.equal(result.ok, false)
     assert.match(result.reason, /is a skill, not a command/)
-    assert.equal(loader.isLoaded("update-gentjin"), false)
+    assert.equal(loader.isLoaded("update-overgeared-skills"), false)
   } finally {
     rmSync(base, { recursive: true, force: true })
   }

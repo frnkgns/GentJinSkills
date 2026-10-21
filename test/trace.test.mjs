@@ -20,7 +20,7 @@ const syntheticAwsKey = secretValue("aws_access_key")
 const syntheticPassword = "SYNTHETIC-password-not-real"
 
 async function withTempDir(fn) {
-  const dir = mkdtempSync(join(tmpdir(), "gentjin-trace-"))
+  const dir = mkdtempSync(join(tmpdir(), "overgeared-skills-trace-"))
   try {
     return await fn(dir)
   } finally {
@@ -33,7 +33,7 @@ function baseEvent(overrides = {}) {
     schema_version: 1,
     event_id: nextEventId(),
     task_id: "task-0123456789ab",
-    project_id: "gentjin",
+    project_id: "overgeared-skills",
     timestamp: new Date().toISOString(),
     phase: "act",
     event_type: "action.executed",
@@ -45,7 +45,7 @@ function baseEvent(overrides = {}) {
 }
 
 test("traces are stored outside Git-tracked project paths by default", () => {
-  const defaultDir = process.env.GENTJIN_TRACE_DIR
+  const defaultDir = process.env.OVERGEARED_SKILLS_TRACE_DIR
   assert.ok(
     defaultDir === undefined || defaultDir.startsWith(process.env.TEMP ?? tmpdir()),
     "default trace directory must not be inside the repository",
@@ -55,7 +55,7 @@ test("traces are stored outside Git-tracked project paths by default", () => {
 test("a valid event is accepted and written as one JSONL line", async () => {
   await withTempDir(async (dir) => {
     const file = join(dir, "nested", "trace.jsonl")
-    const writer = new TraceWriter({ taskId: "task-0123456789ab", projectId: "gentjin", file })
+    const writer = new TraceWriter({ taskId: "task-0123456789ab", projectId: "overgeared-skills", file })
     const result = writer.append(baseEvent({ tool: "read", outcome: "ok", duration_ms: 12 }))
     assert.equal(result.accepted, true)
     await writer.close()
@@ -69,7 +69,7 @@ test("a valid event is accepted and written as one JSONL line", async () => {
 test("an invalid event is rejected and counted, without corrupting the file", async () => {
   await withTempDir(async (dir) => {
     const file = join(dir, "trace.jsonl")
-    const writer = new TraceWriter({ taskId: "task-0123456789ab", projectId: "gentjin", file })
+    const writer = new TraceWriter({ taskId: "task-0123456789ab", projectId: "overgeared-skills", file })
 
     const bad = writer.append({ ...baseEvent(), duration_ms: -5 })
     assert.equal(bad.accepted, false)
@@ -92,7 +92,7 @@ test("an invalid event is rejected and counted, without corrupting the file", as
 test("a logging failure is reported as an incomplete trace, never silent", async () => {
   await withTempDir(async (dir) => {
     const file = join(dir, "trace.jsonl")
-    const writer = new TraceWriter({ taskId: "task-0123456789ab", projectId: "gentjin", file })
+    const writer = new TraceWriter({ taskId: "task-0123456789ab", projectId: "overgeared-skills", file })
     writer.append(baseEvent())
     const report = writer.coverageReport()
     assert.equal(report.incomplete, false)
@@ -105,7 +105,7 @@ test("payload secrets are redacted and truncation is recorded", async () => {
     const file = join(dir, "trace.jsonl")
     const writer = new TraceWriter({
       taskId: "task-0123456789ab",
-      projectId: "gentjin",
+      projectId: "overgeared-skills",
       file,
       maxPayloadLength: 200,
     })
@@ -160,7 +160,7 @@ test("coverage report names every expected hook and flags unobserved ones", asyn
   await withTempDir(async (dir) => {
     const writer = new TraceWriter({
       taskId: "task-0123456789ab",
-      projectId: "gentjin",
+      projectId: "overgeared-skills",
       file: join(dir, "trace.jsonl"),
     })
     const span = writer.onToolExecuteBefore({ tool: "bash" }, { args: { command: "npm test" } })
@@ -181,7 +181,7 @@ test("a command without an observed exit code is reported as a missing field", a
   await withTempDir(async (dir) => {
     const writer = new TraceWriter({
       taskId: "task-0123456789ab",
-      projectId: "gentjin",
+      projectId: "overgeared-skills",
       file: join(dir, "trace.jsonl"),
     })
     const span = writer.onToolExecuteBefore({ tool: "bash" }, { args: {} })
@@ -196,7 +196,7 @@ test("a command without an observed exit code is reported as a missing field", a
 test("a failing tool call is recorded with an error category and real exit code", async () => {
   await withTempDir(async (dir) => {
     const file = join(dir, "trace.jsonl")
-    const writer = new TraceWriter({ taskId: "task-0123456789ab", projectId: "gentjin", file })
+    const writer = new TraceWriter({ taskId: "task-0123456789ab", projectId: "overgeared-skills", file })
     const span = writer.onToolExecuteBefore({ tool: "bash" }, { args: { command: "npm test" } })
     writer.onToolExecuteAfter({ tool: "bash" }, { exitCode: 1, error: "ENOENT no such file" }, span)
     await writer.close()
@@ -246,13 +246,13 @@ test("an asserted event is distinguishable from an observed one", () => {
 })
 
 test("readTrace returns an empty list for a missing file", () => {
-  assert.deepEqual(readTrace(join(tmpdir(), "gentjin-does-not-exist-12345.jsonl")), [])
+  assert.deepEqual(readTrace(join(tmpdir(), "overgeared-skills-does-not-exist-12345.jsonl")), [])
 })
 
 test("a trace containing a secret never leaks it to disk in plaintext", async () => {
   await withTempDir(async (dir) => {
     const file = join(dir, "trace.jsonl")
-    const writer = new TraceWriter({ taskId: "task-0123456789ab", projectId: "gentjin", file })
+    const writer = new TraceWriter({ taskId: "task-0123456789ab", projectId: "overgeared-skills", file })
     writer.append(
       baseEvent({
         tool: "bash",

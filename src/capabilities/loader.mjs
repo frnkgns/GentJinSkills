@@ -11,18 +11,18 @@ import {
 import { buildCapabilityRegistry } from "./registry.mjs"
 import { findCapability, findCapabilityOfKind } from "./resolve.mjs"
 
-export const PLUGIN_NAME = "gentjin-capabilities"
+export const PLUGIN_NAME = "overgeared-skills-capabilities"
 
 function currentRevision(opencodeRoot) {
   try {
-    return readFileSync(join(opencodeRoot, ".gentjin", "version.json"), "utf8").trim()
+    return readFileSync(join(opencodeRoot, ".overgeared-skills", "version.json"), "utf8").trim()
   } catch {
     return null
   }
 }
 
 export function createLoader(options = {}) {
-  const opencodeRoot = options.opencodeRoot ?? process.env.GENTJIN_ROOT
+  const opencodeRoot = options.opencodeRoot ?? process.env.OVERGEARED_SKILLS_ROOT
   const registry = options.registry ?? buildCapabilityRegistry(options.repoRoot ?? opencodeRoot)
   const state = createSessionState()
   const loaded = new Map()
@@ -120,7 +120,7 @@ export function createLoader(options = {}) {
       if (!loaded.has(id)) {
         throw new Error(
           `"${id}" owns this action but its instructions were not loaded in this session. ` +
-            `Call the gentjin_capability tool with id "${id}" first, then follow those instructions.`,
+            `Call the overgeared_skills_capability tool with id "${id}" first, then follow those instructions.`,
         )
       }
       return loaded.get(id)

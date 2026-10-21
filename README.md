@@ -1,12 +1,12 @@
 <div align="center">
 
-# GENTJIN
+# Overgeared Skills
 
 ### A modular development system for [OpenCode](https://opencode.ai/docs/)
 
 **Less prompt noise. More deliberate engineering.**
 
-GENTJIN gives OpenCode a focused operating system for planning, building,
+Overgeared Skills gives OpenCode a focused operating system for planning, building,
 reviewing, and learning from real software work.
 
 [Explore the workflow](#workflow-at-a-glance) · [Browse the skills](#skills)
@@ -23,12 +23,12 @@ forgotten cleanup step, or a review that only happens when someone remembers.
 That approach creates noise. Important rules compete with one another, context
 gets lost between sessions, and the final review becomes an afterthought.
 
-## The GENTJIN approach
+## The Overgeared Skills approach
 
-GENTJIN keeps the always-loaded rules small and moves specialized workflows
+Overgeared Skills keeps the always-loaded rules small and moves specialized workflows
 into focused skills that are activated when they are relevant.
 
-| Everyday problem | GENTJIN response |
+| Everyday problem | Overgeared Skills response |
 | --- | --- |
 | One oversized instruction file | Modular skills with clear triggers |
 | Skills that only run when remembered | Semantic capability selection, not keyword matching |
@@ -43,7 +43,7 @@ into focused skills that are activated when they are relevant.
 
 ## Orchestration
 
-GENTJIN behaves as an orchestration layer rather than a folder of optional
+Overgeared Skills behaves as an orchestration layer rather than a folder of optional
 instructions. For meaningful work it:
 
 - inspects and learns an existing project before changing it, so new code
@@ -72,7 +72,7 @@ override, not the only way the workflow runs.
 
 ## Project memory
 
-GENTJIN keeps a small, durable understanding of each project so a later session
+Overgeared Skills keeps a small, durable understanding of each project so a later session
 does not rediscover what an earlier one already learned. Each project vault gets
 a `project/` area:
 
@@ -108,7 +108,7 @@ not a conversation log, and not a reason to scan the whole project each time.
 
 ## Continuity memory
 
-Context is temporary; the vault is durable. GENTJIN keeps enough state to answer
+Context is temporary; the vault is durable. Overgeared Skills keeps enough state to answer
 ordinary questions about previous work without relying on the conversation:
 
 ```text
@@ -174,7 +174,7 @@ situation is marked `STALE`, `CONTRADICTED`, `AMBIGUOUS`, `UNVERIFIED`, or
 `HISTORICAL`, and the note is corrected. Two canonical notes never end up
 contradicting each other.
 
-"GentJin should become better at remembering without becoming heavier to use."
+"Overgeared Skills should become better at remembering without becoming heavier to use."
 
 ## Workflow at a glance
 
@@ -207,40 +207,40 @@ contradicting each other.
 ```
 
 `/project-review` is the optional deeper audit of an entire codebase, not
-something expected on every feature. GENTJIN supports the full development loop
+something expected on every feature. Overgeared Skills supports the full development loop
 without forcing every workflow into every conversation.
 
 ## Quick start
 
-Clone the repository, open it in OpenCode, and let the agent install GENTJIN
+Clone the repository, open it in OpenCode, and let the agent install Overgeared Skills
 for you:
 
 ```bash
-git clone https://github.com/frnkgns/GentJin.git
-cd GentJin
+git clone https://github.com/frnkgns/Overgeared-Skills.git overgeared-skills
+cd overgeared-skills
 opencode
 ```
 
 Then enter this command in OpenCode:
 
 ```text
-Install GENTJIN by following INSTALL.md
+Install Overgeared Skills by following INSTALL.md
 ```
 
-GENTJIN installs directly into OpenCode's existing runtime directories:
+Overgeared Skills installs directly into OpenCode's existing runtime directories:
 
 - `<user-home>/.config/opencode/AGENTS.md`
 - `<user-home>/.config/opencode/command/`
 - `<user-home>/.config/opencode/skills/`
 
-GENTJIN keeps only lightweight installation metadata under:
+Overgeared Skills keeps only lightweight installation metadata under:
 
 ```text
-<user-home>/.config/opencode/.gentjin/
+<user-home>/.config/opencode/.overgeared-skills/
 ```
 
 ```text
-No duplicate GENTJIN source tree is retained after installation.
+No duplicate Overgeared Skills source tree is retained after installation.
 ```
 
 OpenCode detects your operating system and configuration paths, installs the
@@ -257,14 +257,14 @@ For path detection, conflict handling, updates, and troubleshooting, see
 The cloned repository is not required after a successful installation and can be
 deleted.
 
-Run `/update-gentjin` for normal updates. It uses `<user-home>/.config/opencode/.gentjin/manifest.json` to refresh only GENTJIN-owned files, asks before replacing anything you modified yourself, removes stale GENTJIN-owned files the repository no longer contains, preserves your own skills and commands, retires an old `<user-home>/.config/opencode/GentJin/` folder if one is present, and re-checks the Knowledge Vault permission. It retrieves the current source from an existing clone when one is available, otherwise from a temporary checkout that it removes afterwards. No backup copies are kept.
+Run `/update-overgeared-skills` for normal updates. It uses `<user-home>/.config/opencode/.overgeared-skills/manifest.json` to refresh only Overgeared Skills-owned files, asks before replacing anything you modified yourself, removes stale Overgeared Skills-owned files the repository no longer contains, preserves your own skills and commands, retires an old `<user-home>/.config/opencode/GentJin/` folder if one is present, and re-checks the Knowledge Vault permission. It retrieves the current source from an existing clone when one is available, otherwise from a temporary checkout that it removes afterwards. No backup copies are kept.
 
 ## Commands
 
 | Command | Use it when you want to... |
 | --- | --- |
-| `/install-gentjin` | Install GENTJIN into your global OpenCode configuration. |
-| `/update-gentjin` | Update the installed GENTJIN copy from a newer repository state. |
+| `/install-overgeared-skills` | Install Overgeared Skills into your global OpenCode configuration. |
+| `/update-overgeared-skills` | Update the installed Overgeared Skills copy from a newer repository state. |
 | `/learn-skills` | Load the full text of every installed skill into context for routing questions and corpus audits. |
 | `/setup-git-guardrails` | Install, verify, or remove the guardrail that blocks destructive git commands. Never installed automatically. |
 | `/cleanup` | Finish current work with QA, cleanup, and a final report. |
@@ -283,7 +283,7 @@ workflows.
 
 ## Skills
 
-Each skill is a focused playbook. GENTJIN loads the relevant guidance instead
+Each skill is a focused playbook. Overgeared Skills loads the relevant guidance instead
 of asking the agent to remember every rule at once.
 
 | Skill | Focus |
@@ -369,11 +369,11 @@ stays in the change audit, not in the PR body.
 
 ## Safe by default
 
-GENTJIN is designed to make the cautious path the easy path:
+Overgeared Skills is designed to make the cautious path the easy path:
 
 - Database access is read-only unless write access is explicitly authorized.
 - Commits, pushes, merges, and history changes require an explicit request.
-- Global OpenCode configuration is additive: GENTJIN adds only its required
+- Global OpenCode configuration is additive: Overgeared Skills adds only its required
   Knowledge Vault permission and never removes existing entries.
 - The legacy `Documents/ObsidianVault` folder is renamed to
   `Documents/KnowledgeVault` only with explicit approval, and Obsidian's saved
@@ -394,7 +394,7 @@ GENTJIN is designed to make the cautious path the easy path:
 │   ├── cleanup.md
 │   ├── deployment-check.md
 │   ├── git-push.md
-│   ├── install-gentjin.md
+│   ├── install-overgeared-skills.md
 │   ├── learn-skills.md
 │   ├── pause.md
 │   ├── project-review.md
@@ -403,7 +403,7 @@ GENTJIN is designed to make the cautious path the easy path:
 │   ├── setup-git-guardrails.md
 │   ├── status.md
 │   ├── task.md
-│   └── update-gentjin.md
+│   └── update-overgeared-skills.md
 ├── skills/                   Focused, trigger-based workflows
 │   ├── api-design/
 │   ├── architecture-review/
@@ -444,8 +444,8 @@ GENTJIN is designed to make the cautious path the easy path:
 │   ├── trace/plugin-support.mjs
 │   └── guardrails/git-guardrails.mjs
 ├── registry/skills.json       Generated skill and capability registry
-├── plugins/gentjin-trace.js  Trace plugin using real OpenCode hooks
-│   ├── gentjin-capabilities.ts  Capability loader + guarded-action block
+├── plugins/overgeared-skills-trace.js  Trace plugin using real OpenCode hooks
+│   ├── overgeared-skills-capabilities.ts  Capability loader + guarded-action block
 ├── src/capabilities/         Registry, resolution, loader, adherence state
 ├── registry/capabilities.json  Unified skill + command catalog
 ├── scripts/build-registry.mjs

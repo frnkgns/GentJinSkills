@@ -1,25 +1,25 @@
-TODO — Make GentJin load and follow skills and commands automatically
+TODO — Make Overgeared Skills load and follow skills and commands automatically
 Goal and user requirement
 Users should be able to speak naturally:
 
-- "Update GentJin."
+- "Update Overgeared Skills."
 - "Investigate why this table is empty."
 - "Review my changes."
 - "Save our progress; continue later."
-  OpenCode must select the appropriate existing GentJin capability, load its complete current instructions, and follow the required workflow without requiring slash syntax.
+  OpenCode must select the appropriate existing Overgeared Skills capability, load its complete current instructions, and follow the required workflow without requiring slash syntax.
   A slash command is an explicit entry point, not the only way to reach the workflow.
-  Fix this across skills AND commands. Do not only add an update-gentjin reminder or another Vault note. Do not claim a prompt-only reminder guarantees compliance.
-  This task authorizes improvements to GentJin source and isolated verification. It does not authorize publishing, pushing, updating a live global installation, spending money on model evaluations, or overwriting user files.
+  Fix this across skills AND commands. Do not only add an update-overgeared-skills reminder or another Vault note. Do not claim a prompt-only reminder guarantees compliance.
+  This task authorizes improvements to Overgeared Skills source and isolated verification. It does not authorize publishing, pushing, updating a live global installation, spending money on model evaluations, or overwriting user files.
   Incident to address
-  The user said "update GentJin." OpenCode used a previously written sync script without loading command/update-gentjin.md. According to the supplied conversation, it skipped conflict handling and preservation checks, and previously left version.json out of sync with manifest.json. It later described the installation as correct despite not having followed all required checks.
+  The user said "update Overgeared Skills." OpenCode used a previously written sync script without loading command/update-overgeared-skills.md. According to the supplied conversation, it skipped conflict handling and preservation checks, and previously left version.json out of sync with manifest.json. It later described the installation as correct despite not having followed all required checks.
   Other skills reportedly run only when explicitly invoked with slash syntax.
   These are user-reported runtime observations. The source review below does not independently verify the user's local installation.
   Source baseline inspected
-  Repository: https://github.com/frnkgns/GentJin
+  Repository: https://github.com/frnkgns/Overgeared-Skills
   Latest fetched default-branch revision begins d2c01bf.
   Relevant existing components:
 - AGENTS.md already says skills are the unit of work and slash commands are not a prerequisite.
-- command/update-gentjin.md owns update sequencing, managed-file/conflict handling, stale-file cleanup, metadata, and activation verification.
+- command/update-overgeared-skills.md owns update sequencing, managed-file/conflict handling, stale-file cleanup, metadata, and activation verification.
 - src/routing/route.mjs currently uses phrase rules and an explicit override; its returned selection alone does not prove instructions were loaded.
 - Its current routes include command-like changes-review inside a skills result, so command/skill identity must be checked.
 - src/task/completion-gate.mjs already validates evidence and rejects unsupported completion claims.
@@ -54,7 +54,7 @@ Users should be able to speak naturally:
 - [x] Keep narrow triggers and exclusions; distinguish running a workflow from discussing, quoting, or asking about it.
 - [x] Resolve exact named commands before generic task routing.
 - [x] Recognize natural-language equivalents without requiring exact spelling, capitalization, or a slash.
-- [x] Use context to distinguish "update GentJin" from "update my application's dependencies" or "edit GentJin's README."
+- [x] Use context to distinguish "update Overgeared Skills" from "update my application's dependencies" or "edit Overgeared Skills's README."
 - [x] Ask only when ambiguity materially changes the target, scope, cost, or permission.
 - [x] Support multiple relevant capabilities in dependency order when a task genuinely needs them.
 - [x] Reassess capability requirements after meaningful discoveries, failures, and scope changes.
@@ -117,7 +117,7 @@ Users should be able to speak naturally:
 
      STATUS: IMPLEMENTED + VERIFIED LIVE
 
-     EVIDENCE: plugins/gentjin-capabilities.ts registers an `event` hook. On session.idle it calls loader.completionReport() and appends findings to gentjin-adherence.log. Verified live: a session that loaded install-gentjin and ended produced a real finding that its required steps were never recorded as performed. Covered by test/routing-live.test.mjs runtime completion cases.
+     EVIDENCE: plugins/overgeared-skills-capabilities.ts registers an `event` hook. On session.idle it calls loader.completionReport() and appends findings to overgeared-skills-adherence.log. Verified live: a session that loaded install-overgeared-skills and ended produced a real finding that its required steps were never recorded as performed. Covered by test/routing-live.test.mjs runtime completion cases.
 
      STATUS: NOT IMPLEMENTED - BLOCKED
 
@@ -126,7 +126,7 @@ Users should be able to speak naturally:
 
      STATUS: IMPLEMENTED + VERIFIED LIVE
 
-     EVIDENCE: A governed mutation was blocked mid-session by tool.execute.before; the error named both owning capabilities and the model then called gentjin_capability.
+     EVIDENCE: A governed mutation was blocked mid-session by tool.execute.before; the error named both owning capabilities and the model then called overgeared_skills_capability.
    - [x] Avoid blanket blocking of unrelated shell operations or relying on brittle command-string matching as proof of safety.
 
      STATUS: IMPLEMENTED FOR THE TESTED SET, WITH THREE DOCUMENTED EVASIONS
@@ -159,7 +159,7 @@ Users should be able to speak naturally:
      STATUS: NOT IMPLEMENTED
 
      NOTE: No reconciliation marker exists. grep for reconcil across src/ and plugins/ returns only an unrelated registry precondition string.
-         For update-gentjin specifically:
+         For update-overgeared-skills specifically:
 
 - Verify ownership and locally modified/unclaimed-file handling.
 - Reconcile stale owned files without deleting unclaimed user content.
@@ -179,10 +179,10 @@ Users should be able to speak naturally:
       Use the existing test/evaluation framework. Add negative controls. Do not make a phrase-matching unit test stand in for a live model evaluation.
       Required no-slash scenarios:
       Request Expected behavior
-      Update GentJin Load update-gentjin and follow update rules
-      Please refresh my GentJin installation Same workflow
+      Update Overgeared Skills Load update-overgeared-skills and follow update rules
+      Please refresh my Overgeared Skills installation Same workflow
       update the genthin, meaning the installed skill suite Resolve contextual typo to update workflow
-      Install GentJin Load install-gentjin; preserve installation safeguards
+      Install Overgeared Skills Load install-overgeared-skills; preserve installation safeguards
       Investigate why data is returned but no table rows appear Load systematic-debugging and investigate evidence
       Review my changes Load changes-review and its governing skills; preserve read-only scope
       Review the whole project Load project-review; preserve its confirmation and scope
@@ -194,10 +194,10 @@ Users should be able to speak naturally:
 
 Exclusions:
 
-- "What does /update-gentjin do?" explains it without updating.
-- "Do not update GentJin; explain the steps" performs no update.
+- "What does /update-overgeared-skills do?" explains it without updating.
+- "Do not update Overgeared Skills; explain the steps" performs no update.
 - A quoted transcript containing a command does not execute it.
-- "Update this dependency" does not update the GentJin installation.
+- "Update this dependency" does not update the Overgeared Skills installation.
 - "Review only; do not edit" makes no application edits.
 - Routine prose or a simple unrelated question does not trigger the entire suite.
   Additional negative controls:
@@ -216,7 +216,7 @@ Exclusions:
   EVIDENCE: Parent loaded skills/systematic-debugging/SKILL.md (8666 bytes) and passed it verbatim. The subagent returned per-phase evidence for all six phases, confirmed the root cause with a tagged [DEBUG-c7a1] probe, used git history, and produced a mutation-proven regression test (0/4 pass with the fix reverted, 4/4 pass with it). Plugin tools are not exposed to subagents, so the parent must load and pass.
   Verified 2026-10-07: NOT SUPPORTED. OpenCode does not expose plugin-registered tools to subagents.
   A subagent given "push my changes" correctly identified that git-workflow governs it, then
-  reported that gentjin_capability was unavailable and refused to quote an unverified body.
+  reported that overgeared_skills_capability was unavailable and refused to quote an unverified body.
   The instruction reaches the subagent; the loading tool does not. The parent must load the
   canonical body and pass it into the subagent prompt.
 - [x] Existing Git, tracing, scope, reporting, and installation regressions remain passing.

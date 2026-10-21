@@ -2,7 +2,7 @@ import test, { after } from "node:test"
 import assert from "node:assert/strict"
 import { join, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
-import tracePlugin from "../plugins/gentjin-trace.js"
+import tracePlugin from "../plugins/overgeared-skills-trace.js"
 import { createTracePlugin } from "../src/trace/plugin-body.mjs"
 import { pluginManifest, traceDirIsOutsideRepo, PLUGIN_NAME } from "../src/trace/plugin-support.mjs"
 import { readTrace, assertTraceIntegrity } from "../src/trace/writer.mjs"
@@ -12,7 +12,7 @@ import { rmSync } from "node:fs"
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..")
 const traceDir = join(repoRoot, ".tmp-trace-test")
 
-process.env.GENTJIN_TRACE_DIR = traceDir
+process.env.OVERGEARED_SKILLS_TRACE_DIR = traceDir
 
 after(() => {
   rmSync(traceDir, { recursive: true, force: true })
@@ -23,12 +23,12 @@ test("the plugin default export is an inline arrow, which is what OpenCode invok
 })
 
 test("the plugin module exports nothing else, because extra exports suppress invocation", async () => {
-  const mod = await import("../plugins/gentjin-trace.js")
+  const mod = await import("../plugins/overgeared-skills-trace.js")
   assert.deepEqual(Object.keys(mod), ["default"])
 })
 
 test("plugin exposes exactly the hooks the trace format depends on", async () => {
-  const hooks = Object.keys(await createTracePlugin({ project: { id: "gentjin" } }))
+  const hooks = Object.keys(await createTracePlugin({ project: { id: "overgeared-skills" } }))
   for (const required of ["tool.execute.before", "tool.execute.after", "event", "chat.message", "permission.ask"]) {
     assert.ok(hooks.includes(required), `missing hook: ${required}`)
   }
@@ -42,30 +42,30 @@ test("plugin manifest names its install location and required hooks", () => {
 })
 
 test("the default trace directory lives outside the repository", () => {
-  const saved = process.env.GENTJIN_TRACE_DIR
-  delete process.env.GENTJIN_TRACE_DIR
+  const saved = process.env.OVERGEARED_SKILLS_TRACE_DIR
+  delete process.env.OVERGEARED_SKILLS_TRACE_DIR
   try {
     assert.equal(traceDirIsOutsideRepo(repoRoot), true)
   } finally {
-    if (saved !== undefined) process.env.GENTJIN_TRACE_DIR = saved
+    if (saved !== undefined) process.env.OVERGEARED_SKILLS_TRACE_DIR = saved
   }
 })
 
 test("an overridden trace directory inside the repo is detected as unsafe", () => {
-  const saved = process.env.GENTJIN_TRACE_DIR
-  process.env.GENTJIN_TRACE_DIR = join(repoRoot, "traces")
+  const saved = process.env.OVERGEARED_SKILLS_TRACE_DIR
+  process.env.OVERGEARED_SKILLS_TRACE_DIR = join(repoRoot, "traces")
   try {
     assert.equal(traceDirIsOutsideRepo(repoRoot), false)
   } finally {
-    if (saved === undefined) delete process.env.GENTJIN_TRACE_DIR
-    else process.env.GENTJIN_TRACE_DIR = saved
+    if (saved === undefined) delete process.env.OVERGEARED_SKILLS_TRACE_DIR
+    else process.env.OVERGEARED_SKILLS_TRACE_DIR = saved
   }
 })
 
 test("a live plugin run produces a schema-valid, correlated trace", async () => {
   const dir = traceDir
   const plugin = await createTracePlugin({
-    project: { id: "gentjin" },
+    project: { id: "overgeared-skills" },
     client: { app: { log: async () => {} } },
   })
 
@@ -101,7 +101,7 @@ test("a live plugin run produces a schema-valid, correlated trace", async () => 
 
 test("a failing tool call through the plugin is recorded as an error", async () => {
   const dir = traceDir
-  const plugin = await createTracePlugin({ project: { id: "gentjin" } })
+  const plugin = await createTracePlugin({ project: { id: "overgeared-skills" } })
   await plugin["tool.execute.before"]({ tool: "bash" }, { args: { command: "npm run missing" } })
   await plugin["tool.execute.after"]({ tool: "bash" }, { exitCode: 127, error: "command not found" })
   await new Promise((resolve) => setTimeout(resolve, 200))
@@ -117,7 +117,7 @@ test("a failing tool call through the plugin is recorded as an error", async () 
 })
 
 test("plugin degrades safely when the trace writer cannot load", async () => {
-  const plugin = await createTracePlugin({ project: { id: "gentjin" } })
+  const plugin = await createTracePlugin({ project: { id: "overgeared-skills" } })
   const result = await plugin["tool.execute.after"]({ tool: "bash" }, { exitCode: 0 })
   assert.equal(result, undefined, "a trace failure must not throw into the session")
 })

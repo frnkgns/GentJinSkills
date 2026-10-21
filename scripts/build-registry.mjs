@@ -66,7 +66,7 @@ export const CAPABILITY_CONTRACTS = {
 }
 
 export const FORBIDDEN_CAPABILITIES = [
-  { capability: "external write", reason: "Not part of any GENTJIN contract. Requires separate authorization." },
+  { capability: "external write", reason: "Not part of any Overgeared Skills contract. Requires separate authorization." },
   { capability: "destructive filesystem operation", reason: "Never authorized by a skill selection." },
   { capability: "database mutation", reason: "Read-only by default. Requires explicit authorization." },
   { capability: "git push or history rewrite", reason: "Requires explicit user request." },

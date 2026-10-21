@@ -128,24 +128,27 @@
       "waivable_steps": []
     },
     {
-      "id": "install-gentjin",
+      "id": "install-overgeared-skills",
       "kind": "command",
-      "path": "command/install-gentjin.md",
-      "description": "Install GENTJIN directly into OpenCode's native runtime directories, with metadata-only tracking, guarded vault migration, and verification.",
+      "path": "command/install-overgeared-skills.md",
+      "description": "Install Overgeared Skills directly into OpenCode's native runtime directories, with metadata-only tracking, guarded vault migration, and verification.",
       "intent": [
-        "install gentjin",
-        "set up gentjin",
-        "first time install gentjin"
+        "install overgeared-skills",
+        "install overgeared skills",
+        "set up overgeared-skills",
+        "set up overgeared skills",
+        "first time install overgeared-skills",
+        "first time install overgeared skills"
       ],
       "aliases": [
-        "/install-gentjin"
+        "/install-overgeared-skills"
       ],
       "prerequisites": [],
       "scope": "mutating_workflow",
       "grants_code_change_authority": true,
       "review_only": false,
       "guarded": true,
-      "guarded_reason": "mutates the installed GENTJIN payload and metadata",
+      "guarded_reason": "mutates the installed Overgeared Skills payload and metadata",
       "required_preconditions": [
         "source resolved",
         "payload installed",
@@ -166,7 +169,7 @@
       "id": "learn-skills",
       "kind": "command",
       "path": "command/learn-skills.md",
-      "description": "Load the full text of every installed GENTJIN skill into the current context so routing, skill boundaries, and skill contents are known rather than inferred from descriptions. Use when the user asks to learn the skills, load all skills, read all skills, explain what each skill does, or check for gaps or overlap between skills.",
+      "description": "Load the full text of every installed skill into the current context so routing, skill boundaries, and skill contents are known rather than inferred from descriptions. Use when the user asks to learn the skills, load all skills, read all skills, explain what each skill does, or check for gaps or overlap between skills.",
       "intent": [
         "learn the skills",
         "load all skills",
@@ -305,7 +308,7 @@
       "id": "setup-git-guardrails",
       "kind": "command",
       "path": "command/setup-git-guardrails.md",
-      "description": "Install, verify, or remove the GENTJIN git guardrail that blocks destructive git commands through the OpenCode tool.execute.before hook. Use when the user asks to add git safety guardrails, block dangerous git commands, verify the guardrail is active, or remove it.",
+      "description": "Install, verify, or remove the Overgeared Skills git guardrail that blocks destructive git commands through the OpenCode tool.execute.before hook. Use when the user asks to add git safety guardrails, block dangerous git commands, verify the guardrail is active, or remove it.",
       "intent": [
         "add git guardrails",
         "block dangerous git commands",
@@ -381,28 +384,34 @@
       "waivable_steps": []
     },
     {
-      "id": "update-gentjin",
+      "id": "update-overgeared-skills",
       "kind": "command",
-      "path": "command/update-gentjin.md",
-      "description": "Update the GENTJIN installation from the current repository using the ownership manifest, retiring any legacy install, with prompts for unsafe files and verification.",
+      "path": "command/update-overgeared-skills.md",
+      "description": "Update the Overgeared Skills installation from the current repository using the ownership manifest, retiring any legacy install, with prompts for unsafe files and verification.",
       "intent": [
-        "update gentjin",
-        "update the gentjin",
-        "refresh my gentjin installation",
+        "update overgeared-skills",
+        "update overgeared skills",
+        "update the overgeared-skills",
+        "update the overgeared skills",
+        "refresh my overgeared-skills installation",
+        "refresh my overgeared skills installation",
         "update the genthin",
-        "upgrade gentjin",
-        "sync gentjin",
-        "bring gentjin up to date"
+        "upgrade overgeared-skills",
+        "upgrade overgeared skills",
+        "sync overgeared-skills",
+        "sync overgeared skills",
+        "bring overgeared-skills up to date",
+        "bring overgeared skills up to date"
       ],
       "aliases": [
-        "/update-gentjin"
+        "/update-overgeared-skills"
       ],
       "prerequisites": [],
       "scope": "mutating_workflow",
       "grants_code_change_authority": true,
       "review_only": false,
       "guarded": true,
-      "guarded_reason": "mutates the installed GENTJIN payload and metadata",
+      "guarded_reason": "mutates the installed Overgeared Skills payload and metadata",
       "required_preconditions": [
         "payload reconciled",
         "conflicts reviewed",
@@ -415,11 +424,11 @@
         "reporting"
       ],
       "exclusions": [
-        "explaining what \"/update-gentjin\" does is not an update",
-        "\"do not update gentjin, explain the steps\" performs no update",
+        "explaining what \"/update-overgeared-skills\" does is not an update",
+        "\"do not update overgeared-skills, explain the steps\" performs no update",
         "a quoted transcript containing the phrase does not trigger it",
-        "updating an application dependency is not a GentJin update",
-        "editing GentJin source documentation is not an installation update"
+        "updating an application dependency is not an Overgeared Skills update",
+        "editing Overgeared Skills source documentation is not an installation update"
       ],
       "waivable_steps": []
     },
@@ -755,7 +764,7 @@
       "id": "knowledge-vault",
       "kind": "skill",
       "path": "skills/knowledge-vault/SKILL.md",
-      "description": "Manage persistent project knowledge in the user's Knowledge Vault, including project/vault discovery, note-first lookup, vault initialization and normalization, automatic knowledge capture, architecture and ADRs, patterns, bugs, enhancements, investigations, work-in-progress, sessions, reports, and migration. MUST be used when durable knowledge is established during a task, even when the user never asks for notes, and when the user says \"remember this\", \"save this workflow\", or \"don't do that again\". This is a core GENTJIN system, not an optional extra: prefer capturing a useful note over skipping one. Never store transcripts, secrets, or cheap-to-rediscover information.",
+      "description": "Manage persistent project knowledge in the user's Knowledge Vault, including project/vault discovery, note-first lookup, vault initialization and normalization, automatic knowledge capture, architecture and ADRs, patterns, bugs, enhancements, investigations, work-in-progress, sessions, reports, and migration. MUST be used when durable knowledge is established during a task, even when the user never asks for notes, and when the user says \"remember this\", \"save this workflow\", or \"don't do that again\". This is a core Overgeared Skills system, not an optional extra: prefer capturing a useful note over skipping one. Never store transcripts, secrets, or cheap-to-rediscover information.",
       "intent": [
         "remember",
         "knowledge vault",
@@ -969,7 +978,7 @@
       "id": "skill-authoring",
       "kind": "skill",
       "path": "skills/skill-authoring/SKILL.md",
-      "description": "Author, extend, or retire a GENTJIN skill safely. Use when creating a new skill, changing an existing skill's triggers or scope, deciding whether a new skill is justified, or auditing skills for overlapping triggers, contradictory rules, broken references, or recursive delegation.",
+      "description": "Author, extend, or retire a skill safely. Use when creating a new skill, changing an existing skill's triggers or scope, deciding whether a new skill is justified, or auditing skills for overlapping triggers, contradictory rules, broken references, or recursive delegation.",
       "intent": [
         "new skill",
         "author a skill",
@@ -1062,7 +1071,7 @@
       "id": "work-in-progress",
       "kind": "skill",
       "path": "skills/work-in-progress/SKILL.md",
-      "description": "Preserve and resume unfinished development work. MUST be used when the user pauses, holds, stops for now, or asks to continue previous work, and at meaningful milestones during substantial unfinished work, even without an explicit request. Use when work spans sessions, is blocked, or meaningful implementation remains. This is a core GENTJIN system, not an optional extra: keep the active state current rather than reconstructing it later. Maintains WIP state, decisions, rejected approaches, blockers, testing status, files, and one clear next action.",
+      "description": "Preserve and resume unfinished development work. MUST be used when the user pauses, holds, stops for now, or asks to continue previous work, and at meaningful milestones during substantial unfinished work, even without an explicit request. Use when work spans sessions, is blocked, or meaningful implementation remains. This is a core Overgeared Skills system, not an optional extra: keep the active state current rather than reconstructing it later. Maintains WIP state, decisions, rejected approaches, blockers, testing status, files, and one clear next action.",
       "intent": [
         "pause",
         "stop for now",

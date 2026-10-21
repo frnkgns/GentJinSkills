@@ -33,7 +33,7 @@ function parseArgs(argv) {
 }
 
 const HELP = `
-GENTJIN evaluation runner
+Overgeared Skills evaluation runner
 
 Usage:
   node evals/run.mjs [--mode contract|live|both] [--scenario <id>] [--repeats N] [--baseline] [--json]
@@ -84,10 +84,10 @@ function checkCapabilityRouting() {
   const registry = buildCapabilityRegistry(process.cwd())
 
   const expects = [
-    ["Update GentJin", "command", "update-gentjin"],
-    ["Please refresh my GentJin installation", "command", "update-gentjin"],
-    ["update the genthin, meaning the installed skill suite", "command", "update-gentjin"],
-    ["Install GentJin", "command", "install-gentjin"],
+    ["Update Overgeared Skills", "command", "update-overgeared-skills"],
+    ["Please refresh my Overgeared Skills installation", "command", "update-overgeared-skills"],
+    ["update the genthin, meaning the installed skill suite", "command", "update-overgeared-skills"],
+    ["Install Overgeared Skills", "command", "install-overgeared-skills"],
     ["Investigate why this table is empty.", "skill", "systematic-debugging"],
     ["Review my changes", "command", "changes-review"],
     ["Review the whole project", "command", "project-review"],
@@ -99,11 +99,11 @@ function checkCapabilityRouting() {
   ]
 
   const exclusions = [
-    "What does /update-gentjin do?",
-    "Do not update GentJin; explain the steps",
-    'the transcript said "update gentjin" but that was only quoted',
+    "What does /update-overgeared-skills do?",
+    "Do not update Overgeared Skills; explain the steps",
+    'the transcript said "update overgeared-skills" but that was only quoted',
     "Update this dependency",
-    "Review the GentJin README",
+    "Review the Overgeared Skills README",
     "Review only; do not edit anything",
   ]
 
@@ -278,7 +278,7 @@ function validEvent(event_type) {
     schema_version: 1,
     event_id: `evt-${randomBytes(6).toString("hex")}`,
     task_id: "task-0123456789ab",
-    project_id: "gentjin",
+    project_id: "overgeared-skills",
     timestamp: "2026-10-05T00:00:00.000Z",
     phase: "act",
     event_type,
@@ -299,7 +299,7 @@ function readTraceFixture(kind) {
 }
 
 async function runLive(args, runId) {
-  const workspace = mkdtempSync(join(process.env.TEMP ?? repoRoot, `gentjin-live-${randomBytes(3).toString("hex")}-`))
+  const workspace = mkdtempSync(join(process.env.TEMP ?? repoRoot, `overgeared-skills-live-${randomBytes(3).toString("hex")}-`))
   const results = []
 
   try {
@@ -318,7 +318,7 @@ async function runLive(args, runId) {
       const outcome = await new Promise((resolve) => {
         const child = spawn("opencode", argsList, {
           cwd: workspace,
-          env: { ...process.env, GENTJIN_TRACE_DIR: join(workspace, "traces"), GENTJIN_SCENARIO_ID: scenario.id },
+          env: { ...process.env, OVERGEARED_SKILLS_TRACE_DIR: join(workspace, "traces"), OVERGEARED_SKILLS_SCENARIO_ID: scenario.id },
           shell: true,
         })
         let stdout = ""
@@ -390,8 +390,8 @@ async function main() {
   const runId = `run-${new Date().toISOString().replace(/[:.]/g, "-")}`
   const started = Date.now()
 
-  console.log(`GENTJIN evaluation — ${runId}`)
-  console.log(`mode: ${args.mode}${args.baseline ? " (baseline: --pure, GENTJIN disabled)" : ""}`)
+  console.log(`Overgeared Skills evaluation — ${runId}`)
+  console.log(`mode: ${args.mode}${args.baseline ? " (baseline: --pure, Overgeared Skills disabled)" : ""}`)
   console.log("")
 
   const guards = await runContractGuards(runId)

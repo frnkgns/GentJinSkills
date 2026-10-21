@@ -15,11 +15,11 @@ function git(dir, ...args) {
 }
 
 function makeTempRepo() {
-  const dir = mkdtempSync(join(tmpdir(), "gentjin-cd-"))
+  const dir = mkdtempSync(join(tmpdir(), "overgeared-skills-cd-"))
   created.push(dir)
   git(dir, "init", "-q", "-b", "main")
   git(dir, "config", "user.email", "test@example.invalid")
-  git(dir, "config", "user.name", "GENTJIN Test")
+  git(dir, "config", "user.name", "Overgeared Skills Test")
   return dir
 }
 
@@ -37,7 +37,7 @@ test("a fresh commit in an isolated repository has the intended subject and body
     "Improved bug investigation so fixes start from observed evidence.",
   ]
   const body = renderChangeDescription(items, "Improves tracing, optional Git safeguards, and engineering workflows.")
-  const messageFile = join(tmpdir(), `gentjin-msg-${process.pid}-${created.length}.txt`)
+  const messageFile = join(tmpdir(), `overgeared-skills-msg-${process.pid}-${created.length}.txt`)
   writeFileSync(messageFile, `Improve tracing and safeguards\n\n${body}\n`)
 
   git(dir, "add", "a.txt")
